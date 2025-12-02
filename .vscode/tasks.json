@@ -1,0 +1,58 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run Baretrack App",
+            "type": "shell",
+            "command": "${workspaceFolder}/.venv/Scripts/python.exe",
+            "args": [
+                "-m",
+                "streamlit",
+                "run",
+                "Home.py"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Run Tests",
+            "type": "shell",
+            "command": "${workspaceFolder}/.venv/Scripts/python.exe",
+            "args": [
+                "-m",
+                "pytest"
+            ],
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Clear All Caches",
+            "type": "shell",
+            "windows": {
+                "command": "Get-ChildItem -Path . -Include '__pycache__','.pytest_cache' -Recurse -Force | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue; Write-Host 'File caches cleared.'; & '${workspaceFolder}/.venv/Scripts/python.exe' -m streamlit cache clear"
+            },
+            "linux": {
+                "command": "find . -type d -name '__pycache__' -exec rm -r {} +; rm -rf .pytest_cache; '${workspaceFolder}/.venv/bin/python' -m streamlit cache clear"
+            },
+            "osx": {
+                "command": "find . -type d -name '__pycache__' -exec rm -r {} +; rm -rf .pytest_cache; '${workspaceFolder}/.venv/bin/python' -m streamlit cache clear"
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        }
+    ]
+}
