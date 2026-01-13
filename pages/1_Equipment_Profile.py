@@ -2,6 +2,7 @@ import streamlit as st
 from src.models import BowSetup, ArrowSetup, TabSetup, LimbAlignment, ArrowShaft
 from src.db import engine, create_db_and_tables
 from sqlmodel import Session, select
+from sqlalchemy import delete
 import uuid
 import pandas as pd
 
@@ -190,10 +191,8 @@ with tab2:
                     # Logic to import
                     # 1. Clear existing shafts for this arrow? Or Append? Let's clear for now to avoid dupes/confusion.
                     with Session(engine) as session:
-                        # Delete existing
-                        existing_shafts = session.exec(select(ArrowShaft).where(ArrowShaft.arrow_setup_id == current_arrow.id)).all()
-                        for s in existing_shafts:
-                            session.delete(s)
+                        # Delete existing shafts in bulk
+                        session.exec(delete(ArrowShaft).where(ArrowShaft.arrow_setup_id == current_arrow.id))
                             
                         # Import new
                         for index, row in df.iterrows():
