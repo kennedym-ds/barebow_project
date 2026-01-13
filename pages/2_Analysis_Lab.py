@@ -29,13 +29,6 @@ def get_session_summary(session: SessionModel):
 with Session(engine) as db:
     bows = db.exec(select(BowSetup)).all()
     arrows = db.exec(select(ArrowSetup)).all()
-    # Fetch all sessions for filtering later
-    # Fetch all sessions with relationships loaded
-    all_sessions = db.exec(
-        select(SessionModel)
-        .order_by(SessionModel.date.desc())
-        .options(selectinload(SessionModel.ends).selectinload(End.shots))
-    ).all()
 
 # --- UI Layout ---
 st.sidebar.header("Analysis Settings")
@@ -63,17 +56,21 @@ if not selected_bow or not selected_arrow:
 st.subheader("2. Performance Data")
 
 if mode == "Select from Database":
-    # Filter sessions by selected equipment logic (optional, but good for consistency)
-    # For now, show all but maybe alert if mismatch? 
-    # Let's just filter to make it easier to find relevant ones.
-    
-    # Filter sessions that match selected bow/arrow if possible. 
-    # SessionModel has bow_id and arrow_id.
-    filtered_sessions = [
-        s for s in all_sessions 
-        if (s.bow_id == selected_bow.id if s.bow_id else True) and 
-           (s.arrow_id == selected_arrow.id if s.arrow_id else True)
-    ]
+    # Efficiently fetch only relevant sessions from DB
+    with Session(engine) as db:
+        query = select(SessionModel).order_by(SessionModel.date.desc())
+
+        # Apply filters in SQL
+        if selected_bow:
+            query = query.where((SessionModel.bow_id == selected_bow.id) | (SessionModel.bow_id == None))
+
+        if selected_arrow:
+            query = query.where((SessionModel.arrow_id == selected_arrow.id) | (SessionModel.arrow_id == None))
+
+        # Eager load relationships
+        query = query.options(selectinload(SessionModel.ends).selectinload(End.shots))
+
+        filtered_sessions = db.exec(query).all()
     
     if not filtered_sessions:
         st.info("No recorded sessions match this equipment profile. Switching to Manual Entry might be needed.")
