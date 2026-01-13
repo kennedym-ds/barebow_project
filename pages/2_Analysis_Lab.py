@@ -1,8 +1,8 @@
 import streamlit as st
-from sqlmodel import Session, select
+from sqlmodel import Session, select, func, or_
 from sqlalchemy.orm import selectinload
 from src.db import engine
-from src.models import BowSetup, ArrowSetup, Session as SessionModel, End
+from src.models import BowSetup, ArrowSetup, Session as SessionModel, End, Shot
 from src.analysis import VirtualCoach
 
 st.set_page_config(page_title="Virtual Coach Analysis", page_icon="🧪", layout="wide")
@@ -14,28 +14,34 @@ By comparing your performance at two different distances, we can calculate how m
 """)
 
 # --- Helper Functions ---
-def get_session_summary(session: SessionModel):
+def get_session_summary(session: SessionModel, avg: float = None):
     """Returns a string summary and the calculated average score."""
-    if not session.ends:
-        return f"{session.date.strftime('%Y-%m-%d')} - {session.round_type} (No Shots)", 0.0
-    
-    total_score = sum(s.score for end in session.ends for s in end.shots)
-    total_shots = sum(len(end.shots) for end in session.ends)
-    avg = total_score / total_shots if total_shots > 0 else 0
+    if avg is None:
+        # Fallback if not provided.
+        # Note: If session is detached/unloaded, accessing ends will fail or trigger lazy load (which might fail if session closed).
+        # We try to rely on provided avg from the optimized query.
+        if not session.ends:
+             return f"{session.date.strftime('%Y-%m-%d')} - {session.round_type} (No Shots)", 0.0
+
+        total_score = sum(s.score for end in session.ends for s in end.shots)
+        total_shots = sum(len(end.shots) for end in session.ends)
+        avg = total_score / total_shots if total_shots > 0 else 0
     
     return f"{session.date.strftime('%Y-%m-%d')} - {session.round_type} ({session.distance_m}m): {avg:.2f} avg", avg
+
+def load_full_session(session_id: str):
+    """Fetches a single session with all relationships loaded for analysis."""
+    with Session(engine) as db:
+        return db.exec(
+            select(SessionModel)
+            .where(SessionModel.id == session_id)
+            .options(selectinload(SessionModel.ends).selectinload(End.shots))
+        ).one_or_none()
 
 # --- Data Loading ---
 with Session(engine) as db:
     bows = db.exec(select(BowSetup)).all()
     arrows = db.exec(select(ArrowSetup)).all()
-    # Fetch all sessions for filtering later
-    # Fetch all sessions with relationships loaded
-    all_sessions = db.exec(
-        select(SessionModel)
-        .order_by(SessionModel.date.desc())
-        .options(selectinload(SessionModel.ends).selectinload(End.shots))
-    ).all()
 
 # --- UI Layout ---
 st.sidebar.header("Analysis Settings")
@@ -63,54 +69,99 @@ if not selected_bow or not selected_arrow:
 st.subheader("2. Performance Data")
 
 if mode == "Select from Database":
-    # Filter sessions by selected equipment logic (optional, but good for consistency)
-    # For now, show all but maybe alert if mismatch? 
-    # Let's just filter to make it easier to find relevant ones.
     
-    # Filter sessions that match selected bow/arrow if possible. 
-    # SessionModel has bow_id and arrow_id.
-    filtered_sessions = [
-        s for s in all_sessions 
-        if (s.bow_id == selected_bow.id if s.bow_id else True) and 
-           (s.arrow_id == selected_arrow.id if s.arrow_id else True)
-    ]
+    # Optimized fetching: Filter in DB and Aggregate Average Score
+    # Original logic: if (s.bow_id == selected_bow.id if s.bow_id else True)
+    # This means: if s.bow_id is set, it must match. If not set (None), it is included.
     
-    if not filtered_sessions:
+    with Session(engine) as db:
+        stmt = (
+            select(SessionModel, func.avg(Shot.score).label("average_score"))
+            .join(End, SessionModel.id == End.session_id, isouter=True)
+            .join(Shot, End.id == Shot.end_id, isouter=True)
+            .where(or_(SessionModel.bow_id == selected_bow.id, SessionModel.bow_id == None))
+            .where(or_(SessionModel.arrow_id == selected_arrow.id, SessionModel.arrow_id == None))
+            .group_by(SessionModel.id)
+            .order_by(SessionModel.date.desc())
+        )
+        results = db.exec(stmt).all()
+
+    if not results:
         st.info("No recorded sessions match this equipment profile. Switching to Manual Entry might be needed.")
+        s_map = {}
+        s_avg_map = {}
+    else:
+        # s_map maps Summary String -> Session ID (lightweight)
+        # We will load the full session only when selected.
+        s_map = {}
+        # We store the average score separately to display it without reloading
+        s_avg_map = {}
         
-    s_map = {get_session_summary(s)[0]: s for s in filtered_sessions}
-    
+        # We need to keep the "lightweight" session object accessible for initial display properties (distance, face)
+        # But wait, if we close the session, accessing attributes of SessionModel might trigger refresh?
+        # No, simple attributes (columns) are usually available if they were loaded.
+        # But to be safe, we can store the lightweight object in a dict, but we must not access lazy relationships.
+        s_obj_map = {}
+
+        for session, avg_score in results:
+             if avg_score is None:
+                 avg_score = 0.0
+
+             # Use the lightweight session to generate summary
+             # We pass the avg explicitly to avoid accessing .ends
+             summary_str, _ = get_session_summary(session, avg=avg_score)
+
+             s_map[summary_str] = session.id
+             s_avg_map[summary_str] = avg_score
+             s_obj_map[summary_str] = session # Lightweight object
+
     col_s1, col_s2 = st.columns(2)
     
     with col_s1:
         st.markdown("**Short Distance (Baseline)**")
-        # Default to a session with dist <= 30
-        short_opts = [k for k, s in s_map.items() if s.distance_m <= 30]
+        # Filter options based on distance using the lightweight objects
+        short_opts = [k for k, s in s_obj_map.items() if s.distance_m <= 30]
         sel_short = st.selectbox("Select Short Session", options=short_opts)
         
         if sel_short:
-            short_session = s_map[sel_short]
-            _, short_avg = get_session_summary(short_session)
+            # Retrieve the average from our map
+            short_avg = s_avg_map[sel_short]
             st.metric("Short Average", f"{short_avg:.2f}")
-            actual_short_dist = short_session.distance_m
-            actual_short_face = short_session.target_face_size_cm
-            actual_short_score = short_avg
+
+            # Load full session for potential analysis
+            short_session = load_full_session(s_map[sel_short])
+
+            if short_session:
+                actual_short_dist = short_session.distance_m
+                actual_short_face = short_session.target_face_size_cm
+                actual_short_score = short_avg
+            else:
+                st.error("Failed to load session details.")
+                actual_short_score = None
         else:
             actual_short_score = None
 
     with col_s2:
         st.markdown("**Long Distance (Target)**")
-        # Default to a session with dist > 30
-        long_opts = [k for k, s in s_map.items() if s.distance_m > 30]
+        # Filter options based on distance
+        long_opts = [k for k, s in s_obj_map.items() if s.distance_m > 30]
         sel_long = st.selectbox("Select Long Session", options=long_opts)
         
         if sel_long:
-            long_session = s_map[sel_long]
-            _, long_avg = get_session_summary(long_session)
+            # Retrieve average
+            long_avg = s_avg_map[sel_long]
             st.metric("Long Average", f"{long_avg:.2f}")
-            actual_long_dist = long_session.distance_m
-            actual_long_face = long_session.target_face_size_cm
-            actual_long_score = long_avg
+
+            # Load full session
+            long_session = load_full_session(s_map[sel_long])
+
+            if long_session:
+                actual_long_dist = long_session.distance_m
+                actual_long_face = long_session.target_face_size_cm
+                actual_long_score = long_avg
+            else:
+                 st.error("Failed to load session details.")
+                 actual_long_score = None
         else:
             actual_long_score = None
 
