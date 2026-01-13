@@ -8,22 +8,53 @@ def calculate_gpp(arrow_weight_gr: float, draw_weight_lbs: float) -> float:
 
 def calculate_foc(arrow_length_in: float, point_weight_gr: float, total_weight_gr: float, nock_weight_gr: float = 10.0, fletch_weight_gr: float = 15.0) -> float:
     """
-    Calculates Front of Center (FOC) percentage.
-    Simplified formula assuming standard component distribution if exact centers of gravity aren't known.
-    Standard Formula: ((Balance Point - (Length/2)) / Length) * 100
+    Calculates Front of Center (FOC) percentage using component estimation.
     
-    We can approximate Balance Point using moments if we don't have the physical measurement.
-    But usually, FOC is an input or derived from component weights.
+    Formula: FOC% = 100 * (Balance Point - Length/2) / Length
     
-    Approximation using weights (assuming shaft is uniform):
-    Moment from tip = (Point * 0) + (Shaft * L/2) + (Fletch * (L-1)) + (Nock * L)
-    CG = Total Moment / Total Weight
+    We calculate Balance Point (Center of Gravity) using the Law of Moments from the nock end.
+
+    Assumptions:
+    - Point is at x = Length
+    - Nock is at x = 0
+    - Fletching CG is approx 1.5 inches from Nock (x = 1.5)
+    - Shaft is uniform, CG at x = Length / 2
     """
-    # This is a complex estimation without knowing shaft weight specifically vs total.
-    # Let's assume the user might input FOC or we use a heuristic.
-    # For now, let's use a placeholder or a simple weight ratio heuristic if needed.
-    # Actually, let's stick to the GPP for now as it's deterministic from our inputs.
-    return 0.0 
+    if arrow_length_in <= 0 or total_weight_gr <= 0:
+        return 0.0
+
+    # Calculate Shaft Weight
+    shaft_weight_gr = total_weight_gr - point_weight_gr - nock_weight_gr - fletch_weight_gr
+
+    if shaft_weight_gr < 0:
+        # Fallback if weights are inconsistent
+        shaft_weight_gr = 0
+
+    # Calculate Moments (from Nock, i.e., 0)
+    # Note: Traditional FOC measures from Nock Groove, so L is full length.
+    # However, usually FOC is calculated relative to the arrow length.
+    # Let's use distance from Nock groove.
+
+    m_nock = nock_weight_gr * 0.0
+    m_fletch = fletch_weight_gr * 1.5 # Approx 1.5" from nock groove
+    m_shaft = shaft_weight_gr * (arrow_length_in / 2.0)
+    m_point = point_weight_gr * arrow_length_in # Point weight acts at the tip (approx)
+
+    total_moment = m_nock + m_fletch + m_shaft + m_point
+    center_of_gravity_from_nock = total_moment / total_weight_gr
+
+    # FOC Calculation
+    # FOC = (CG - Center_of_Arrow) / Arrow_Length
+    center_of_arrow = arrow_length_in / 2.0
+
+    # We need to measure CG from the Nock?
+    # Usually FOC is (A - L/2) / L where A is distance from Nock to CG.
+    # Let's verify direction.
+    # If heavy point, CG is closer to point (Large A).
+    # A > L/2 -> Positive FOC.
+
+    foc_decimal = (center_of_gravity_from_nock - center_of_arrow) / arrow_length_in
+    return round(foc_decimal * 100.0, 1)
 
 def analyze_setup_safety(bow: BowSetup, arrow: ArrowSetup) -> list[str]:
     """Checks for dangerous configurations."""
