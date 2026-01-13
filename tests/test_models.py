@@ -40,9 +40,11 @@ def test_arrow_setup_creation():
         total_arrow_weight_gr=450,
         shaft_diameter_mm=9.3,
         fletching_type="Feathers",
-        nock_type="Beiter"
+        nock_type="Beiter",
+        arrow_count=12
     )
     
     assert arrow.total_arrow_weight_gr == 450
     assert arrow.shaft_diameter_mm == 9.3
+    assert arrow.arrow_count == 12
 

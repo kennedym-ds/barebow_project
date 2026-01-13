@@ -1,90 +1,205 @@
 import streamlit as st
-from src.models import BowSetup, ArrowSetup
+from sqlmodel import Session, select
+from sqlalchemy.orm import selectinload
+from src.db import engine
+from src.models import BowSetup, ArrowSetup, Session as SessionModel, End
 from src.analysis import VirtualCoach
-import uuid
 
-st.set_page_config(page_title="Analysis Lab", page_icon="🧪")
+st.set_page_config(page_title="Virtual Coach Analysis", page_icon="🧪", layout="wide")
 
-st.title("🧪 Analysis Lab: The Virtual Coach")
-
+st.title("🧪 Virtual Coach Analysis")
 st.markdown("""
-This module uses the **James Park Model** to separate your **Skill** from your **Equipment**.
-Enter your scores from two distances to see if your gear is holding you back.
+This module uses the **James Park Model** to separate your **Skill** from your **Equipment** errors.
+By comparing your performance at two different distances, we can calculate how much score you are losing to drag, drift, and tuning issues.
 """)
 
-# --- Mock Data / State Management ---
-# In a real app, we'd load this from a database or session state
-if 'bow' not in st.session_state:
-    # Create a default mock setup for demo purposes
-    st.session_state.bow = BowSetup(
-        id="demo", name="Demo Bow",
-        riser_make="Gillo", riser_model="G1", riser_length_in=25,
-        limbs_make="Uukha", limbs_model="Sx50", limbs_length="Long", limbs_marked_poundage=36,
-        draw_weight_otf=38.0, brace_height_in=8.75,
-        tiller_top_mm=185, tiller_bottom_mm=185, tiller_type="neutral",
-        plunger_spring_tension=5, plunger_center_shot_mm=0,
-        nocking_point_height_mm=12
-    )
-if 'arrow' not in st.session_state:
-    st.session_state.arrow = ArrowSetup(
-        id="demo", make="Easton", model="X23", spine=400, length_in=30,
-        point_weight_gr=150, total_arrow_weight_gr=450, shaft_diameter_mm=9.3,
-        fletching_type="Feathers", nock_type="Beiter"
-    )
-
-# --- UI ---
-
-col1, col2 = st.columns(2)
-
-with col1:
-    st.subheader("1. Baseline Skill (Short Distance)")
-    short_dist = st.number_input("Distance (m)", value=18.0, key="sd")
-    short_face = st.selectbox("Target Face (cm)", [40, 60, 80, 122], index=0, key="sf")
-    short_score = st.number_input("Average Arrow Score (0-10)", value=9.2, step=0.1, help="e.g. 276/300 = 9.2", key="ss")
-
-with col2:
-    st.subheader("2. Performance (Long Distance)")
-    long_dist = st.number_input("Distance (m)", value=50.0, key="ld")
-    long_face = st.selectbox("Target Face (cm)", [40, 60, 80, 122], index=3, key="lf")
-    long_score = st.number_input("Average Arrow Score (0-10)", value=7.5, step=0.1, key="ls")
-
-if st.button("Run Analysis"):
-    coach = VirtualCoach(st.session_state.bow, st.session_state.arrow)
+# --- Helper Functions ---
+def get_session_summary(session: SessionModel):
+    """Returns a string summary and the calculated average score."""
+    if not session.ends:
+        return f"{session.date.strftime('%Y-%m-%d')} - {session.round_type} (No Shots)", 0.0
     
-    results = coach.analyze_session_performance(
-        short_score, short_dist, short_face,
-        long_score, long_dist, long_face
-    )
+    total_score = sum(s.score for end in session.ends for s in end.shots)
+    total_shots = sum(len(end.shots) for end in session.ends)
+    avg = total_score / total_shots if total_shots > 0 else 0
     
-    st.divider()
+    return f"{session.date.strftime('%Y-%m-%d')} - {session.round_type} ({session.distance_m}m): {avg:.2f} avg", avg
+
+# --- Data Loading ---
+with Session(engine) as db:
+    bows = db.exec(select(BowSetup)).all()
+    arrows = db.exec(select(ArrowSetup)).all()
+    # Fetch all sessions for filtering later
+    # Fetch all sessions with relationships loaded
+    all_sessions = db.exec(
+        select(SessionModel)
+        .order_by(SessionModel.date.desc())
+        .options(selectinload(SessionModel.ends).selectinload(End.shots))
+    ).all()
+
+# --- UI Layout ---
+st.sidebar.header("Analysis Settings")
+mode = st.sidebar.radio("Input Mode", ["Select from Database", "Manual Entry"])
+
+# Equipment Selection (Required for both modes to check physics)
+st.subheader("1. Equipment Profile")
+col_eq1, col_eq2 = st.columns(2)
+
+with col_eq1:
+    bow_map = {b.name: b for b in bows}
+    selected_bow_name = st.selectbox("Select Bow", options=list(bow_map.keys()) if bow_map else [])
+    selected_bow = bow_map.get(selected_bow_name)
+
+with col_eq2:
+    arrow_map = {f"{a.make} {a.model} ({a.spine})": a for a in arrows}
+    selected_arrow_name = st.selectbox("Select Arrow", options=list(arrow_map.keys()) if arrow_map else [])
+    selected_arrow = arrow_map.get(selected_arrow_name)
+
+if not selected_bow or not selected_arrow:
+    st.warning("Please create Bow and Arrow profiles in the 'Equipment Profile' page first.")
+    st.stop()
+
+# --- Inputs based on Mode ---
+st.subheader("2. Performance Data")
+
+if mode == "Select from Database":
+    # Filter sessions by selected equipment logic (optional, but good for consistency)
+    # For now, show all but maybe alert if mismatch? 
+    # Let's just filter to make it easier to find relevant ones.
     
-    # Display Results
-    r_col1, r_col2 = st.columns(2)
+    # Filter sessions that match selected bow/arrow if possible. 
+    # SessionModel has bow_id and arrow_id.
+    filtered_sessions = [
+        s for s in all_sessions 
+        if (s.bow_id == selected_bow.id if s.bow_id else True) and 
+           (s.arrow_id == selected_arrow.id if s.arrow_id else True)
+    ]
     
-    with r_col1:
-        st.subheader("📊 Drag Loss Analysis")
+    if not filtered_sessions:
+        st.info("No recorded sessions match this equipment profile. Switching to Manual Entry might be needed.")
+        
+    s_map = {get_session_summary(s)[0]: s for s in filtered_sessions}
+    
+    col_s1, col_s2 = st.columns(2)
+    
+    with col_s1:
+        st.markdown("**Short Distance (Baseline)**")
+        # Default to a session with dist <= 30
+        short_opts = [k for k, s in s_map.items() if s.distance_m <= 30]
+        sel_short = st.selectbox("Select Short Session", options=short_opts)
+        
+        if sel_short:
+            short_session = s_map[sel_short]
+            _, short_avg = get_session_summary(short_session)
+            st.metric("Short Average", f"{short_avg:.2f}")
+            actual_short_dist = short_session.distance_m
+            actual_short_face = short_session.target_face_size_cm
+            actual_short_score = short_avg
+        else:
+            actual_short_score = None
+
+    with col_s2:
+        st.markdown("**Long Distance (Target)**")
+        # Default to a session with dist > 30
+        long_opts = [k for k, s in s_map.items() if s.distance_m > 30]
+        sel_long = st.selectbox("Select Long Session", options=long_opts)
+        
+        if sel_long:
+            long_session = s_map[sel_long]
+            _, long_avg = get_session_summary(long_session)
+            st.metric("Long Average", f"{long_avg:.2f}")
+            actual_long_dist = long_session.distance_m
+            actual_long_face = long_session.target_face_size_cm
+            actual_long_score = long_avg
+        else:
+            actual_long_score = None
+
+else:
+    # Manual Mode
+    col_m1, col_m2 = st.columns(2)
+    
+    with col_m1:
+        st.markdown("**Short Distance (Baseline)**")
+        actual_short_dist = st.number_input("Distance (m)", value=18.0)
+        actual_short_face = st.selectbox("Target Face (cm)", [40, 60, 80, 122], index=0)
+        actual_short_score = st.number_input("Average Score (0-10)", value=9.0, step=0.1)
+        
+    with col_m2:
+        st.markdown("**Long Distance (Target)**")
+        actual_long_dist = st.number_input("Distance (m)", value=50.0)
+        actual_long_face = st.selectbox("Target Face (cm)", [40, 60, 80, 122], index=3, key="man_lf")
+        actual_long_score = st.number_input("Average Score (0-10)", value=7.5, step=0.1)
+
+# --- Analysis Execution ---
+st.divider()
+
+if st.button("Analyze Performance", type="primary"):
+    if not actual_short_score or not actual_long_score:
+        st.error("Please ensure both Short and Long distance data is available.")
+    else:
+        # Instantiate Virtual Coach
+        coach = VirtualCoach(selected_bow, selected_arrow)
+        
+        results = coach.analyze_session_performance(
+            short_score=actual_short_score,
+            short_dist=actual_short_dist,
+            short_face=actual_short_face,
+            long_score=actual_long_score,
+            long_dist=actual_long_dist,
+            long_face=actual_long_face
+        )
+        
+        # --- Visualization ---
+        
+        # 1. Physics & Safety
+        st.subheader("1. Equipment Health Check")
+        
+        safety = results['safety']
+        setup = results['setup_score']
+        
+        c1, c2 = st.columns([1, 2])
+        
+        with c1:
+            # Gauge for Efficiency
+            st.metric("Setup Efficiency", f"{setup['score']}/100", 
+                      delta="Optimal" if setup['score'] > 80 else "Review Needed",
+                      delta_color="normal" if setup['score'] > 80 else "inverse")
+            st.write(f"**GPP (Grains/Pound):** {setup['gpp']}")
+            
+        with c2:
+            if safety:
+                for w in safety:
+                    st.error(f"🛑 {w}")
+            else:
+                st.success("✅ Equipment adheres to safety standards.")
+                
+            if setup['feedback']:
+                for f in setup['feedback']:
+                    st.info(f"ℹ️ {f}")
+            else:
+                st.write("No setup tuning issues detected.")
+
+        # 2. Performance Analysis
+        st.subheader("2. Skill vs. Drag Analysis")
+        
         metrics = results['performance_metrics']
         
-        st.metric("Predicted Score", metrics['predicted_score'])
-        st.metric("Actual Score", metrics['actual_score'], delta=f"{metrics['points_lost']:.2f} pts", delta_color="inverse")
+        m1, m2, m3 = st.columns(3)
+        m1.metric("Predicted Long Dist Score", metrics['predicted_score'])
+        m2.metric("Actual Long Dist Score", metrics['actual_score'])
+        m3.metric("Loss Due to Drag/Tuning", f"{metrics['points_lost']} pts",
+                  delta=f"-{metrics['percent_loss']}%", delta_color="inverse")
         
-        if metrics['percent_loss'] > 5:
-            st.warning(f"You are losing {metrics['percent_loss']}% of your score to aerodynamics/tuning.")
+        # 3. Recommendations
+        st.subheader("3. Coach's Verdict")
+        
+        recs = results['coach_recommendations']
+        
+        if recs:
+            for r in recs:
+                st.warning(f"👉 {r}")
         else:
-            st.success("Your equipment is performing efficiently!")
-            
-    with r_col2:
-        st.subheader("🛠️ Setup Efficiency")
-        setup = results['setup_score']
-        st.metric("Setup Score", f"{setup['score']}/100")
-        st.write(f"**GPP:** {setup['gpp']}")
-        
-        for fb in setup['feedback']:
-            st.info(fb)
-            
-    st.subheader("💡 Coach Recommendations")
-    if results['coach_recommendations']:
-        for rec in results['coach_recommendations']:
-            st.write(f"- {rec}")
-    else:
-        st.write("No critical equipment changes recommended. Focus on form!")
+            if metrics['percent_loss'] < 5.0:
+                st.success("🎉 Comprehensive Analysis Pass! Your group expansion is consistent with your skill level. Keep training!")
+            else:
+                st.info("Performance is decent, but slight improvements in tuning or form at distance could help.")

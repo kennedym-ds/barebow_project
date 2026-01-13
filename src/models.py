@@ -74,9 +74,35 @@ class ArrowSetup(SQLModel, table=True):
     shaft_diameter_mm: float
     fletching_type: str
     nock_type: str
+    arrow_count: int = Field(default=12, description="Number of arrows in the set")
     
     # Relationships
     sessions: List["Session"] = Relationship(back_populates="arrow")
+    shafts: List["ArrowShaft"] = Relationship(back_populates="arrow_setup", sa_relationship_kwargs={"cascade": "all, delete"})
+
+class ArrowShaft(SQLModel, table=True):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
+    arrow_setup_id: str = Field(foreign_key="arrowsetup.id")
+    
+    arrow_number: int # Matches "No." from CSV
+    measured_weight_gr: Optional[float] = None
+    measured_spine_astm: Optional[float] = None
+    straightness: Optional[float] = None
+    
+    # Relationship
+    arrow_setup: ArrowSetup = Relationship(back_populates="shafts")
+
+class TabSetup(SQLModel, table=True):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
+    name: str
+    make: str = "Zniper"
+    model: str = "Barebow Tab"
+    
+    # Comma-separated list of mark positions in mm (e.g., "4.5, 9.0, 13.5")
+    marks: str = "" 
+    
+    # Relationships
+    # sessions: List["Session"] = Relationship(back_populates="tab") # Future proofing
 
 class Session(SQLModel, table=True):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
@@ -84,6 +110,7 @@ class Session(SQLModel, table=True):
     
     bow_id: Optional[str] = Field(default=None, foreign_key="bowsetup.id")
     arrow_id: Optional[str] = Field(default=None, foreign_key="arrowsetup.id")
+    # tab_id: Optional[str] = Field(default=None, foreign_key="tabsetup.id") # Add later if needed
     
     round_type: str # "WA 18m", "WA 25m", "Flint"
     target_face_size_cm: int # 40, 60, etc.
@@ -116,6 +143,8 @@ class Shot(SQLModel, table=True):
     x: float
     y: float
     
+    arrow_number: Optional[int] = Field(default=None, description="The number marked on the arrow shaft")
+
     # Relationships
     end: End = Relationship(back_populates="shots")
 

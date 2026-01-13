@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, create_engine, Session
-from src.models import BowSetup, ArrowSetup, Session as SessionModel, End, Shot
+from src.models import BowSetup, ArrowSetup, Session as SessionModel, End, Shot, ArrowShaft
 
 sqlite_file_name = "baretrack.db"
 sqlite_url = f"sqlite:///{sqlite_file_name}"

@@ -1,4 +1,8 @@
 import streamlit as st
+from src.db import create_db_and_tables
+
+# Initialize DB on app start
+create_db_and_tables()
 
 st.set_page_config(
     page_title="BareTrack",
