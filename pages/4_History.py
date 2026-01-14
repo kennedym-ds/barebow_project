@@ -1,5 +1,6 @@
 import streamlit as st
 from sqlmodel import Session, select, func
+from sqlalchemy.orm import selectinload
 from src.db import engine
 from src.models import Session as SessionModel, End, Shot, BowSetup, ArrowSetup
 import pandas as pd
@@ -13,7 +14,11 @@ st.title("📜 Session History")
 def get_sessions():
     with Session(engine) as db:
         # Fetch sessions ordered by date
-        statement = select(SessionModel).order_by(SessionModel.date.desc())
+        statement = select(SessionModel).options(
+            selectinload(SessionModel.ends).selectinload(End.shots),
+            selectinload(SessionModel.bow),
+            selectinload(SessionModel.arrow)
+        ).order_by(SessionModel.date.desc())
         results = db.exec(statement).all()
         
         data = []
