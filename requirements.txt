@@ -1,5 +1,7 @@
 pydantic
 pandas
+numpy
+scipy
 pytest
 sqlmodel
 plotly

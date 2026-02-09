@@ -1,6 +1,29 @@
 {
     "version": "2.0.0",
+    "options": {
+        "env": {
+            "PATH": "C:\\Program Files\\nodejs;${env:PATH}"
+        }
+    },
     "tasks": [
+        {
+            "label": "API: Kill Port 8000",
+            "type": "shell",
+            "windows": {
+                "command": "Get-NetTCPConnection -LocalPort 8000 -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }; Write-Host 'Port 8000 cleared.'"
+            },
+            "linux": {
+                "command": "fuser -k 8000/tcp 2>/dev/null; echo 'Port 8000 cleared.'"
+            },
+            "osx": {
+                "command": "lsof -ti:8000 | xargs kill -9 2>/dev/null; echo 'Port 8000 cleared.'"
+            },
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
         {
             "label": "API: Start Server",
             "type": "shell",
@@ -13,6 +36,7 @@
                 "--port",
                 "8000"
             ],
+            "dependsOn": ["API: Kill Port 8000"],
             "group": {
                 "kind": "build",
                 "isDefault": true

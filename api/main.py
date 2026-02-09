@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.db import create_db_and_tables
-from api.routers import bows, arrows, tabs, sessions, scoring, analysis, crawls, analytics
+from api.routers import bows, arrows, tabs, sessions, scoring, analysis, crawls, analytics, rounds
 
 
 @asynccontextmanager
@@ -43,6 +43,7 @@ app.include_router(scoring.router, prefix="/api/scoring", tags=["Scoring"])
 app.include_router(analysis.router, prefix="/api/analysis", tags=["Analysis"])
 app.include_router(crawls.router, prefix="/api/crawls", tags=["Crawl Regression"])
 app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])
+app.include_router(rounds.router, prefix="/api/rounds", tags=["Rounds"])
 
 
 @app.get("/")

@@ -322,3 +322,157 @@
     align-items: flex-start;
   }
 }
+
+/* Score Prediction Tab */
+.prediction-tab .prediction-selectors {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.prediction-tab .prediction-selectors label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.prediction-tab .prediction-selectors select {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.prediction-stats .stat-warning {
+  border-color: #f44336;
+  background: #fff5f5;
+}
+.prediction-stats .stat-caution {
+  border-color: #ff9800;
+  background: #fff8e1;
+}
+.prediction-stats .stat-good {
+  border-color: #4CAF50;
+  background: #f1f8e9;
+}
+
+.warning-text { color: #d32f2f; }
+.good-text { color: #2e7d32; }
+
+/* Bias Analysis Tab */
+.bias-tab .bias-stats .stat-warning {
+  border-color: #f44336;
+  background: #fff5f5;
+}
+.bias-tab .bias-stats .stat-good {
+  border-color: #4CAF50;
+  background: #f1f8e9;
+}
+
+/* Round context enhancements */
+.stat-sub {
+  font-size: 0.75rem;
+  color: #888;
+  margin-top: 0.25rem;
+}
+
+.pb-table td:nth-child(5) {
+  font-weight: 600;
+  color: #1976d2;
+}
+
+.caption {
+  font-size: 0.85rem;
+  color: #777;
+  margin: 0.25rem 0 1rem;
+}
+
+/* Precision Tab */
+.precision-tab .hit-prob-selector {
+  margin: 1rem 0;
+}
+
+.precision-tab .hit-prob-selector select {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-left: 0.5rem;
+}
+
+/* Trends Tab */
+.trends-tab .summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.trends-tab .summary-table th,
+.trends-tab .summary-table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.trends-tab .summary-table th {
+  font-weight: 600;
+  color: #555;
+  border-bottom: 2px solid #ddd;
+}
+
+/* Equipment Tab */
+.equipment-selectors {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+}
+
+.setup-selector {
+  flex: 1;
+  min-width: 200px;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.setup-selector h3 {
+  margin: 0 0 0.75rem;
+  color: #333;
+}
+
+.setup-selector label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.setup-selector select {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 400;
+}
+
+.vs-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #999;
+  padding: 2rem 0.5rem;
+}
+
+.comparison-results {
+  margin-top: 1rem;
+}

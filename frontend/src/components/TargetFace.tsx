@@ -128,7 +128,7 @@ export default function TargetFace({
       z: zVals,
       showscale: false,
       opacity: 0.01,
-      hoverinfo: 'skip',
+      hoverinfo: 'none',
     } as Data);
 
     // Shot markers
