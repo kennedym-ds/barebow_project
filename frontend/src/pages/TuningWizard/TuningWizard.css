@@ -1,0 +1,243 @@
+.tuning-wizard {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.tuning-wizard h1 {
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.warning-box {
+  background: #fff3cd;
+  border: 2px solid #ffc107;
+  border-radius: 8px;
+  padding: 1.5rem;
+  color: #856404;
+}
+
+.warning-box strong {
+  color: #000;
+}
+
+/* Sections */
+.section {
+  margin: 2rem 0;
+}
+
+.section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.section-subtitle {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  color: #555;
+}
+
+/* Equipment Grid */
+.equipment-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .equipment-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: #333;
+}
+
+.form-group select {
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+}
+
+.form-group select:focus {
+  outline: none;
+  border-color: #2196F3;
+}
+
+/* Radio Groups */
+.radio-group {
+  display: flex;
+  gap: 2rem;
+  margin-top: 0.5rem;
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: normal;
+}
+
+.radio-group input[type="radio"] {
+  cursor: pointer;
+}
+
+.radio-group-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.radio-group-vertical label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.radio-group-vertical label:hover {
+  background: #f5f5f5;
+}
+
+.radio-group-vertical input[type="radio"] {
+  cursor: pointer;
+}
+
+/* Observation Grid */
+.observation-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .observation-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.observation-group {
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.observation-group h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+}
+
+.observation-group .hint {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+/* Diagnosis Boxes */
+.diagnosis-box {
+  margin: 1.5rem 0;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-width: 2px;
+  border-style: solid;
+}
+
+.diagnosis-box h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.diagnosis-box.success {
+  background: #d4edda;
+  border-color: #28a745;
+  color: #155724;
+}
+
+.diagnosis-box.error {
+  background: #f8d7da;
+  border-color: #dc3545;
+  color: #721c24;
+}
+
+.diagnosis-box.warning {
+  background: #fff3cd;
+  border-color: #ffc107;
+  color: #856404;
+}
+
+.diagnosis-box ul {
+  margin: 0.5rem 0 0 1.5rem;
+}
+
+.diagnosis-box li {
+  margin: 0.5rem 0;
+}
+
+/* Fixes Section */
+.fixes-section {
+  margin-top: 1rem;
+}
+
+.fixes-section h4 {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.fixes-section ul {
+  margin: 0.5rem 0 0 1.5rem;
+}
+
+.fixes-section li {
+  margin: 0.5rem 0;
+}
+
+/* Perfect Tune Banner */
+.perfect-tune-banner {
+  background: linear-gradient(135deg, #4caf50 0%, #8bc34a 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  margin-top: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.perfect-tune-banner h2 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+/* Dividers */
+hr {
+  border: none;
+  border-top: 2px solid #e0e0e0;
+  margin: 2rem 0;
+}

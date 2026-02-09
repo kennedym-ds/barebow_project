@@ -1,0 +1,389 @@
+.session-logger {
+  padding: 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* ─── Configuration Phase ─────────────────────────────── */
+
+.session-config {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.config-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.form-group select,
+.form-group input {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.form-group label input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+.custom-config {
+  padding: 1rem;
+  background: #f8f8f8;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.btn-primary {
+  padding: 0.75rem 1.5rem;
+  background: #0066cc;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #0052a3;
+}
+
+.btn-primary:disabled {
+  background: #999;
+  cursor: not-allowed;
+}
+
+/* ─── Logging Phase ──────────────────────────────────── */
+
+.logging-active {
+  padding: 1rem;
+}
+
+.session-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #eee;
+}
+
+.session-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.session-info {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 1rem;
+  color: #666;
+}
+
+.btn-end-session {
+  padding: 0.5rem 1rem;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-end-session:hover {
+  background: #c82333;
+}
+
+.logging-layout {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.target-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.view-mode-toggle {
+  margin-bottom: 1rem;
+}
+
+.view-mode-toggle button {
+  padding: 0.5rem 1rem;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.view-mode-toggle button:hover {
+  background: #5a6268;
+}
+
+.controls-area {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ─── Quiver Panel ───────────────────────────────────── */
+
+.quiver-panel {
+  background: #f8f8f8;
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.quiver-panel h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+}
+
+.active-indicator {
+  margin: 0 0 1rem 0;
+  font-weight: 600;
+  color: #0066cc;
+}
+
+.quiver-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.quiver-arrow {
+  padding: 0.75rem;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.quiver-arrow:hover:not(:disabled) {
+  border-color: #0066cc;
+  transform: translateY(-2px);
+}
+
+.quiver-arrow.active {
+  background: #0066cc;
+  color: white;
+  border-color: #0066cc;
+}
+
+.quiver-arrow.shot {
+  background: #e8f4e8;
+}
+
+.quiver-arrow.shot.active {
+  background: #0052a3;
+}
+
+.quiver-arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.arrow-number {
+  font-size: 1rem;
+}
+
+.arrow-score {
+  font-size: 0.85rem;
+  color: #28a745;
+}
+
+.quiver-arrow.active .arrow-score {
+  color: #ffeb3b;
+}
+
+/* ─── End Controls ───────────────────────────────────── */
+
+.end-controls {
+  background: #f8f8f8;
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.end-info h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+}
+
+.current-score {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #28a745;
+  margin: 0.5rem 0;
+}
+
+.arrow-count {
+  margin: 0 0 1rem 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.btn-save-end {
+  width: 100%;
+  padding: 0.75rem;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-save-end:hover:not(:disabled) {
+  background: #218838;
+}
+
+.btn-save-end:disabled {
+  background: #999;
+  cursor: not-allowed;
+}
+
+/* ─── Stats Table ────────────────────────────────────── */
+
+.stats-table {
+  background: #f8f8f8;
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.stats-table h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.2rem;
+}
+
+.stats-table table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.stats-table th,
+.stats-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+.stats-table th {
+  background: #0066cc;
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+.stats-table tbody tr {
+  border-bottom: 1px solid #eee;
+}
+
+.stats-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.stats-table tbody tr:hover {
+  background: #f8f8f8;
+}
+
+.stats-table tbody tr.current-end {
+  background: #e8f4e8;
+  font-weight: 600;
+}
+
+.stats-table tbody tr.current-end:hover {
+  background: #d4edd4;
+}
+
+.current-label {
+  color: #28a745;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* ─── Complete Phase ─────────────────────────────────── */
+
+.session-complete {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.session-complete h2 {
+  color: #28a745;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.summary-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: #f8f8f8;
+  padding: 2rem;
+  border-radius: 8px;
+  border: 2px solid #ddd;
+}
+
+.stat-label {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.stat-value {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #0066cc;
+}
+
+/* ─── Responsive ─────────────────────────────────────── */
+
+@media (max-width: 1024px) {
+  .logging-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .summary-stats {
+    grid-template-columns: 1fr;
+  }
+}

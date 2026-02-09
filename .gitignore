@@ -25,8 +25,9 @@ dmypy.json
 # Pytest
 .pytest_cache/
 
-# Streamlit
-.streamlit/secrets.toml
+# Frontend
+node_modules/
+frontend/dist/
 
 # Database
 *.db

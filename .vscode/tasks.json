@@ -2,17 +2,63 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Run Baretrack App",
+            "label": "API: Start Server",
             "type": "shell",
             "command": "${workspaceFolder}/.venv/Scripts/python.exe",
             "args": [
                 "-m",
-                "streamlit",
-                "run",
-                "Home.py"
+                "uvicorn",
+                "api.main:app",
+                "--reload",
+                "--port",
+                "8000"
             ],
             "group": {
                 "kind": "build",
+                "isDefault": true
+            },
+            "isBackground": true,
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "group": "dev"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Frontend: Dev Server",
+            "type": "shell",
+            "command": "npm",
+            "args": ["run", "dev"],
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "isBackground": true,
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "group": "dev"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Dev: Start All",
+            "dependsOn": ["API: Start Server", "Frontend: Dev Server"],
+            "dependsOrder": "parallel",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run Tests",
+            "type": "shell",
+            "command": "${workspaceFolder}/.venv/Scripts/python.exe",
+            "args": [
+                "-m",
+                "pytest",
+                "-v"
+            ],
+            "group": {
+                "kind": "test",
                 "isDefault": true
             },
             "presentation": {
@@ -22,31 +68,30 @@
             "problemMatcher": []
         },
         {
-            "label": "Run Tests",
+            "label": "Frontend: Build",
             "type": "shell",
-            "command": "${workspaceFolder}/.venv/Scripts/python.exe",
-            "args": [
-                "-m",
-                "pytest"
-            ],
-            "group": "test",
+            "command": "npm",
+            "args": ["run", "build"],
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
             "presentation": {
                 "reveal": "always",
-                "panel": "new"
+                "panel": "shared"
             },
             "problemMatcher": []
         },
         {
-            "label": "Clear All Caches",
+            "label": "Clear Caches",
             "type": "shell",
             "windows": {
-                "command": "Get-ChildItem -Path . -Include '__pycache__','.pytest_cache' -Recurse -Force | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue; Write-Host 'File caches cleared.'; & '${workspaceFolder}/.venv/Scripts/python.exe' -m streamlit cache clear"
+                "command": "Get-ChildItem -Path . -Include '__pycache__','.pytest_cache' -Recurse -Force | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue; Write-Host 'Caches cleared.'"
             },
             "linux": {
-                "command": "find . -type d -name '__pycache__' -exec rm -r {} +; rm -rf .pytest_cache; '${workspaceFolder}/.venv/bin/python' -m streamlit cache clear"
+                "command": "find . -type d -name '__pycache__' -exec rm -r {} +; rm -rf .pytest_cache"
             },
             "osx": {
-                "command": "find . -type d -name '__pycache__' -exec rm -r {} +; rm -rf .pytest_cache; '${workspaceFolder}/.venv/bin/python' -m streamlit cache clear"
+                "command": "find . -type d -name '__pycache__' -exec rm -r {} +; rm -rf .pytest_cache"
             },
             "presentation": {
                 "reveal": "always",

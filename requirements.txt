@@ -1,7 +1,8 @@
-streamlit
 pydantic
 pandas
 pytest
 sqlmodel
 plotly
-streamlit-plotly-events
+fastapi
+uvicorn[standard]
+httpx
