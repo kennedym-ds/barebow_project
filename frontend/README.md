@@ -21,7 +21,7 @@ React + TypeScript frontend for the BareTrack archery tracking application.
 ### Installation
 
 ```bash
-npm install --legacy-peer-deps
+npm install
 ```
 
 ### Development Server
@@ -95,6 +95,8 @@ Ensure the FastAPI backend is running before starting the frontend dev server.
 - `/tuning` - Tuning Wizard
 
 ## Development
+
+**Recent additions**: Per-arrow heatmaps with centroids, density heatmap toggle, arrow precision tiers (Primary/Secondary/Reserve), CSV export
 
 ### Adding a New Page
 

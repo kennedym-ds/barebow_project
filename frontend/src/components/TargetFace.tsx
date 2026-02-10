@@ -3,6 +3,13 @@ import Plot from 'react-plotly.js';
 import type { Data, Layout, Shape } from 'plotly.js';
 import { getRingScore, getFlintScore } from '../utils/scoring';
 
+interface Centroid {
+  x: number;
+  y: number;
+  label: string;
+  color: string;
+}
+
 interface TargetFaceProps {
   faceSizeCm: number;
   faceType: 'WA' | 'Flint';
@@ -22,6 +29,12 @@ interface TargetFaceProps {
   shaftDiameterMm?: number;
   /** Whether X-ring scores as 11 (WA scoring option) */
   xIs11?: boolean;
+  /** Opacity for shot dot markers (0–1). Default 1. */
+  markerOpacity?: number;
+  /** Centre-of-mass markers rendered as × symbols */
+  centroids?: Centroid[];
+  /** Extra Plotly traces (e.g. heatmap contours) injected before shot markers */
+  extraTraces?: Data[];
 }
 
 export default function TargetFace({
@@ -35,6 +48,9 @@ export default function TargetFace({
   interactive = true,
   shaftDiameterMm = 0,
   xIs11 = false,
+  markerOpacity = 1,
+  centroids = [],
+  extraTraces = [],
 }: TargetFaceProps) {
   const { shapes, maxR } = useMemo(() => {
     const shapes: Partial<Shape>[] = [];
@@ -171,6 +187,9 @@ export default function TargetFace({
   const traces = useMemo(() => {
     const data: Data[] = [];
 
+    // Extra traces (heatmap contours etc.) go behind shot markers
+    data.push(...extraTraces);
+
     // Shot markers
     if (shots.length > 0) {
       data.push({
@@ -181,12 +200,34 @@ export default function TargetFace({
         marker: {
           color: shots.map(s => s.color || '#00FF00'),
           size: 18,
+          opacity: markerOpacity,
           line: { color: 'black', width: 1 },
         },
         text: shots.map(s => s.arrow_number?.toString() || ''),
         textfont: { color: 'black', size: 11 },
         textposition: 'middle center' as any,
         hovertext: shots.map(s => `Arrow #${s.arrow_number || '?'}: ${s.score}`),
+        hoverinfo: 'text',
+      } as Data);
+    }
+
+    // Centroid markers (centre of mass per arrow group)
+    if (centroids.length > 0) {
+      data.push({
+        type: 'scatter',
+        x: centroids.map(c => c.x),
+        y: centroids.map(c => c.y),
+        mode: 'markers+text' as any,
+        marker: {
+          symbol: 'x' as any,
+          color: centroids.map(c => c.color),
+          size: 16,
+          line: { color: 'black', width: 2 },
+        },
+        text: centroids.map(c => c.label),
+        textfont: { color: 'black', size: 10 },
+        textposition: 'top center' as any,
+        hovertext: centroids.map(c => `${c.label} centre`),
         hoverinfo: 'text',
       } as Data);
     }
@@ -213,7 +254,7 @@ export default function TargetFace({
     }
 
     return data;
-  }, [shots, maxR, showMedianCenter]);
+  }, [shots, maxR, showMedianCenter, markerOpacity, centroids, extraTraces]);
 
   const layout: Partial<Layout> = useMemo(() => ({
     shapes,

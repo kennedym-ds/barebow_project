@@ -51,6 +51,7 @@ export default function AnalysisLab() {
 
   // Arrow Tracker state
   const [selectedArrows, setSelectedArrows] = useState<Set<number>>(new Set());
+  const [showHeatmap, setShowHeatmap] = useState(false);
 
   const { data: bows } = useBows();
   const { data: arrows } = useArrows();
@@ -871,6 +872,49 @@ export default function AnalysisLab() {
                     }));
                   });
 
+                // Compute centroids (centre of mass) per selected arrow
+                const centroids = arrowPerfQuery.data.arrows
+                  .filter(arrow => selectedArrows.has(arrow.arrow_number) && arrow.shots.length > 0)
+                  .map(arrow => {
+                    const cx = arrow.shots.reduce((s, sh) => s + sh.x, 0) / arrow.shots.length;
+                    const cy = arrow.shots.reduce((s, sh) => s + sh.y, 0) / arrow.shots.length;
+                    return {
+                      x: cx,
+                      y: cy,
+                      label: `#${arrow.arrow_number}`,
+                      color: arrowColorMap.get(arrow.arrow_number)!,
+                    };
+                  });
+
+                // Build heatmap contour traces per selected arrow
+                const heatmapTraces: any[] = [];
+                if (showHeatmap) {
+                  const faceCm = arrowPerfQuery.data.face_cm;
+                  arrowPerfQuery.data.arrows
+                    .filter(arrow => selectedArrows.has(arrow.arrow_number) && arrow.shots.length >= 3)
+                    .forEach(arrow => {
+                      const color = arrowColorMap.get(arrow.arrow_number)!;
+                      heatmapTraces.push({
+                        type: 'histogram2dcontour',
+                        x: arrow.shots.map(s => s.x),
+                        y: arrow.shots.map(s => s.y),
+                        colorscale: [[0, 'rgba(255,255,255,0)'], [1, color]],
+                        showscale: false,
+                        ncontours: 6,
+                        contours: { coloring: 'fill' },
+                        line: { width: 1, color },
+                        opacity: 0.4,
+                        hoverinfo: 'skip',
+                        xaxis: 'x',
+                        yaxis: 'y',
+                        autobinx: false,
+                        autobiny: false,
+                        xbins: { start: -faceCm / 2, end: faceCm / 2, size: faceCm / 20 },
+                        ybins: { start: -faceCm / 2, end: faceCm / 2, size: faceCm / 20 },
+                      });
+                    });
+                }
+
                 const selectedArrowsList = arrowPerfQuery.data.arrows.filter(a => selectedArrows.has(a.arrow_number));
 
                 return (
@@ -899,6 +943,15 @@ export default function AnalysisLab() {
                             Arrow #{arrow.arrow_number}
                           </label>
                         ))}
+                        <hr className="selector-divider" />
+                        <label className="heatmap-toggle">
+                          <input
+                            type="checkbox"
+                            checked={showHeatmap}
+                            onChange={() => setShowHeatmap(!showHeatmap)}
+                          />
+                          🌡️ Density heatmap
+                        </label>
                       </div>
 
                       <div className="target-face-container">
@@ -910,6 +963,9 @@ export default function AnalysisLab() {
                             interactive={false}
                             width={500}
                             height={500}
+                            markerOpacity={0.2}
+                            centroids={centroids}
+                            extraTraces={heatmapTraces}
                           />
                         </Suspense>
                       </div>

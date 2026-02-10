@@ -1,5 +1,11 @@
 # Research: Advanced Analytics Metrics for BareTrack
 
+> **📋 RESEARCH ARTIFACT**  
+> This document is a **research artifact** capturing analysis and recommendations as of the date listed. It does NOT reflect current implementation status. Many proposed features remain unimplemented.  
+> **For actual implemented features**, see root `README.md` and `CHANGELOG.md`.
+
+---
+
 **Date**: 2025-07-31T12:00:00Z  
 **Researcher**: researcher-agent  
 **Confidence**: High  

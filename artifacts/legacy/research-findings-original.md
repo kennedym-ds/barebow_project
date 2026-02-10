@@ -1,3 +1,12 @@
+# [ARCHIVED] Original Research Findings
+
+> **⚠️ LEGACY ARTIFACT — DO NOT USE**  
+> This document describes a "pivot to Streamlit" that **never happened**. The actual BareTrack implementation uses FastAPI + React from the start. Some WHY rationale (Park Model, crawl regression) remains valid and has been extracted to `docs/ARCHITECTURE.md`.  
+> **Archived**: 2026-02-10  
+> **For current architecture**, see root `README.md`.
+
+---
+
 # Research Findings & Project Context
 
 ## 1. Market Analysis & The "Barebow Gap"

@@ -1,5 +1,11 @@
 # Research: Competitive Landscape — Archery Scoring & Analysis Apps
 
+> **📋 RESEARCH ARTIFACT**  
+> This document is a **research artifact** capturing analysis and recommendations as of the date listed. It does NOT reflect current implementation status. Many proposed features remain unimplemented.  
+> **For actual implemented features**, see root `README.md` and `CHANGELOG.md`.
+
+---
+
 **Date**: 2026-02-09T14:00:00Z  
 **Researcher**: researcher-agent  
 **Confidence**: High (primary competitor data), Medium (pricing — some apps have evolved since last store snapshot)  

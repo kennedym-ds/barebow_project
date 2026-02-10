@@ -536,6 +536,17 @@
   margin-bottom: 0.25rem;
 }
 
+.selector-divider {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 0.5rem 0;
+}
+
+.heatmap-toggle {
+  font-weight: 500;
+  color: #444;
+}
+
 .arrow-single-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));

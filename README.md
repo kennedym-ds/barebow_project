@@ -1,25 +1,25 @@
-# 🏹 BareTrack: Intelligent Barebow Analysis
+# BareTrack
 
-BareTrack is a specialized analysis tool for Barebow archers, designed to move beyond simple scorekeeping and provide deep insights into the relationship between **Skill**, **Equipment**, and **Physics**.
+Barebow archery analysis tool. Tracks sessions, analyzes precision, calculates crawl marks for string-walking.
 
-## 🚀 Key Features
+## Key Features
 
-*   **The "Virtual Coach"**: Uses the **James Park Model** to separate your skill (angular deviation) from equipment errors (drag/drift).
-*   **Setup Efficiency Scoring**: Analyzes your GPP (Grains Per Pound) and FOC to tell you if your arrows are tuned correctly for your discipline (Indoor vs. Outdoor).
-*   **Physics-Aware Profiling**: Tracks critical barebow variables like Tiller, Plunger Tension, and Crawl.
-*   **Interactive Session Logger**: Click-on-target scoring with real-time statistics.
-*   **Crawl Manager**: Regression-based crawl mark prediction with visual charts.
-*   **Analytics Dashboard**: CEP50, sigma tracking, and personal bests over time.
-*   **Tuning Wizard**: Step-by-step barebow tuning guides.
+*   **James Park Model Analysis**: Separates archer skill (angular deviation) from equipment drag loss using two-distance comparison.
+*   **Setup Efficiency**: GPP (Grains Per Pound) and FOC calculations with safety checks.
+*   **Equipment Tracking**: Bow/arrow/tab profiles with detailed specifications (tiller, plunger, brace height, etc.).
+*   **Session Logger**: Click-on-target scoring with WA and Flint target faces.
+*   **Crawl Manager**: Polynomial regression predicts crawl marks from known distances. Includes point-on distance calculation.
+*   **Analytics**: CEP50, sigma tracking, arrow precision tiers, personal bests, bias analysis, within-end patterns.
+*   **Per-Arrow Analysis**: Heatmaps with density overlays, centre-of-mass markers, precision grouping (Primary/Secondary/Reserve).
 
-## 🏗️ Architecture
+## Architecture
 
 Monorepo with a **FastAPI** backend and **React + TypeScript** frontend:
 
 ```
 barebow_project/
 ├── src/              # Python domain logic (models, physics, analysis)
-├── api/              # FastAPI REST API (34 endpoints)
+├── api/              # FastAPI REST API (49 REST endpoints)
 │   ├── main.py       # App entry point, CORS, router mounting
 │   ├── deps.py       # Database session dependency
 │   └── routers/      # Route modules (bows, arrows, tabs, sessions, etc.)
@@ -34,7 +34,7 @@ barebow_project/
 └── tests/            # pytest suite (models, API endpoints)
 ```
 
-## 🛠️ Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -86,7 +86,7 @@ npm run build
 
 The output is in `frontend/dist/` — serve it with any static file server behind the API.
 
-## 🧪 Running Tests
+## Running Tests
 
 ```bash
 python -m pytest
@@ -94,7 +94,7 @@ python -m pytest
 
 Tests use in-memory SQLite with `StaticPool` for isolation — no database file needed.
 
-## 📂 Key Modules
+## Key Modules
 
 | Module | Purpose |
 |---|---|
@@ -104,7 +104,30 @@ Tests use in-memory SQLite with `StaticPool` for isolation — no database file 
 | `src/analysis.py` | "Virtual Coach" — synthesises physics + statistics |
 | `src/crawls.py` | Crawl mark regression & prediction |
 | `src/scoring.py` | Ring score calculation for WA & Flint target faces |
-| `api/` | 34 REST endpoints wrapping the domain logic |
+| `api/` | 49 REST endpoints wrapping the domain logic |
 | `frontend/` | React SPA with Plotly.js interactive charts |
 
+## Recent Features
+
+*   **Round Presets** (17 standard rounds): Portsmouth, Bray I/II, WA indoor (18m), WA outdoor (50m, 70m), National Field, NFAA, and more.
+*   **CSV Data Export**: Download full session histories with shot coordinates, scores, and equipment settings.
+*   **Point-On Distance Calculator**: Find the zero-crawl distance using polynomial root-finding.
+*   **Per-Arrow Heatmaps**: Individual arrow performance with alpha-blended shot clusters, centre-of-mass markers, and optional density heatmap overlay.
+*   **Arrow Precision Tiers**: Automatic classification of arrows as Primary (best), Secondary (good), or Reserve (training) based on composite precision metrics.
+*   **Session Notes & Replay**: Annotate shooting sessions and replay arrow-by-arrow progress.
+*   **Dashboard Home**: Personal bests, recent performance, and equipment status.
+*   **Score Goal Simulator**: Predict scores for untested distances using the James Park Model.
+
+## Routes
+
+| Route | Page | Purpose |
+|-------|------|----------|
+| `/` | Dashboard Home | Personal bests, recent sessions, equipment status |
+| `/equipment` | Equipment Profile | Manage bows, arrows, tabs, and setups |
+| `/analysis` | Analysis Lab | Park Model, score predictions, arrow performance |
+| `/session` | Session Logger | Real-time scoring with click-on-target interface |
+| `/history` | Session History | Session replay, notes, and CSV export |
+| `/crawls` | Crawl Manager | Crawl mark prediction with sight tape, Point-On calculator |
+| `/analytics` | Analytics Dashboard | CEP50, sigma tracking, arrow precision tiers, trends |
+| `/tuning` | Tuning Wizard | Step-by-step barebow tuning guides |
 

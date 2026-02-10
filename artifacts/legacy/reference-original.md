@@ -1,3 +1,12 @@
+# [ARCHIVED] Original Reference Document
+
+> **⚠️ LEGACY ARTIFACT — DO NOT USE**  
+> This document was created during early project planning and describes an architecture (Streamlit-based) that was **never implemented**. The actual BareTrack implementation uses FastAPI + React.  
+> **Archived**: 2026-02-10  
+> **For current architecture**, see `docs/ARCHITECTURE.md` and root `README.md`.
+
+---
+
 # Barebow Analysis & Data Architecture Reference
 
 This report outlines the data architecture and analytical logic required for a barebow-specific archery application. Based on the provided sources, barebow archery (particularly with string walking) introduces unique variables that standard archery apps often overlook, such as crawl distances, negative tiller, and dynamic spine shifts.
@@ -14,7 +23,7 @@ To provide meaningful analysis, the app must track specific variables that influ
 | **Draw Length (AMO & Actual)** | Essential for selecting the correct arrow spine. Barebow archers often use longer arrows for indoor shooting to reduce crawl distances. |
 | **Tiller Setting** | Unlike Olympic recurve (positive tiller), barebow string walkers often require neutral or negative tiller (e.g., 1/8" to 1/4" negative) to compensate for the downward pressure placed on the bottom limb during a crawl. |
 | **Nocking Point Height** | String walking changes the vertical force on the arrow. A higher nocking point (e.g., 1/2" to 3/4" high) is often required to prevent "nock low" flight caused by deep crawls. |
-| **Plunger Tension** | The plunger is the primary tool for fine-tuning horizontal impact and compensating for the archer’s paradox. Recording specific click/turn settings allows the archer to adjust for different distances without aiming off. |
+| **Plunger Tension** | The plunger is the primary tool for fine-tuning horizontal impact and compensating for the archer's paradox. Recording specific click/turn settings allows the archer to adjust for different distances without aiming off. |
 | **Brace Height** | Controls the timing of the arrow leaving the string. Even small changes affect dynamic spine and noise. |
 | **Riser Weight Config** | Barebow requires adding weights to the riser for stability (since stabilizers are banned). Tracking weight distribution helps analyze how balance affects holding stability. |
 
