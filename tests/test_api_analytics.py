@@ -833,3 +833,134 @@ def test_equipment_comparison_endpoint(client: TestClient):
     assert "score_significant" in data
     assert "sigma_significant" in data
     assert "interpretation" in data
+
+
+def test_dashboard_stats(client: TestClient):
+    """Test dashboard statistics endpoint."""
+    # Create multiple sessions to test all dashboard features
+    
+    # Session 1 (oldest)
+    session1_data = {
+        "round_type": "WA 18m Indoor",
+        "target_face_size_cm": 40,
+        "distance_m": 18,
+        "notes": "First session"
+    }
+    session1_response = client.post("/api/sessions", json=session1_data)
+    session1_id = session1_response.json()["id"]
+    
+    # Add end with 3 shots (total: 27)
+    end1_data = {
+        "end_number": 1,
+        "shots": [
+            {"score": 10, "is_x": True, "x": 0.3, "y": 0.2},
+            {"score": 9, "is_x": False, "x": 1.2, "y": -0.8},
+            {"score": 8, "is_x": False, "x": 2.0, "y": 1.5}
+        ]
+    }
+    client.post(f"/api/sessions/{session1_id}/ends", json=end1_data)
+    
+    # Session 2 (middle) - personal best
+    session2_data = {
+        "round_type": "WA 18m Indoor",
+        "target_face_size_cm": 40,
+        "distance_m": 18,
+        "notes": "Best session"
+    }
+    session2_response = client.post("/api/sessions", json=session2_data)
+    session2_id = session2_response.json()["id"]
+    
+    # Add end with 3 shots (total: 30 - all 10s)
+    end2_data = {
+        "end_number": 1,
+        "shots": [
+            {"score": 10, "is_x": True, "x": 0.1, "y": 0.1},
+            {"score": 10, "is_x": True, "x": 0.2, "y": -0.1},
+            {"score": 10, "is_x": True, "x": 0.0, "y": 0.2}
+        ]
+    }
+    client.post(f"/api/sessions/{session2_id}/ends", json=end2_data)
+    
+    # Session 3 (most recent)
+    session3_data = {
+        "round_type": "Flint 20yd",
+        "target_face_size_cm": 60,
+        "distance_m": 18.28,
+        "notes": "Latest session"
+    }
+    session3_response = client.post("/api/sessions", json=session3_data)
+    session3_id = session3_response.json()["id"]
+    
+    # Add end with 6 shots (total: 48)
+    end3_data = {
+        "end_number": 1,
+        "shots": [
+            {"score": 9, "is_x": False, "x": 1.5, "y": 0.8},
+            {"score": 8, "is_x": False, "x": 2.1, "y": 1.2},
+            {"score": 8, "is_x": False, "x": 1.8, "y": -1.5},
+            {"score": 8, "is_x": False, "x": 2.3, "y": 1.0},
+            {"score": 8, "is_x": False, "x": 1.9, "y": -1.2},
+            {"score": 7, "is_x": False, "x": 3.0, "y": 1.8}
+        ]
+    }
+    client.post(f"/api/sessions/{session3_id}/ends", json=end3_data)
+    
+    # Query dashboard endpoint
+    response = client.get("/api/analytics/dashboard")
+    
+    assert response.status_code == 200
+    data = response.json()
+    
+    # Verify all required fields are present
+    assert data["total_sessions"] == 3
+    assert data["total_arrows"] == 12  # 3 + 3 + 6
+    assert data["days_since_last_practice"] is not None
+    assert isinstance(data["days_since_last_practice"], int)
+    
+    # Last session details (should be session 3)
+    assert data["last_session_score"] == 48
+    assert data["last_session_round"] == "Flint 20yd"
+    assert data["last_session_date"] is not None
+    
+    # Personal best (should be session 3 with 48 points - highest total score)
+    assert data["personal_best_score"] == 48
+    assert data["personal_best_round"] == "Flint 20yd"
+    assert data["personal_best_date"] is not None
+    
+    # Rolling average score (EWMA)
+    assert data["rolling_avg_score"] is not None
+    assert isinstance(data["rolling_avg_score"], float)
+    assert 8.0 <= data["rolling_avg_score"] <= 10.0
+    
+    # Sparkline data (should have 3 sessions in chronological order)
+    assert len(data["sparkline_dates"]) == 3
+    assert len(data["sparkline_scores"]) == 3
+    assert all(isinstance(score, float) for score in data["sparkline_scores"])
+    # First session avg: 27/3 = 9.0
+    assert abs(data["sparkline_scores"][0] - 9.0) < 0.01
+    # Second session avg: 30/3 = 10.0
+    assert abs(data["sparkline_scores"][1] - 10.0) < 0.01
+    # Third session avg: 48/6 = 8.0
+    assert abs(data["sparkline_scores"][2] - 8.0) < 0.01
+
+
+def test_dashboard_stats_empty_database(client: TestClient):
+    """Test dashboard endpoint with no sessions."""
+    response = client.get("/api/analytics/dashboard")
+    
+    assert response.status_code == 200
+    data = response.json()
+    
+    # Verify all fields handle empty state gracefully
+    assert data["total_sessions"] == 0
+    assert data["total_arrows"] == 0
+    assert data["days_since_last_practice"] is None
+    assert data["last_session_score"] is None
+    assert data["last_session_round"] is None
+    assert data["last_session_date"] is None
+    assert data["rolling_avg_score"] is None
+    assert data["personal_best_score"] is None
+    assert data["personal_best_round"] is None
+    assert data["personal_best_date"] is None
+    assert data["sparkline_dates"] == []
+    assert data["sparkline_scores"] == []

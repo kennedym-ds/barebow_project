@@ -231,7 +231,7 @@ def delete_session(session_id: str, db: SQLModelSession = Depends(get_db)):
     return None
 
 
-@router.post("/{session_id}/ends", response_model=End, status_code=status.HTTP_201_CREATED)
+@router.post("/{session_id}/ends", response_model=EndResponse, status_code=status.HTTP_201_CREATED)
 def save_end(session_id: str, end_data: EndCreate, db: SQLModelSession = Depends(get_db)):
     """Save an end with shots to a session."""
     session = db.get(SessionModel, session_id)
@@ -255,5 +255,27 @@ def save_end(session_id: str, end_data: EndCreate, db: SQLModelSession = Depends
         db.add(shot)
     
     db.commit()
-    db.refresh(end)
-    return end
+
+    # Reload with shots eagerly loaded
+    statement = select(End).where(End.id == end.id).options(
+        selectinload(End.shots)
+    )
+    end = db.exec(statement).one()
+
+    return EndResponse(
+        id=end.id,
+        session_id=end.session_id,
+        end_number=end.end_number,
+        shots=[
+            ShotResponse(
+                id=shot.id,
+                end_id=shot.end_id,
+                score=shot.score,
+                is_x=shot.is_x,
+                x=shot.x,
+                y=shot.y,
+                arrow_number=shot.arrow_number
+            )
+            for shot in end.shots
+        ]
+    )

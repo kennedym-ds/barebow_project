@@ -26,14 +26,16 @@ export default function QuiverPanel({
         {Array.from({ length: arrowCount }, (_, i) => i + 1).map(num => {
           const shot = shotMap.get(num);
           const isActive = num === activeArrow;
-          const isUsableThisEnd = num <= arrowsPerEnd;
+          const endIsFull = shotsInEnd.length >= arrowsPerEnd;
+          // Arrow is selectable if it already has a shot (re-place) or the end isn't full yet
+          const isSelectable = !!shot || !endIsFull;
 
           return (
             <button
               key={num}
-              className={`quiver-arrow ${isActive ? 'active' : ''} ${shot ? 'shot' : ''} ${!isUsableThisEnd ? 'disabled' : ''}`}
-              onClick={() => isUsableThisEnd && onSelectArrow(num)}
-              disabled={!isUsableThisEnd}
+              className={`quiver-arrow ${isActive ? 'active' : ''} ${shot ? 'shot' : ''} ${!isSelectable ? 'disabled' : ''}`}
+              onClick={() => isSelectable && onSelectArrow(num)}
+              disabled={!isSelectable}
             >
               <div className="arrow-number">#{num}</div>
               {shot && <div className="arrow-score">[{shot.score}]</div>}

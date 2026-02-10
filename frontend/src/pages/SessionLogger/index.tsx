@@ -23,6 +23,8 @@ export default function SessionLogger() {
     arrowsPerEnd: number;
     totalArrows: number;
     arrowCount: number;
+    shaftDiameterMm: number;
+    notes: string;
   }) => {
     try {
       const session = await createSession.mutateAsync({
@@ -31,7 +33,7 @@ export default function SessionLogger() {
         round_type: config.roundType,
         target_face_size_cm: config.faceSizeCm,
         distance_m: config.distanceM,
-        notes: '',
+        notes: config.notes,
       });
 
       actions.startSession({
@@ -142,6 +144,8 @@ export default function SessionLogger() {
             viewMode={state.viewMode}
             onPlaceShot={actions.placeShot}
             onToggleView={actions.toggleView}
+            shaftDiameterMm={state.shaftDiameterMm}
+            xIs11={state.xIs11}
           />
         </div>
 

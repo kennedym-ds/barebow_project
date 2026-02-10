@@ -2,7 +2,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import List, Tuple
-from src.crawls import calculate_crawl_regression, predict_crawl, generate_crawl_chart
+from src.crawls import calculate_crawl_regression, predict_crawl, generate_crawl_chart, find_point_on_distance
 
 router = APIRouter()
 
@@ -26,6 +26,7 @@ class CrawlCalculateResponse(BaseModel):
     """Response schema for crawl calculation."""
     chart: List[CrawlPoint]
     coefficients: List[float]
+    point_on_distance: float | None = None
 
 
 class CrawlPredictRequest(BaseModel):
@@ -58,9 +59,13 @@ def calculate_crawl(request: CrawlCalculateRequest) -> CrawlCalculateResponse:
     # Convert to response format
     chart = [CrawlPoint(distance=d, crawl_mm=c) for d, c in chart_data]
     
+    # Find point-on distance
+    point_on = find_point_on_distance(model)
+    
     return CrawlCalculateResponse(
         chart=chart,
-        coefficients=model.coefficients.tolist()
+        coefficients=model.coefficients.tolist(),
+        point_on_distance=point_on
     )
 
 

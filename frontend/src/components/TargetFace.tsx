@@ -1,6 +1,7 @@
-import { useMemo } from 'react';
+import { useMemo, useCallback, useState } from 'react';
 import Plot from 'react-plotly.js';
 import type { Data, Layout, Shape } from 'plotly.js';
+import { getRingScore, getFlintScore } from '../utils/scoring';
 
 interface TargetFaceProps {
   faceSizeCm: number;
@@ -17,6 +18,10 @@ interface TargetFaceProps {
   width?: number;
   height?: number;
   interactive?: boolean;
+  /** Arrow shaft outer diameter in mm — used for hover preview and line-break display */
+  shaftDiameterMm?: number;
+  /** Whether X-ring scores as 11 (WA scoring option) */
+  xIs11?: boolean;
 }
 
 export default function TargetFace({
@@ -28,6 +33,8 @@ export default function TargetFace({
   width = 600,
   height = 600,
   interactive = true,
+  shaftDiameterMm = 0,
+  xIs11 = false,
 }: TargetFaceProps) {
   const { shapes, maxR } = useMemo(() => {
     const shapes: Partial<Shape>[] = [];
@@ -112,24 +119,57 @@ export default function TargetFace({
     return { shapes, maxR };
   }, [faceSizeCm, faceType]);
 
+  // Click handler using overlay div — much more reliable than invisible heatmap
+  const handleOverlayClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!onPlotClick || !interactive) return;
+      const rect = e.currentTarget.getBoundingClientRect();
+      const pixelX = e.clientX - rect.left;
+      const pixelY = e.clientY - rect.top;
+      // margins are 0, so axis fills the full div
+      const dataX = -maxR + (2 * maxR * pixelX) / width;
+      const dataY = maxR - (2 * maxR * pixelY) / height; // screen-Y is inverted
+      onPlotClick(dataX, dataY);
+    },
+    [onPlotClick, interactive, maxR, width, height],
+  );
+
+  // Hover preview state: show arrow circle + predicted score at cursor
+  const [hover, setHover] = useState<{ px: number; py: number; dataX: number; dataY: number } | null>(null);
+
+  const handleOverlayMove = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!interactive) return;
+      const rect = e.currentTarget.getBoundingClientRect();
+      const px = e.clientX - rect.left;
+      const py = e.clientY - rect.top;
+      const dataX = -maxR + (2 * maxR * px) / width;
+      const dataY = maxR - (2 * maxR * py) / height;
+      setHover({ px, py, dataX, dataY });
+    },
+    [interactive, maxR, width, height],
+  );
+
+  const handleOverlayLeave = useCallback(() => setHover(null), []);
+
+  // Preview score computed from hover position
+  const hoverScore = useMemo(() => {
+    if (!hover) return null;
+    const r = Math.sqrt(hover.dataX ** 2 + hover.dataY ** 2);
+    return faceType === 'Flint'
+      ? getFlintScore(r, faceSizeCm, shaftDiameterMm)
+      : getRingScore(r, faceSizeCm, xIs11, shaftDiameterMm);
+  }, [hover, faceSizeCm, faceType, shaftDiameterMm, xIs11]);
+
+  // Arrow circle radius in pixels (for hover indicator)
+  const arrowRadiusPx = useMemo(() => {
+    if (shaftDiameterMm <= 0) return 0;
+    const radiusCm = (shaftDiameterMm / 10) / 2;
+    return (radiusCm / (2 * maxR)) * width;
+  }, [shaftDiameterMm, maxR, width]);
+
   const traces = useMemo(() => {
     const data: Data[] = [];
-
-    // Invisible heatmap for click detection (200x200 grid)
-    const gridSize = 200;
-    const xVals = Array.from({ length: gridSize }, (_, i) => -maxR + (2 * maxR * i) / (gridSize - 1));
-    const yVals = Array.from({ length: gridSize }, (_, i) => -maxR + (2 * maxR * i) / (gridSize - 1));
-    const zVals = Array.from({ length: gridSize }, () => Array(gridSize).fill(0));
-
-    data.push({
-      type: 'heatmap',
-      x: xVals,
-      y: yVals,
-      z: zVals,
-      showscale: false,
-      opacity: 0.01,
-      hoverinfo: 'none',
-    } as Data);
 
     // Shot markers
     if (shots.length > 0) {
@@ -197,24 +237,76 @@ export default function TargetFace({
     paper_bgcolor: 'rgba(0,0,0,0)',
     plot_bgcolor: 'rgba(0,0,0,0)',
     dragmode: false,
+    clickmode: 'event',
     showlegend: false,
   }), [shapes, maxR, width, height]);
 
   return (
-    <Plot
-      data={traces}
-      layout={layout}
-      config={{ 
-        displayModeBar: false, 
-        staticPlot: !interactive 
-      }}
-      onClick={(event) => {
-        if (onPlotClick && interactive && event.points.length > 0) {
-          const pt = event.points[0];
-          onPlotClick(pt.x as number, pt.y as number);
-        }
-      }}
-      style={{ width, height }}
-    />
+    <div style={{ position: 'relative', width, height }}>
+      <Plot
+        data={traces}
+        layout={layout}
+        config={{ 
+          displayModeBar: false, 
+          staticPlot: true,
+        }}
+        style={{ width, height }}
+      />
+      {interactive && (
+        <div
+          onClick={handleOverlayClick}
+          onMouseMove={handleOverlayMove}
+          onMouseLeave={handleOverlayLeave}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            cursor: 'crosshair',
+          }}
+        >
+          {/* Hover preview: arrow circle + score badge */}
+          {hover && (
+            <>
+              {arrowRadiusPx > 0 && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    left: hover.px - arrowRadiusPx,
+                    top: hover.py - arrowRadiusPx,
+                    width: arrowRadiusPx * 2,
+                    height: arrowRadiusPx * 2,
+                    borderRadius: '50%',
+                    border: '2px solid rgba(0,255,0,0.7)',
+                    backgroundColor: 'rgba(0,255,0,0.15)',
+                    pointerEvents: 'none',
+                  }}
+                />
+              )}
+              {hoverScore !== null && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    left: hover.px + (arrowRadiusPx || 8) + 6,
+                    top: hover.py - 12,
+                    background: 'rgba(0,0,0,0.8)',
+                    color: '#0f0',
+                    padding: '2px 8px',
+                    borderRadius: 4,
+                    fontSize: 14,
+                    fontWeight: 700,
+                    pointerEvents: 'none',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {hoverScore === 0 ? 'M' : hoverScore}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
+    </div>
   );
 }

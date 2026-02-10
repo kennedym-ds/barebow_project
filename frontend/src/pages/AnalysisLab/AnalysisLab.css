@@ -207,3 +207,628 @@
   gap: 0.5rem;
   margin-top: 1rem;
 }
+
+/* ─── Mode tabs ─── */
+.analysis-mode-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.mode-tab {
+  padding: 0.6rem 1.5rem;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.mode-tab:hover {
+  color: #333;
+}
+
+.mode-tab.active {
+  color: #007bff;
+  border-bottom-color: #007bff;
+}
+
+.mode-description {
+  color: #666;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+/* ─── Single-distance filter ─── */
+.filter-row {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.loading-text {
+  color: #888;
+  font-style: italic;
+}
+
+/* ─── Result cards ─── */
+.result-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.result-card h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-size: 1.15rem;
+}
+
+.shot-count-label {
+  color: #888;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.sub-section {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.sub-section h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.interpretation {
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-top: 0.5rem;
+}
+
+/* ─── Accuracy vs Precision bar ─── */
+.bar-split {
+  display: flex;
+  height: 28px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #eee;
+}
+
+.bar-fill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+  min-width: 60px;
+}
+
+.bar-fill.accuracy {
+  background: #dc3545;
+}
+
+.bar-fill.precision {
+  background: #007bff;
+}
+
+/* ─── Metric card variants ─── */
+.metric-card .ci {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: #888;
+  margin-top: 2px;
+}
+
+.metric-card .sub-value {
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: 4px;
+}
+
+.metric-card.best {
+  border-left-color: #28a745;
+}
+
+.metric-card.worst {
+  border-left-color: #dc3545;
+}
+
+/* ─── End-score table ─── */
+.end-score-table {
+  overflow-x: auto;
+  margin-top: 0.75rem;
+}
+
+.end-score-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.end-score-table th,
+.end-score-table td {
+  padding: 0.35rem 0.6rem;
+  text-align: center;
+  border: 1px solid #e0e0e0;
+}
+
+.end-score-table th {
+  background: #f5f5f5;
+  font-weight: 600;
+}
+
+/* ─── Hit probability ─── */
+.ring-prob-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 0.75rem;
+}
+
+.ring-prob-item {
+  display: grid;
+  grid-template-columns: 32px 1fr 48px;
+  align-items: center;
+  gap: 8px;
+}
+
+.ring-label {
+  font-weight: 600;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.ring-bar-container {
+  height: 18px;
+  background: #eee;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.ring-bar {
+  height: 100%;
+  background: #007bff;
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+.ring-pct {
+  font-size: 0.8rem;
+  color: #666;
+  text-align: right;
+}
+
+/* ─── Trend table ─── */
+.trend-table {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+.trend-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.trend-table th,
+.trend-table td {
+  padding: 0.4rem 0.75rem;
+  text-align: center;
+  border: 1px solid #e0e0e0;
+}
+
+.trend-table th {
+  background: #f5f5f5;
+  font-weight: 600;
+}
+
+/* ─── Score Goal Simulator ─── */
+.goal-simulator {
+  margin-top: 1rem;
+}
+
+.goal-inputs {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.goal-inputs .form-group {
+  flex: 1;
+  min-width: 120px;
+}
+
+.goal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.sigma-bar-container {
+  margin-top: 1rem;
+}
+
+.sigma-bar-container label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.35rem;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.sigma-bar {
+  height: 20px;
+  background: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.sigma-bar-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+
+.sigma-bar-fill.achieved { background: #28a745; }
+.sigma-bar-fill.close { background: #ffc107; }
+.sigma-bar-fill.far { background: #dc3545; }
+
+.sigma-bar-label {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+/* ─── Arrow Tracker ─── */
+.arrow-tracker {
+  margin-top: 1rem;
+}
+
+.arrow-heatmap-layout {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.arrow-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.arrow-selector label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.arrow-color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.arrow-selector .toggle-all {
+  font-weight: 600;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.arrow-single-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.arrow-single-stats .mini-card {
+  background: #f8f9fa;
+  border-radius: 6px;
+  padding: 0.75rem;
+  text-align: center;
+}
+
+.arrow-single-stats .mini-card h5 {
+  margin: 0 0 0.25rem;
+  font-size: 0.75rem;
+  color: #666;
+  text-transform: uppercase;
+}
+
+.arrow-single-stats .mini-card .value {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.target-face-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.arrow-table-container {
+  overflow-x: auto;
+}
+
+.arrow-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.arrow-table th,
+.arrow-table td {
+  padding: 0.5rem 0.75rem;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+.arrow-table th {
+  background: #f5f5f5;
+  font-weight: 600;
+  color: #555;
+}
+
+.arrow-table .best-arrow {
+  background: #d4edda;
+}
+
+.arrow-table .worst-arrow {
+  background: #f8d7da;
+}
+
+.arrow-meta {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: #999;
+}
+
+/* ─── Precision Groups ─── */
+.precision-groups {
+  margin-bottom: 1.5rem;
+}
+
+.precision-groups-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.precision-groups-subtitle {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: #888;
+}
+
+.primary-set-callout {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.primary-set-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.primary-set-body {
+  flex: 1;
+}
+
+.primary-set-body strong {
+  font-size: 0.95rem;
+  color: #856404;
+}
+
+.primary-set-body p {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  color: #856404;
+}
+
+.primary-set-show-btn {
+  background: #ffc107;
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.primary-set-show-btn:hover {
+  background: #e0a800;
+}
+
+.tier-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.tier-card {
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid #ddd;
+}
+
+.tier-card.tier-primary {
+  border-color: #28a745;
+  background: #f0fdf4;
+}
+
+.tier-card.tier-secondary {
+  border-color: #ffc107;
+  background: #fffdf0;
+}
+
+.tier-card.tier-reserve {
+  border-color: #dc3545;
+  background: #fff5f5;
+}
+
+.tier-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.tier-badge {
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.tier-badge-primary {
+  background: #28a745;
+  color: white;
+}
+
+.tier-badge-secondary {
+  background: #ffc107;
+  color: #333;
+}
+
+.tier-badge-reserve {
+  background: #dc3545;
+  color: white;
+}
+
+.tier-badge-sm {
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.tier-count {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.tier-arrows {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.tier-arrow-chip {
+  background: #e9ecef;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.tier-primary .tier-arrow-chip {
+  background: #d4edda;
+  color: #155724;
+}
+
+.tier-secondary .tier-arrow-chip {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.tier-reserve .tier-arrow-chip {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.tier-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.tier-stat {
+  text-align: center;
+}
+
+.tier-stat-label {
+  display: block;
+  font-size: 0.65rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.tier-stat-value {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.tier-show-btn {
+  width: 100%;
+  padding: 0.35rem;
+  background: transparent;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: #555;
+}
+
+.tier-show-btn:hover {
+  background: #f5f5f5;
+}
+
+/* Table row tinting by tier */
+.tier-row-primary {
+  background: #f0fdf4;
+}
+
+.tier-row-secondary {
+  background: #fffdf0;
+}
+
+.tier-row-reserve {
+  background: #fff5f5;
+}
+
+@media (max-width: 700px) {
+  .arrow-heatmap-layout {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from src.crawls import calculate_crawl_regression, predict_crawl, generate_crawl_chart
+from src.crawls import calculate_crawl_regression, predict_crawl, generate_crawl_chart, find_point_on_distance
 
 def test_linear_interpolation():
     # If we only have 2 points, it should be linear
@@ -43,3 +43,29 @@ def test_chart_generation():
     assert chart[0][1] == 20.0
     assert chart[1][0] == 20
     assert chart[1][1] == 15.0
+
+def test_find_point_on_distance():
+    # Case 1: Linear with clear Point-On
+    dists = [10, 50]
+    crawls = [20, 0]  # Point-On should be at exactly 50m
+    model = calculate_crawl_regression(dists, crawls)
+    point_on = find_point_on_distance(model)
+    assert point_on == 50.0
+    
+    # Case 2: Parabolic with Point-On
+    dists = [10, 30, 50]
+    crawls = [25, 10, 0]
+    model = calculate_crawl_regression(dists, crawls)
+    point_on = find_point_on_distance(model)
+    # Should find the zero crossing around 50m
+    assert point_on is not None
+    assert 45.0 <= point_on <= 55.0
+    
+    # Case 3: No valid Point-On (all positive crawls)
+    dists = [10, 30, 50]
+    crawls = [30, 25, 20]  # Never crosses zero
+    model = calculate_crawl_regression(dists, crawls)
+    point_on = find_point_on_distance(model)
+    # Should be None or outside reasonable range
+    if point_on is not None:
+        assert point_on > 100.0 or point_on < 5.0

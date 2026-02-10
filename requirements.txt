@@ -6,5 +6,6 @@ pytest
 sqlmodel
 plotly
 fastapi
+python-multipart
 uvicorn[standard]
 httpx

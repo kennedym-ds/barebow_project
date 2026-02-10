@@ -370,3 +370,103 @@ export function useArrows() {
     queryFn: () => apiFetch<Array<{id: string; make: string; model: string}>>('/api/arrows'),
   });
 }
+
+// Dashboard
+export interface DashboardStats {
+  total_sessions: number;
+  total_arrows: number;
+  days_since_last_practice: number | null;
+  last_session_score: number | null;
+  last_session_round: string | null;
+  last_session_date: string | null;
+  rolling_avg_score: number | null;
+  personal_best_score: number | null;
+  personal_best_round: string | null;
+  personal_best_date: string | null;
+  sparkline_dates: string[];
+  sparkline_scores: number[];
+}
+
+export function useDashboard() {
+  return useQuery({
+    queryKey: ['analytics', 'dashboard'],
+    queryFn: () => apiFetch<DashboardStats>('/api/analytics/dashboard'),
+  });
+}
+
+// Score Goal Simulator
+export interface ScoreGoalSimulation {
+  goal_total_score: number;
+  goal_avg_arrow: number;
+  required_sigma_cm: number;
+  current_sigma_cm: number | null;
+  current_avg_arrow: number | null;
+  sigma_improvement_pct: number | null;
+  distance_m: number;
+  face_cm: number;
+  feasible: boolean;
+  interpretation: string;
+}
+
+export function useScoreGoal(goalScore: number, totalArrows: number, distanceM: number, faceCm: number, roundType?: string) {
+  const params = new URLSearchParams();
+  params.set('goal_total_score', goalScore.toString());
+  params.set('total_arrows', totalArrows.toString());
+  params.set('distance_m', distanceM.toString());
+  params.set('face_cm', faceCm.toString());
+  if (roundType) params.set('round_type', roundType);
+  return useQuery({
+    queryKey: ['analytics', 'score-goal', goalScore, totalArrows, distanceM, faceCm, roundType],
+    queryFn: () => apiFetch<ScoreGoalSimulation>(`/api/analytics/score-goal?${params.toString()}`),
+    enabled: goalScore > 0 && totalArrows > 0,
+  });
+}
+
+// Arrow Performance
+export interface ArrowPerformance {
+  arrow_number: number;
+  total_shots: number;
+  avg_score: number;
+  std_score: number;
+  avg_radius: number;
+  x_count: number;
+  ten_count: number;
+  miss_count: number;
+  shots: Array<{ x: number; y: number; score: number; is_x: boolean }>;
+  precision_score: number;
+  precision_rank: number;
+  tier: 'primary' | 'secondary' | 'reserve';
+}
+
+export interface ArrowTier {
+  name: string;
+  label: string;
+  arrow_numbers: number[];
+  avg_precision_score: number;
+  avg_score: number;
+  avg_radius: number;
+}
+
+export interface ArrowPerformanceSummary {
+  arrows: ArrowPerformance[];
+  best_arrow: number | null;
+  worst_arrow: number | null;
+  total_shots_with_number: number;
+  total_shots_without_number: number;
+  interpretation: string;
+  face_cm: number;
+  tiers: ArrowTier[];
+  primary_set: number[];
+  group_size: number;
+}
+
+export function useArrowPerformance(roundType?: string, fromDate?: string, toDate?: string) {
+  const params = new URLSearchParams();
+  if (roundType) params.set('round_type', roundType);
+  if (fromDate) params.set('from_date', fromDate);
+  if (toDate) params.set('to_date', toDate);
+  return useQuery({
+    queryKey: ['analytics', 'arrow-performance', roundType, fromDate, toDate],
+    queryFn: () => apiFetch<ArrowPerformanceSummary>(`/api/analytics/arrow-performance?${params.toString()}`),
+  });
+}

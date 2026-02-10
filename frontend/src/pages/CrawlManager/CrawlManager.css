@@ -203,6 +203,307 @@
   background: #f9f9f9;
 }
 
+/* ─── Tab image controls ─── */
+.tab-image-controls {
+  margin-bottom: 1rem;
+}
+
+.image-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.upload-button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: #007bff;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.15s;
+}
+
+.upload-button:hover {
+  background: #0056b3;
+}
+
+.upload-button.small {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+.delete-image-btn {
+  padding: 0.35rem 0.75rem;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.delete-image-btn:hover {
+  background: #c82333;
+}
+
+/* ─── Calibration UI ─── */
+.calibration-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.calib-status {
+  font-size: 0.85rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.calib-status.ok {
+  background: #d4edda;
+  color: #155724;
+}
+
+.calib-status.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.calib-btn {
+  padding: 0.35rem 0.75rem;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.calib-btn:hover {
+  background: #5a6268;
+}
+
+.calib-btn.active {
+  background: #fd7e14;
+}
+
+.calib-ref-input {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.calib-ref-input label {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.calib-ref-input input {
+  width: 60px;
+  padding: 0.25rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.calib-instruction {
+  padding: 0.5rem 0.75rem;
+  background: #e8f0fe;
+  border-left: 3px solid #007bff;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #1a73e8;
+}
+
+/* ─── Tab image overlay ─── */
+.tab-image-container {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.tab-image-container.calibrating {
+  cursor: crosshair;
+  border-color: #fd7e14;
+}
+
+.tab-photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.overlay-line {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+  border-top: 2px solid;
+  z-index: 2;
+}
+
+.overlay-label {
+  position: absolute;
+  right: 4px;
+  top: -1px;
+  transform: translateY(-100%);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 1px 4px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+/* Nock line */
+.nock-line {
+  border-top-color: #333;
+  border-top-style: solid;
+}
+
+.nock-label {
+  background: #333;
+  color: white;
+}
+
+/* Reference line (calibration) */
+.ref-line {
+  border-top-color: #fd7e14;
+  border-top-style: dashed;
+}
+
+.ref-label {
+  background: #fd7e14;
+  color: white;
+}
+
+/* Tab mark lines */
+.mark-line {
+  border-top-color: #007bff;
+  border-top-style: dotted;
+}
+
+.mark-label {
+  background: rgba(0, 123, 255, 0.85);
+  color: white;
+}
+
+/* Predicted crawl line */
+.crawl-line {
+  border-top-color: #28a745;
+  border-top-width: 3px;
+  border-top-style: solid;
+}
+
+.crawl-label {
+  background: #28a745;
+  color: white;
+  font-size: 0.85rem;
+}
+
+/* Chart tick marks (every 5m) */
+.overlay-tick {
+  position: absolute;
+  left: 0;
+  width: 20px;
+  pointer-events: none;
+  border-top: 1px solid rgba(0,0,0,0.3);
+  z-index: 1;
+}
+
+.tick-label {
+  position: absolute;
+  left: 2px;
+  top: -1px;
+  transform: translateY(-100%);
+  font-size: 0.65rem;
+  color: #666;
+  white-space: nowrap;
+}
+
+.crawl-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.crawl-card-header h3 {
+  margin: 0;
+}
+
+.print-btn {
+  padding: 0.4rem 1rem;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.print-btn:hover {
+  background: #5a6268;
+}
+
+.print-date {
+  display: none;
+}
+
+/* Point-On Distance Callout */
+.point-on-callout {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  margin-top: 1rem;
+  background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+  border: 2px solid #66bb6a;
+  border-radius: 10px;
+}
+
+.point-on-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.point-on-info {
+  flex: 1;
+}
+
+.point-on-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.point-on-value {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #1b5e20;
+  line-height: 1.2;
+}
+
+.point-on-desc {
+  font-size: 0.8rem;
+  color: #555;
+  margin-top: 0.25rem;
+}
+
 @media print {
   .crawl-manager {
     padding: 0;
@@ -211,8 +512,18 @@
   .known-marks-section,
   .tab-selector,
   .distance-control,
-  .visual-tab {
+  .visual-tab,
+  .tab-image-controls,
+  .predicted-crawl,
+  .print-btn {
     display: none;
+  }
+
+  .print-date {
+    display: block;
+    font-size: 0.75rem;
+    color: #666;
+    margin-bottom: 0.5rem;
   }
 
   .crawl-layout {

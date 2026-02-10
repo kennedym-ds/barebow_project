@@ -49,3 +49,26 @@ export function useDeleteTab() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['tabs'] }),
   });
 }
+
+export function useUploadTabImage() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, file }: { id: string; file: File }) => {
+      const form = new FormData();
+      form.append('file', file);
+      const res = await fetch(`/api/tabs/${id}/image`, { method: 'POST', body: form });
+      if (!res.ok) throw new Error('Upload failed');
+      return res.json() as Promise<TabSetup>;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['tabs'] }),
+  });
+}
+
+export function useDeleteTabImage() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      apiFetch<void>(`/api/tabs/${id}/image`, { method: 'DELETE' }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['tabs'] }),
+  });
+}

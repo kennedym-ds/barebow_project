@@ -47,3 +47,34 @@ def generate_crawl_chart(model: np.poly1d, min_dist: int = 5, max_dist: int = 60
         crawl = predict_crawl(model, d)
         chart.append((d, round(crawl, 1)))
     return chart
+
+def find_point_on_distance(model: np.poly1d) -> float | None:
+    """
+    Finds the Point-On distance — where crawl equals zero.
+    
+    Point-On is the distance at which the archer aims directly at the target
+    with no string walk (crawl = 0). This is the 'Rosetta Stone' of barebow
+    string-walking — all other crawl values are referenced against it.
+    
+    Args:
+        model: The polynomial regression model from calculate_crawl_regression
+        
+    Returns:
+        The Point-On distance in meters, or None if no valid root exists.
+        Returns the smallest positive real root within a reasonable range (5-100m).
+    """
+    roots = np.roots(model.coefficients)
+    
+    # Filter to real, positive roots in a reasonable range
+    valid_roots = []
+    for root in roots:
+        if np.isreal(root):
+            real_val = float(np.real(root))
+            if 5.0 <= real_val <= 100.0:
+                valid_roots.append(real_val)
+    
+    if not valid_roots:
+        return None
+    
+    # Return the smallest valid root (typically the point-on distance)
+    return round(min(valid_roots), 1)

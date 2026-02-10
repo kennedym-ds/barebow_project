@@ -16,6 +16,8 @@ interface SessionConfigProps {
     arrowsPerEnd: number;
     totalArrows: number;
     arrowCount: number;
+    shaftDiameterMm: number;
+    notes: string;
   }) => void;
 }
 
@@ -24,15 +26,25 @@ export default function SessionConfig({ onStartSession }: SessionConfigProps) {
   const [arrowId, setArrowId] = useState('');
   const [roundType, setRoundType] = useState('WA 18m (Indoor)');
   
+  // Arrows per end — initialised from the default round preset, editable by the user
+  const [arrowsPerEnd, setArrowsPerEnd] = useState(ROUND_DEFINITIONS['WA 18m (Indoor)'].arrows_end);
+
   // Custom overrides (used when roundType === 'Custom')
   const [customDistance, setCustomDistance] = useState(18);
   const [customFaceSize, setCustomFaceSize] = useState(40);
-  const [customArrowsPerEnd, setCustomArrowsPerEnd] = useState(3);
   const [customTotalArrows, setCustomTotalArrows] = useState(30);
   const [xIs11, setXIs11] = useState(false);
+  const [notes, setNotes] = useState('');
 
   const { data: arrows } = useArrows();
   const selectedArrow = arrows?.find(a => a.id === arrowId);
+
+  const handleRoundTypeChange = (value: string) => {
+    setRoundType(value);
+    // Sync arrows-per-end to the new preset default
+    const def = ROUND_DEFINITIONS[value];
+    if (def) setArrowsPerEnd(def.arrows_end);
+  };
 
   const handleStart = () => {
     const isCustom = roundType === 'Custom';
@@ -46,9 +58,11 @@ export default function SessionConfig({ onStartSession }: SessionConfigProps) {
       distanceM: isCustom ? customDistance : roundDef.dist,
       faceType: isCustom ? ('WA' as FaceType) : roundDef.type,
       xIs11: isCustom ? xIs11 : roundDef.x_11,
-      arrowsPerEnd: isCustom ? customArrowsPerEnd : roundDef.arrows_end,
+      arrowsPerEnd,
       totalArrows: isCustom ? customTotalArrows : roundDef.total,
       arrowCount: selectedArrow?.arrow_count || 12,
+      shaftDiameterMm: selectedArrow?.shaft_diameter_mm || 5.2,
+      notes,
     };
 
     onStartSession(config);
@@ -81,9 +95,18 @@ export default function SessionConfig({ onStartSession }: SessionConfigProps) {
 
         <div className="form-group">
           <label>Round Type</label>
-          <select value={roundType} onChange={(e) => setRoundType(e.target.value)}>
+          <select value={roundType} onChange={(e) => handleRoundTypeChange(e.target.value)}>
             {Object.keys(ROUND_DEFINITIONS).map(key => (
               <option key={key} value={key}>{key}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label>Arrows per End</label>
+          <select value={arrowsPerEnd} onChange={(e) => setArrowsPerEnd(Number(e.target.value))}>
+            {[3, 4, 5, 6].map(n => (
+              <option key={n} value={n}>{n}</option>
             ))}
           </select>
         </div>
@@ -113,16 +136,6 @@ export default function SessionConfig({ onStartSession }: SessionConfigProps) {
             </div>
 
             <div className="form-group">
-              <label>Arrows per End</label>
-              <input 
-                type="number" 
-                min={1}
-                value={customArrowsPerEnd} 
-                onChange={(e) => setCustomArrowsPerEnd(Number(e.target.value))}
-              />
-            </div>
-
-            <div className="form-group">
               <label>Total Arrows</label>
               <input 
                 type="number" 
@@ -144,6 +157,17 @@ export default function SessionConfig({ onStartSession }: SessionConfigProps) {
             />
             <span>Score X as 11</span>
           </label>
+        </div>
+
+        <div className="form-group">
+          <label>Session Notes</label>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Wind conditions, goals, equipment changes..."
+            rows={2}
+            style={{ width: '100%', resize: 'vertical', padding: '0.375rem', borderRadius: '4px', border: '1px solid #ccc', fontFamily: 'inherit', fontSize: '0.95rem' }}
+          />
         </div>
 
         <button 

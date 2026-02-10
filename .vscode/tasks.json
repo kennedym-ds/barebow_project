@@ -33,6 +33,10 @@
                 "uvicorn",
                 "api.main:app",
                 "--reload",
+                "--reload-dir",
+                "src",
+                "--reload-dir",
+                "api",
                 "--port",
                 "8000"
             ],

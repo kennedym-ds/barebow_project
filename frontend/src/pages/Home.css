@@ -1,0 +1,137 @@
+.dashboard {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.dashboard h1 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+/* ─── Empty state ─── */
+.empty-dashboard {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.empty-dashboard h2 {
+  color: #444;
+  margin-bottom: 0.5rem;
+}
+
+.empty-dashboard p {
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+/* ─── Stat cards grid ─── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.25rem;
+  text-align: center;
+  transition: box-shadow 0.15s;
+}
+
+.stat-card:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.stat-card.accent {
+  border-color: #007bff;
+  border-width: 2px;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #222;
+  line-height: 1.1;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #666;
+  margin-top: 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.stat-sub {
+  font-size: 0.75rem;
+  color: #999;
+  margin-top: 0.25rem;
+}
+
+/* ─── Sparkline ─── */
+.sparkline-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.sparkline-card h3 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  color: #555;
+}
+
+.sparkline-svg {
+  width: 100%;
+  height: auto;
+  max-height: 140px;
+}
+
+/* ─── Quick links ─── */
+.quick-links {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.quick-link {
+  display: inline-block;
+  padding: 0.65rem 1.25rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  background: #f0f0f0;
+  color: #333;
+  transition: background 0.15s;
+}
+
+.quick-link:hover {
+  background: #e0e0e0;
+}
+
+.quick-link.primary {
+  background: #007bff;
+  color: white;
+}
+
+.quick-link.primary:hover {
+  background: #0056b3;
+}
+
+@media (max-width: 600px) {
+  .stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .stat-value {
+    font-size: 1.5rem;
+  }
+}

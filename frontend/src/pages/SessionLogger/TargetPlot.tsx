@@ -10,6 +10,8 @@ interface TargetPlotProps {
   viewMode: 'current' | 'cumulative';
   onPlaceShot: (x: number, y: number) => void;
   onToggleView: () => void;
+  shaftDiameterMm: number;
+  xIs11: boolean;
 }
 
 export default function TargetPlot({
@@ -20,6 +22,8 @@ export default function TargetPlot({
   viewMode,
   onPlaceShot,
   onToggleView,
+  shaftDiameterMm,
+  xIs11,
 }: TargetPlotProps) {
   // Build shot array for rendering
   const shots = [];
@@ -67,6 +71,8 @@ export default function TargetPlot({
         width={600}
         height={600}
         interactive={true}
+        shaftDiameterMm={shaftDiameterMm}
+        xIs11={xIs11}
       />
     </div>
   );

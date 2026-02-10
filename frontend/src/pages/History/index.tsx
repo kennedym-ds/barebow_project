@@ -1,13 +1,50 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSessions, useSession, useDeleteSession } from '../../api/sessions';
 import TargetFace from '../../components/TargetFace';
 import './History.css';
+
+function exportSessionCSV(session: any) {
+  const rows: string[] = ['Date,Round,Distance_m,Face_cm,End,Arrow,Score,X_cm,Y_cm,Is_X'];
+  const dateStr = new Date(session.date).toISOString().slice(0, 19);
+  const sortedEnds = [...session.ends].sort((a: any, b: any) => a.end_number - b.end_number);
+  
+  for (const end of sortedEnds) {
+    const sortedShots = [...end.shots].sort((a: any, b: any) => a.arrow_number - b.arrow_number);
+    for (const shot of sortedShots) {
+      rows.push([
+        dateStr,
+        session.round_type,
+        session.distance_m,
+        session.target_face_size_cm,
+        end.end_number,
+        shot.arrow_number ?? '',
+        shot.score,
+        shot.x?.toFixed(2) ?? '',
+        shot.y?.toFixed(2) ?? '',
+        shot.is_x ? 'TRUE' : 'FALSE',
+      ].join(','));
+    }
+  }
+  
+  const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `session_${dateStr.replace(/[T:]/g, '-')}_${session.round_type}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 export default function History() {
   const { data: sessions, isLoading } = useSessions();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const { data: session } = useSession(selectedId);
   const deleteSession = useDeleteSession();
+
+  // Replay state
+  const [replayEnd, setReplayEnd] = useState<number | null>(null); // null = show all
+  const [playing, setPlaying] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const handleDelete = async () => {
     if (!selectedId) return;
@@ -47,6 +84,37 @@ export default function History() {
   const totalScore = allShots.reduce((sum, s) => sum + s.score, 0);
   const avgScore = allShots.length > 0 ? totalScore / allShots.length : 0;
 
+  const sortedEnds = session ? [...session.ends].sort((a, b) => a.end_number - b.end_number) : [];
+  const totalEnds = sortedEnds.length;
+
+  // Replay: filter shots up to current end
+  const visibleShots = replayEnd === null
+    ? allShots
+    : sortedEnds.filter(e => e.end_number <= replayEnd).flatMap(e => e.shots);
+
+  // Auto-advance playback
+  useEffect(() => {
+    if (playing && replayEnd !== null && totalEnds > 0) {
+      timerRef.current = setInterval(() => {
+        setReplayEnd(prev => {
+          if (prev === null || prev >= sortedEnds[totalEnds - 1].end_number) {
+            setPlaying(false);
+            return prev;
+          }
+          const curIdx = sortedEnds.findIndex(e => e.end_number === prev);
+          return sortedEnds[Math.min(curIdx + 1, totalEnds - 1)].end_number;
+        });
+      }, 1200);
+    }
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [playing, replayEnd, totalEnds, sortedEnds]);
+
+  // Reset replay when session changes
+  useEffect(() => {
+    setReplayEnd(null);
+    setPlaying(false);
+  }, [selectedId]);
+
   return (
     <div className="history-page">
       <h1>📜 Session History</h1>
@@ -70,13 +138,20 @@ export default function History() {
         </div>
         
         {selectedId && (
-          <button 
-            className="delete-btn" 
-            onClick={handleDelete}
-            disabled={deleteSession.isPending}
-          >
-            🗑️ Delete Selected Session
-          </button>
+          <div className="session-actions">
+            {session && (
+              <button className="export-btn" onClick={() => exportSessionCSV(session)}>
+                📥 Export CSV
+              </button>
+            )}
+            <button 
+              className="delete-btn" 
+              onClick={handleDelete}
+              disabled={deleteSession.isPending}
+            >
+              🗑️ Delete Selected Session
+            </button>
+          </div>
         )}
       </div>
 
@@ -114,7 +189,7 @@ export default function History() {
                 <TargetFace
                   faceSizeCm={session.target_face_size_cm}
                   faceType="WA"
-                  shots={allShots.map(s => ({
+                  shots={visibleShots.map(s => ({
                     x: s.x,
                     y: s.y,
                     score: s.score,
@@ -126,6 +201,42 @@ export default function History() {
                 />
               ) : (
                 <p>No shots to plot.</p>
+              )}
+
+              {/* Replay controls */}
+              {totalEnds > 1 && (
+                <div className="replay-controls">
+                  <button className="replay-btn" onClick={() => {
+                    if (replayEnd === null) {
+                      setReplayEnd(sortedEnds[0].end_number);
+                      setPlaying(true);
+                    } else {
+                      setPlaying(!playing);
+                    }
+                  }}>
+                    {playing ? '⏸ Pause' : replayEnd === null ? '▶ Replay' : '▶ Play'}
+                  </button>
+                  <button className="replay-btn" disabled={replayEnd === null} onClick={() => {
+                    setPlaying(false);
+                    setReplayEnd(prev => {
+                      if (prev === null) return null;
+                      const idx = sortedEnds.findIndex(e => e.end_number === prev);
+                      return idx > 0 ? sortedEnds[idx - 1].end_number : prev;
+                    });
+                  }}>⏮</button>
+                  <button className="replay-btn" disabled={replayEnd === null} onClick={() => {
+                    setPlaying(false);
+                    setReplayEnd(prev => {
+                      if (prev === null) return null;
+                      const idx = sortedEnds.findIndex(e => e.end_number === prev);
+                      return idx < totalEnds - 1 ? sortedEnds[idx + 1].end_number : prev;
+                    });
+                  }}>⏭</button>
+                  <button className="replay-btn" disabled={replayEnd === null} onClick={() => { setPlaying(false); setReplayEnd(null); }}>Show All</button>
+                  <span className="replay-label">
+                    {replayEnd === null ? `All ${totalEnds} ends` : `End ${replayEnd} of ${sortedEnds[totalEnds-1].end_number}`}
+                  </span>
+                </div>
               )}
             </div>
 

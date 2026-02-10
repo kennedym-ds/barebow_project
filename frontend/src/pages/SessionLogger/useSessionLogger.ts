@@ -22,6 +22,7 @@ export interface SessionLoggerState {
   arrowsPerEnd: number;
   totalArrows: number;
   arrowCount: number; // total arrows in quiver
+  shaftDiameterMm: number; // arrow shaft outer diameter for line-break scoring
   activeArrow: number;
   shotsInCurrentEnd: ShotInProgress[];
   savedEnds: End[];
@@ -41,6 +42,7 @@ type Action =
       arrowsPerEnd: number;
       totalArrows: number;
       arrowCount: number;
+      shaftDiameterMm: number;
       bowId?: string;
       arrowId?: string;
     }}
@@ -63,6 +65,7 @@ const initialState: SessionLoggerState = {
   arrowsPerEnd: 3,
   totalArrows: 60,
   arrowCount: 12,
+  shaftDiameterMm: 5.2,
   activeArrow: 1,
   shotsInCurrentEnd: [],
   savedEnds: [],
@@ -84,6 +87,7 @@ function reducer(state: SessionLoggerState, action: Action): SessionLoggerState 
         arrowsPerEnd: action.payload.arrowsPerEnd,
         totalArrows: action.payload.totalArrows,
         arrowCount: action.payload.arrowCount,
+        shaftDiameterMm: action.payload.shaftDiameterMm,
         bowId: action.payload.bowId,
         arrowId: action.payload.arrowId,
         currentEndNumber: 1,
@@ -96,12 +100,12 @@ function reducer(state: SessionLoggerState, action: Action): SessionLoggerState 
       const { x, y } = action.payload;
       const radius = Math.sqrt(x * x + y * y);
       
-      // Calculate score
+      // Calculate score (using arrow diameter for line-break rule)
       const score = state.faceType === 'Flint' 
-        ? getFlintScore(radius, state.faceSizeCm)
-        : getRingScore(radius, state.faceSizeCm, state.xIs11);
+        ? getFlintScore(radius, state.faceSizeCm, state.shaftDiameterMm)
+        : getRingScore(radius, state.faceSizeCm, state.xIs11, state.shaftDiameterMm);
       
-      const is_x = isXRing(radius, state.faceSizeCm, state.faceType);
+      const is_x = isXRing(radius, state.faceSizeCm, state.faceType, state.shaftDiameterMm);
 
       // Remove any existing shot for this arrow
       const filteredShots = state.shotsInCurrentEnd.filter(
@@ -118,27 +122,30 @@ function reducer(state: SessionLoggerState, action: Action): SessionLoggerState 
 
       const updatedShots = [...filteredShots, newShot];
 
-      // Auto-advance to next unused arrow
+      // Auto-advance to next unused arrow (scan full quiver)
       const shotNums = new Set(updatedShots.map(s => s.arrow_number));
       let nextArrow = state.activeArrow;
       let found = false;
 
-      // Try to find next unshot arrow > current
-      for (let i = state.activeArrow + 1; i <= state.arrowsPerEnd; i++) {
-        if (!shotNums.has(i)) {
-          nextArrow = i;
-          found = true;
-          break;
-        }
-      }
-
-      // If not found, wrap around from 1
-      if (!found) {
-        for (let i = 1; i <= state.arrowsPerEnd; i++) {
+      // End is full when we've placed arrowsPerEnd shots — don't advance
+      if (updatedShots.length < state.arrowsPerEnd) {
+        // Try to find next unshot arrow > current
+        for (let i = state.activeArrow + 1; i <= state.arrowCount; i++) {
           if (!shotNums.has(i)) {
             nextArrow = i;
             found = true;
             break;
+          }
+        }
+
+        // If not found, wrap around from 1
+        if (!found) {
+          for (let i = 1; i <= state.arrowCount; i++) {
+            if (!shotNums.has(i)) {
+              nextArrow = i;
+              found = true;
+              break;
+            }
           }
         }
       }
@@ -206,6 +213,7 @@ export function useSessionLogger() {
     arrowsPerEnd: number;
     totalArrows: number;
     arrowCount: number;
+    shaftDiameterMm: number;
     bowId?: string;
     arrowId?: string;
   }) => {

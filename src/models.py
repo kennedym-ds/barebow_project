@@ -99,7 +99,15 @@ class TabSetup(SQLModel, table=True):
     model: str = "Barebow Tab"
     
     # Comma-separated list of mark positions in mm (e.g., "4.5, 9.0, 13.5")
-    marks: str = "" 
+    marks: str = ""
+    
+    # Path to uploaded tab image (relative to uploads/ dir)
+    tab_image_path: Optional[str] = None
+    
+    # Calibration: how many mm on the physical tab does one pixel represent?
+    # Users set nock_y (top of string groove) and scale_mm_per_px after uploading.
+    nock_y_px: Optional[float] = None
+    scale_mm_per_px: Optional[float] = None 
     
     # Relationships
     # sessions: List["Session"] = Relationship(back_populates="tab") # Future proofing

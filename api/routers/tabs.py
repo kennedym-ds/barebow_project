@@ -1,12 +1,19 @@
 """Tab Setup CRUD endpoints."""
-from fastapi import APIRouter, Depends, HTTPException, status
+import os
+import uuid as uuid_mod
+from pathlib import Path
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
+from fastapi.responses import FileResponse
 from sqlmodel import Session as SQLModelSession, select
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 from src.models import TabSetup
 from api.deps import get_db
 
 router = APIRouter()
+
+UPLOAD_DIR = Path("uploads/tabs")
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 
 class TabSetupCreate(BaseModel):
@@ -21,6 +28,8 @@ class TabSetupUpdate(BaseModel):
     make: str | None = None
     model: str | None = None
     marks: str | None = None
+    nock_y_px: float | None = None
+    scale_mm_per_px: float | None = None
 
 
 @router.get("", response_model=List[TabSetup])
@@ -86,6 +95,81 @@ def delete_tab(tab_id: str, db: SQLModelSession = Depends(get_db)):
     if not tab:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tab setup not found")
     
+    # Clean up image file if present
+    if tab.tab_image_path:
+        img_path = UPLOAD_DIR / tab.tab_image_path
+        if img_path.exists():
+            img_path.unlink()
+    
     db.delete(tab)
     db.commit()
+    return None
+
+
+@router.post("/{tab_id}/image", response_model=TabSetup)
+async def upload_tab_image(
+    tab_id: str,
+    file: UploadFile = File(...),
+    db: SQLModelSession = Depends(get_db),
+):
+    """Upload a photo of the tab face."""
+    tab = db.get(TabSetup, tab_id)
+    if not tab:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tab setup not found")
+    
+    # Validate content type
+    if file.content_type not in ("image/jpeg", "image/png", "image/webp"):
+        raise HTTPException(status_code=400, detail="Only JPEG, PNG, or WebP images are accepted")
+    
+    # Delete old image if exists
+    if tab.tab_image_path:
+        old_path = UPLOAD_DIR / tab.tab_image_path
+        if old_path.exists():
+            old_path.unlink()
+    
+    # Save with unique filename
+    ext = file.filename.rsplit(".", 1)[-1] if file.filename and "." in file.filename else "jpg"
+    filename = f"{tab_id}_{uuid_mod.uuid4().hex[:8]}.{ext}"
+    dest = UPLOAD_DIR / filename
+    
+    contents = await file.read()
+    dest.write_bytes(contents)
+    
+    tab.tab_image_path = filename
+    db.add(tab)
+    db.commit()
+    db.refresh(tab)
+    return tab
+
+
+@router.get("/{tab_id}/image")
+def get_tab_image(tab_id: str, db: SQLModelSession = Depends(get_db)):
+    """Serve the uploaded tab image."""
+    tab = db.get(TabSetup, tab_id)
+    if not tab or not tab.tab_image_path:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No image for this tab")
+    
+    img_path = UPLOAD_DIR / tab.tab_image_path
+    if not img_path.exists():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Image file missing")
+    
+    return FileResponse(img_path)
+
+
+@router.delete("/{tab_id}/image", status_code=status.HTTP_204_NO_CONTENT)
+def delete_tab_image(tab_id: str, db: SQLModelSession = Depends(get_db)):
+    """Remove the tab image."""
+    tab = db.get(TabSetup, tab_id)
+    if not tab:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tab setup not found")
+    
+    if tab.tab_image_path:
+        img_path = UPLOAD_DIR / tab.tab_image_path
+        if img_path.exists():
+            img_path.unlink()
+        tab.tab_image_path = None
+        tab.nock_y_px = None
+        tab.scale_mm_per_px = None
+        db.add(tab)
+        db.commit()
     return None

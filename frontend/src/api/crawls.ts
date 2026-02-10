@@ -17,6 +17,7 @@ export interface CrawlPoint {
 export interface CrawlCalculateResponse {
   chart: CrawlPoint[];
   coefficients: number[];
+  point_on_distance: number | null;
 }
 
 export interface CrawlPredictRequest {

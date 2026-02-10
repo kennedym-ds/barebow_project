@@ -60,10 +60,13 @@ export interface TabSetup {
   make: string;
   model: string;
   marks: string;
+  tab_image_path: string | null;
+  nock_y_px: number | null;
+  scale_mm_per_px: number | null;
 }
 
-export type TabSetupCreate = Omit<TabSetup, 'id'>;
-export type TabSetupUpdate = Partial<TabSetupCreate>;
+export type TabSetupCreate = Omit<TabSetup, 'id' | 'tab_image_path' | 'nock_y_px' | 'scale_mm_per_px'>;
+export type TabSetupUpdate = Partial<TabSetupCreate & Pick<TabSetup, 'nock_y_px' | 'scale_mm_per_px'>>;
 
 // ─── Session & Shot Types ────────────────────────────────
 
@@ -185,13 +188,26 @@ export interface RoundDefinition {
 }
 
 export const ROUND_DEFINITIONS: Record<string, RoundDefinition> = {
-  'WA 18m (Indoor)':   { dist: 18, face: 40, arrows_end: 3, total: 60, type: 'WA', x_11: false },
-  'WA 25m (Indoor)':   { dist: 25, face: 60, arrows_end: 3, total: 60, type: 'WA', x_11: false },
-  'WA 50m (Barebow)':  { dist: 50, face: 122, arrows_end: 6, total: 72, type: 'WA', x_11: false },
-  'WA 70m (Recurve)':  { dist: 70, face: 122, arrows_end: 6, total: 72, type: 'WA', x_11: false },
+  // ── Indoor ──
+  'WA 18m (Indoor)':     { dist: 18, face: 40, arrows_end: 3, total: 60, type: 'WA', x_11: false },
+  'WA 25m (Indoor)':     { dist: 25, face: 60, arrows_end: 3, total: 60, type: 'WA', x_11: false },
+  'Portsmouth':          { dist: 18, face: 60, arrows_end: 3, total: 60, type: 'WA', x_11: false },
+  'Bray I':              { dist: 18, face: 40, arrows_end: 3, total: 30, type: 'WA', x_11: false },
+  'Bray II':             { dist: 25, face: 60, arrows_end: 3, total: 30, type: 'WA', x_11: false },
+  'Lancaster Quali':     { dist: 18, face: 40, arrows_end: 3, total: 60, type: 'WA', x_11: true },
   'IFAA Flint (Indoor)': { dist: 20, face: 35, arrows_end: 4, total: 56, type: 'Flint', x_11: false },
-  'Lancaster Quali':   { dist: 18, face: 40, arrows_end: 3, total: 60, type: 'WA', x_11: true },
-  'Custom':            { dist: 18, face: 40, arrows_end: 3, total: 30, type: 'WA', x_11: false },
+  // ── Outdoor ──
+  'WA 30m':              { dist: 30, face: 80, arrows_end: 6, total: 36, type: 'WA', x_11: false },
+  'WA 40m':              { dist: 40, face: 80, arrows_end: 6, total: 36, type: 'WA', x_11: false },
+  'WA 50m (Barebow)':    { dist: 50, face: 122, arrows_end: 6, total: 72, type: 'WA', x_11: false },
+  'WA 60m':              { dist: 60, face: 122, arrows_end: 6, total: 36, type: 'WA', x_11: false },
+  'WA 70m (Recurve)':    { dist: 70, face: 122, arrows_end: 6, total: 72, type: 'WA', x_11: false },
+  'Half WA 50m':         { dist: 50, face: 122, arrows_end: 6, total: 36, type: 'WA', x_11: false },
+  // ── National / Practice ──
+  'National (Barebow)':  { dist: 50, face: 122, arrows_end: 6, total: 48, type: 'WA', x_11: false },
+  'Short National':      { dist: 40, face: 122, arrows_end: 6, total: 48, type: 'WA', x_11: false },
+  'Practice (30 arrows)':{ dist: 18, face: 40, arrows_end: 3, total: 30, type: 'WA', x_11: false },
+  'Custom':              { dist: 18, face: 40, arrows_end: 3, total: 30, type: 'WA', x_11: false },
 };
 
 // ─── Analytics ───────────────────────────────────────────
