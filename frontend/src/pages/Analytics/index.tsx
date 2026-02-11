@@ -666,8 +666,9 @@ function HeatmapTab({
     const distances = normalizedShots.map(s => 
       Math.sqrt(Math.pow(s.x_norm - mu_x, 2) + Math.pow(s.y_norm - mu_y, 2))
     );
+    const meanDist = distances.reduce((a, b) => a + b, 0) / distances.length;
     const sigma_r = Math.sqrt(
-      distances.reduce((sum, d) => sum + Math.pow(d - distances.reduce((a, b) => a + b) / distances.length, 2), 0) / distances.length
+      distances.reduce((sum, d) => sum + Math.pow(d - meanDist, 2), 0) / distances.length
     );
     const threshold = 2 * sigma_r;
 
@@ -863,12 +864,12 @@ function ScorePredictionTab({
   toDate?: string;
   roundPresets?: RoundPreset[];
 }) {
-  const [shortRound, setShortRound] = useState('WA 18m');
-  const [longRound, setLongRound] = useState('WA 50m');
+  const [shortRound, setShortRound] = useState('WA 18m (Indoor)');
+  const [longRound, setLongRound] = useState('WA 50m (Barebow)');
   
   const { data: parkData, isLoading } = useParkModel(shortRound, longRound, fromDate, toDate);
 
-  const roundOptions = roundPresets?.map(p => p.name) || ['WA 18m', 'WA 25m', 'WA 50m', 'Indoor Field', 'Flint'];
+  const roundOptions = roundPresets?.map(p => p.name) || ['WA 18m (Indoor)', 'WA 25m (Indoor)', 'WA 50m (Barebow)', 'Indoor Field', 'IFAA Flint (Indoor)'];
 
   if (isLoading) return <div>Analyzing...</div>;
 
@@ -1220,7 +1221,7 @@ function PrecisionTab({ roundTypes, fromDate, toDate }: {
 }) {
   const { data, isLoading } = useAdvancedPrecision(roundTypes, fromDate, toDate);
   const { data: withinEnd } = useWithinEnd(roundTypes, fromDate, toDate);
-  const [hitProbRound, setHitProbRound] = useState('WA 18m');
+  const [hitProbRound, setHitProbRound] = useState('WA 18m (Indoor)');
   const { data: hitProb } = useHitProbability(hitProbRound, fromDate, toDate);
 
   if (isLoading) return <div>Computing precision metrics...</div>;

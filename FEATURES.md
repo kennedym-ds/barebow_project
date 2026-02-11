@@ -1,6 +1,6 @@
 # Features
 
-Implemented features as of 2026-02-10.
+Implemented features as of 2026-02-11.
 
 ---
 
@@ -19,7 +19,7 @@ Implemented features as of 2026-02-10.
 - ✅ **Quiver Panel**: Select which arrows (1-12+) to log by number
 - ✅ **Arrows-Per-End Selector**: 3, 5, 6, or 10 arrows per end
 - ✅ **Real-Time Stats**: Running score, avg arrow, total score, ends completed
-- ✅ **Round Presets**: 17 standard rounds (Portsmouth, Bray I/II, WA 18m/25m/30m/40m/50m/60m, National, etc.) with auto-populated settings
+- ✅ **Round Presets**: 21 standard rounds (Portsmouth, Bray I/II, WA 18m/25m/30m/40m/50m/60m/70m, Lancaster, National, IFAA Flint, etc.) with auto-populated settings
 - ✅ **Session Notes**: Free-text field for conditions, form observations, mental state
 
 ### Session History & Analysis
@@ -165,5 +165,5 @@ See `artifacts/research/barebow-archer-needs.md` for prioritized roadmap.
 
 ---
 
-**Last Updated**: 2026-02-10  
+**Last Updated**: 2026-02-11  
 **Test Coverage**: 93 tests passing

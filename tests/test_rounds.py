@@ -12,13 +12,18 @@ from src.rounds import (
 def test_get_all_presets():
     """Test getting all round presets."""
     presets = get_all_presets()
-    assert len(presets) == 6
+    assert len(presets) == 21
     
     names = [p.name for p in presets]
-    assert "WA 18m" in names
-    assert "WA 25m" in names
-    assert "WA 50m" in names
+    # Check primary frontend names
+    assert "WA 18m (Indoor)" in names
+    assert "WA 25m (Indoor)" in names
+    assert "WA 50m (Barebow)" in names
     assert "Half WA 50m" in names
+    assert "IFAA Flint (Indoor)" in names
+    # Check legacy aliases
+    assert "WA 18m" in names
+    assert "WA 50m" in names
     assert "Indoor Field" in names
     assert "Flint" in names
 
@@ -117,9 +122,9 @@ def test_get_max_score_with_custom_arrow_count():
     max_score = get_max_score("Indoor Field", 30)
     assert max_score == 150  # 30 × 5
     
-    # Flint scoring: 10 per arrow
+    # Flint scoring: 5 per arrow
     max_score = get_max_score("Flint", 28)
-    assert max_score == 280  # 28 × 10
+    assert max_score == 140  # 28 × 5
 
 
 def test_get_max_score_unknown_round():

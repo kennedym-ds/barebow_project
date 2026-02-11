@@ -9,7 +9,7 @@ function exportSessionCSV(session: any) {
   const sortedEnds = [...session.ends].sort((a: any, b: any) => a.end_number - b.end_number);
   
   for (const end of sortedEnds) {
-    const sortedShots = [...end.shots].sort((a: any, b: any) => a.arrow_number - b.arrow_number);
+    const sortedShots = [...end.shots].sort((a: any, b: any) => (a.arrow_number ?? Infinity) - (b.arrow_number ?? Infinity));
     for (const shot of sortedShots) {
       rows.push([
         dateStr,
@@ -188,7 +188,7 @@ export default function History() {
               {allShots.length > 0 ? (
                 <TargetFace
                   faceSizeCm={session.target_face_size_cm}
-                  faceType="WA"
+                  faceType={session.round_type?.toLowerCase().includes('flint') ? 'Flint' : 'WA'}
                   shots={visibleShots.map(s => ({
                     x: s.x,
                     y: s.y,

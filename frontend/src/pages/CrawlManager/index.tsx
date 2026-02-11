@@ -65,18 +65,23 @@ export default function CrawlManager() {
     setRefYLocal(null);
   }, [selectedTab]);
 
-  // Auto-calculate when marks change
+  // Auto-calculate when marks change (debounced to avoid firing on every keystroke)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
-    const validMarks = marks.filter(m => m.distance > 0 && !isNaN(m.distance) && !isNaN(m.crawl));
-    if (validMarks.length >= 2) {
-      calculateCrawl.mutate({
-        known_distances: validMarks.map(m => m.distance),
-        known_crawls: validMarks.map(m => m.crawl),
-        min_dist: 5,
-        max_dist: 60,
-        step: 1,
-      });
-    }
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      const validMarks = marks.filter(m => m.distance > 0 && !isNaN(m.distance) && !isNaN(m.crawl));
+      if (validMarks.length >= 2) {
+        calculateCrawl.mutate({
+          known_distances: validMarks.map(m => m.distance),
+          known_crawls: validMarks.map(m => m.crawl),
+          min_dist: 5,
+          max_dist: 60,
+          step: 1,
+        });
+      }
+    }, 400);
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [marks]);
 
   const chartData: CrawlPoint[] = calculateCrawl.data?.chart || [];

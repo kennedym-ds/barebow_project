@@ -9,3 +9,5 @@ fastapi
 python-multipart
 uvicorn[standard]
 httpx
+pywebview
+pyinstaller

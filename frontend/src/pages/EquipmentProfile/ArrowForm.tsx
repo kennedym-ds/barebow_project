@@ -44,6 +44,11 @@ export default function ArrowForm() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleNumericChange = (field: keyof ArrowSetupCreate, raw: string) => {
+    const parsed = parseFloat(raw);
+    handleChange(field, isNaN(parsed) ? '' as any : parsed);
+  };
+
   const handleSave = async () => {
     try {
       if (selectedId === 'new') {
@@ -130,7 +135,7 @@ export default function ArrowForm() {
               type="number"
               step="1"
               value={formData.spine}
-              onChange={(e) => handleChange('spine', parseFloat(e.target.value))}
+              onChange={(e) => handleNumericChange('spine', e.target.value)}
             />
           </div>
 
@@ -140,7 +145,7 @@ export default function ArrowForm() {
               type="number"
               step="0.125"
               value={formData.length_in}
-              onChange={(e) => handleChange('length_in', parseFloat(e.target.value))}
+              onChange={(e) => handleNumericChange('length_in', e.target.value)}
             />
           </div>
 
@@ -164,7 +169,7 @@ export default function ArrowForm() {
               type="number"
               step="5"
               value={formData.point_weight_gr}
-              onChange={(e) => handleChange('point_weight_gr', parseFloat(e.target.value))}
+              onChange={(e) => handleNumericChange('point_weight_gr', e.target.value)}
             />
           </div>
 
@@ -174,7 +179,7 @@ export default function ArrowForm() {
               type="number"
               step="1"
               value={formData.total_arrow_weight_gr}
-              onChange={(e) => handleChange('total_arrow_weight_gr', parseFloat(e.target.value))}
+              onChange={(e) => handleNumericChange('total_arrow_weight_gr', e.target.value)}
             />
           </div>
 
@@ -184,7 +189,7 @@ export default function ArrowForm() {
               type="number"
               step="0.1"
               value={formData.shaft_diameter_mm}
-              onChange={(e) => handleChange('shaft_diameter_mm', parseFloat(e.target.value))}
+              onChange={(e) => handleNumericChange('shaft_diameter_mm', e.target.value)}
             />
           </div>
 

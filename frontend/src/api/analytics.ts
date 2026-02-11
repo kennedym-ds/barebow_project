@@ -351,7 +351,7 @@ export function useEquipmentComparison(
   if (fromDate) params.set('from_date', fromDate);
   if (toDate) params.set('to_date', toDate);
   return useQuery({
-    queryKey: ['analytics', 'equipment', setupABowId, setupAArrowId, setupBBowId, setupBArrowId, roundType],
+    queryKey: ['analytics', 'equipment', setupABowId, setupAArrowId, setupBBowId, setupBArrowId, roundType, fromDate, toDate],
     queryFn: () => apiFetch<EquipmentComparison>(`/api/analytics/equipment-comparison?${params.toString()}`),
     enabled: !!(setupABowId || setupAArrowId) && !!(setupBBowId || setupBArrowId),
   });

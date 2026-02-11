@@ -16,6 +16,41 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2026-02-11] — Deep Review & Robustness Fixes
+
+### Fixed
+- **Flint Scoring**: Corrected max score (560 → 280) and scoring formula (`*10` → `*5`) in round presets
+- **Round Preset Alignment**: Expanded backend from 6 to 21 presets, matching all frontend round definitions with legacy aliases for backward compatibility
+- **Zero-Division Guards**: Added protection in Park Model (`known_distance_m <= 0`) and scoring (`ring_width <= 0`)
+- **Date Parsing**: All 22 date parameters in analytics now return HTTP 422 on invalid format instead of crashing with 500
+- **Crawl Validation**: Both `/calculate` and `/predict` endpoints now reject inputs with fewer than 2 points or mismatched list lengths
+- **Tab Upload Security**: File extension validation — only `.jpg`, `.jpeg`, `.png`, `.webp` accepted
+- **NaN Form Inputs**: Bow and arrow equipment forms guard against `NaN` propagation from empty numeric fields
+- **Flint Target Detection**: History page now derives `faceType` from `round_type` instead of hardcoding `"WA"`
+- **CSV Sort Stability**: Arrow number sort handles `null` values with fallback to `Infinity`
+- **Heatmap Flier Detection**: Fixed O(n²) performance by precomputing mean distance outside reduce loop
+- **Equipment Comparison Cache**: Added missing `fromDate`/`toDate` to query key, preventing stale data
+- **Crawl Debounce**: Added 400ms debounce to crawl calculation mutation to prevent rapid-fire recomputation
+
+### Changed
+- **Bulk Delete Performance**: Arrow shaft deletion uses single SQL `DELETE WHERE` instead of loop
+- **Precision Calculation**: `np.std()**2` replaced with `np.var()` — cleaner and avoids rounding artifacts
+- **Analytics Shot Ordering**: Bias and within-end queries now sort by `(arrow_number, id)` for deterministic results
+
+### Docs
+- Added [Getting Started](docs/getting-started.md) guide
+- Added [User Guide](docs/user-guide.md)
+- Updated README with documentation links table
+- Updated FEATURES.md round count (17 → 21)
+- Cleaned repo: removed stale `build/`, `dist/`, `__pycache__/` directories
+- Added `build/`, `dist/`, `uploads/` to `.gitignore`
+
+### Technical
+- Test suite: 93 tests passing
+- 4 tests updated to match corrected round preset count and Flint scoring
+
+---
+
 ## [2026-02-10] — Arrow Analytics Updates
 
 ### Added
@@ -154,6 +189,7 @@ Currently pre-1.0. Versions will follow [Semantic Versioning](https://semver.org
 ---
 
 [Unreleased]: https://github.com/kennedym-ds/barebow_project/compare/main...HEAD
+[2026-02-11]: https://github.com/kennedym-ds/barebow_project/compare/v2026-02-10...v2026-02-11
 [2026-02-10]: https://github.com/kennedym-ds/barebow_project/compare/v2026-02-09...v2026-02-10
 [2026-02-09]: https://github.com/kennedym-ds/barebow_project/compare/v2026-02-08...v2026-02-09
 [2026-02-08]: https://github.com/kennedym-ds/barebow_project/compare/v2026-01-18...v2026-02-08

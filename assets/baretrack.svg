@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="248" fill="#1a1a2e" stroke="#e2e2e2" stroke-width="4"/>
+  
+  <!-- Target rings -->
+  <circle cx="256" cy="256" r="200" fill="none" stroke="#4a90d9" stroke-width="3" opacity="0.3"/>
+  <circle cx="256" cy="256" r="155" fill="none" stroke="#4a90d9" stroke-width="3" opacity="0.4"/>
+  <circle cx="256" cy="256" r="110" fill="none" stroke="#4a90d9" stroke-width="3" opacity="0.5"/>
+  <circle cx="256" cy="256" r="65"  fill="none" stroke="#4a90d9" stroke-width="3" opacity="0.7"/>
+  
+  <!-- Gold center (X-ring) -->
+  <circle cx="256" cy="256" r="28" fill="#f0c040" opacity="0.9"/>
+  <circle cx="256" cy="256" r="12" fill="#e8a020"/>
+  
+  <!-- Bow limb arc (left side) -->
+  <path d="M 120,120 Q 80,256 120,392" 
+        fill="none" stroke="#c0956c" stroke-width="10" stroke-linecap="round"/>
+  
+  <!-- Bow string -->
+  <line x1="120" y1="120" x2="120" y2="392" 
+        stroke="#e2e2e2" stroke-width="2.5" opacity="0.8"/>
+  
+  <!-- Arrow shaft -->
+  <line x1="120" y1="256" x2="256" y2="256" 
+        stroke="#d4d4d4" stroke-width="4" stroke-linecap="round"/>
+  
+  <!-- Arrow point -->
+  <polygon points="256,248 274,256 256,264" fill="#d4d4d4"/>
+  
+  <!-- Fletching -->
+  <polygon points="128,252 140,256 128,260 122,256" fill="#e05050" opacity="0.9"/>
+  <polygon points="122,249 134,253 122,257 116,253" fill="#e05050" opacity="0.7"/>
+</svg>

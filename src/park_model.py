@@ -89,6 +89,10 @@ def predict_score_at_distance(
     # 1. Calculate Sigma at known distance
     sigma_known = calculate_sigma_from_score(known_score, known_face_cm)
     
+    # Guard against zero distance (e.g. Flint multi-distance rounds)
+    if known_distance_m <= 0:
+        return 0.0, 0.0
+    
     # 2. Calculate Angular Error (Sigma_Theta) in radians
     # sigma_r approx distance * sigma_theta
     # So sigma_theta = sigma_r / (distance * 100)  <- convert m to cm

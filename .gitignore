@@ -29,10 +29,17 @@ dmypy.json
 node_modules/
 frontend/dist/
 
+# PyInstaller build output
+build/
+dist/
+
 # Database
 *.db
 *.sqlite3
 baretrack.db
+
+# Uploads (user-generated, not versioned)
+uploads/
 
 # VS Code (Keep tasks.json and launch.json if present, ignore user settings)
 .vscode/*

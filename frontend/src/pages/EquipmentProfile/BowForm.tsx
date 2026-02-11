@@ -52,6 +52,11 @@ export default function BowForm() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleNumericChange = (field: keyof BowSetupCreate, raw: string) => {
+    const parsed = parseFloat(raw);
+    handleChange(field, isNaN(parsed) ? '' as any : parsed);
+  };
+
   const handleSave = async () => {
     try {
       // Auto-generate name from riser and limbs make
@@ -129,7 +134,7 @@ export default function BowForm() {
               type="number"
               step="0.1"
               value={formData.riser_length_in}
-              onChange={(e) => handleChange('riser_length_in', parseFloat(e.target.value))}
+              onChange={(e) => handleNumericChange('riser_length_in', e.target.value)}
             />
           </div>
 
@@ -169,7 +174,7 @@ export default function BowForm() {
               type="number"
               step="0.5"
               value={formData.limbs_marked_poundage}
-              onChange={(e) => handleChange('limbs_marked_poundage', parseFloat(e.target.value))}
+              onChange={(e) => handleNumericChange('limbs_marked_poundage', e.target.value)}
             />
           </div>
         </div>
@@ -184,7 +189,7 @@ export default function BowForm() {
               type="number"
               step="0.5"
               value={formData.draw_weight_otf}
-              onChange={(e) => handleChange('draw_weight_otf', parseFloat(e.target.value))}
+              onChange={(e) => handleNumericChange('draw_weight_otf', e.target.value)}
             />
           </div>
 
@@ -194,7 +199,7 @@ export default function BowForm() {
               type="number"
               step="0.1"
               value={formData.brace_height_in}
-              onChange={(e) => handleChange('brace_height_in', parseFloat(e.target.value))}
+              onChange={(e) => handleNumericChange('brace_height_in', e.target.value)}
             />
           </div>
 
@@ -204,7 +209,7 @@ export default function BowForm() {
               type="number"
               step="0.5"
               value={formData.tiller_top_mm}
-              onChange={(e) => handleChange('tiller_top_mm', parseFloat(e.target.value))}
+              onChange={(e) => handleNumericChange('tiller_top_mm', e.target.value)}
             />
           </div>
 
@@ -214,7 +219,7 @@ export default function BowForm() {
               type="number"
               step="0.5"
               value={formData.tiller_bottom_mm}
-              onChange={(e) => handleChange('tiller_bottom_mm', parseFloat(e.target.value))}
+              onChange={(e) => handleNumericChange('tiller_bottom_mm', e.target.value)}
             />
           </div>
 
@@ -238,7 +243,7 @@ export default function BowForm() {
               max="10"
               step="0.5"
               value={formData.plunger_spring_tension}
-              onChange={(e) => handleChange('plunger_spring_tension', parseFloat(e.target.value))}
+              onChange={(e) => handleNumericChange('plunger_spring_tension', e.target.value)}
             />
           </div>
 
@@ -248,7 +253,7 @@ export default function BowForm() {
               type="number"
               step="0.1"
               value={formData.plunger_center_shot_mm}
-              onChange={(e) => handleChange('plunger_center_shot_mm', parseFloat(e.target.value))}
+              onChange={(e) => handleNumericChange('plunger_center_shot_mm', e.target.value)}
             />
           </div>
 
@@ -258,7 +263,7 @@ export default function BowForm() {
               type="number"
               step="0.5"
               value={formData.nocking_point_height_mm}
-              onChange={(e) => handleChange('nocking_point_height_mm', parseFloat(e.target.value))}
+              onChange={(e) => handleNumericChange('nocking_point_height_mm', e.target.value)}
             />
           </div>
         </div>
@@ -303,7 +308,7 @@ export default function BowForm() {
               type="number"
               step="1"
               value={formData.total_mass_g}
-              onChange={(e) => handleChange('total_mass_g', parseFloat(e.target.value))}
+              onChange={(e) => handleNumericChange('total_mass_g', e.target.value)}
             />
           </div>
 

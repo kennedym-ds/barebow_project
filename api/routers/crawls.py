@@ -1,10 +1,18 @@
 """Crawl regression endpoints."""
-from fastapi import APIRouter
-from pydantic import BaseModel
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel, field_validator
 from typing import List, Tuple
 from src.crawls import calculate_crawl_regression, predict_crawl, generate_crawl_chart, find_point_on_distance
 
 router = APIRouter()
+
+
+def _validate_crawl_lists(distances: List[float], crawls: List[float]) -> None:
+    """Shared validation for crawl distance/crawl lists."""
+    if len(distances) < 2:
+        raise HTTPException(status_code=422, detail="At least 2 data points are required")
+    if len(distances) != len(crawls):
+        raise HTTPException(status_code=422, detail="known_distances and known_crawls must be the same length")
 
 
 class CrawlCalculateRequest(BaseModel):
@@ -50,10 +58,11 @@ def calculate_crawl(request: CrawlCalculateRequest) -> CrawlCalculateResponse:
     Uses polynomial regression (degree 2) to model the relationship
     between distance and crawl position.
     """
+    # Validate inputs
+    _validate_crawl_lists(request.known_distances, request.known_crawls)
+    
     # Calculate regression model
     model = calculate_crawl_regression(request.known_distances, request.known_crawls)
-    
-    # Generate chart
     chart_data = generate_crawl_chart(model, request.min_dist, request.max_dist, request.step)
     
     # Convert to response format
@@ -76,6 +85,9 @@ def predict_crawl_position(request: CrawlPredictRequest) -> CrawlPredictResponse
     
     Uses the regression model trained on known distances/crawls.
     """
+    # Validate inputs
+    _validate_crawl_lists(request.known_distances, request.known_crawls)
+    
     # Calculate regression model
     model = calculate_crawl_regression(request.known_distances, request.known_crawls)
     

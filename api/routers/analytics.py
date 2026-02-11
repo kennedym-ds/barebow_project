@@ -1,5 +1,5 @@
 """Analytics aggregation endpoints."""
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session as SQLModelSession, select
 from sqlalchemy.orm import selectinload
 from typing import List, Optional
@@ -13,6 +13,14 @@ import numpy as np
 from src import precision
 
 router = APIRouter()
+
+
+def _parse_date(value: str) -> datetime:
+    """Parse ISO date string, raising 422 on invalid format."""
+    try:
+        return datetime.fromisoformat(value)
+    except (ValueError, TypeError):
+        raise HTTPException(status_code=422, detail=f"Invalid date format: '{value}'. Expected ISO 8601 (e.g. 2025-01-15)")
 
 
 class SessionSummaryStats(BaseModel):
@@ -338,11 +346,11 @@ def get_session_summaries(
         statement = statement.where(SessionModel.round_type.in_(round_types))
     
     if from_date:
-        start = datetime.fromisoformat(from_date)
+        start = _parse_date(from_date)
         statement = statement.where(SessionModel.date >= start)
     
     if to_date:
-        end = datetime.fromisoformat(to_date)
+        end = _parse_date(to_date)
         statement = statement.where(SessionModel.date <= end)
     
     sessions = db.exec(statement).all()
@@ -424,11 +432,11 @@ def get_all_shots(
         statement = statement.where(SessionModel.round_type.in_(round_types))
     
     if from_date:
-        start = datetime.fromisoformat(from_date)
+        start = _parse_date(from_date)
         statement = statement.where(SessionModel.date >= start)
     
     if to_date:
-        end = datetime.fromisoformat(to_date)
+        end = _parse_date(to_date)
         statement = statement.where(SessionModel.date <= end)
     
     sessions = db.exec(statement).all()
@@ -523,10 +531,10 @@ def get_park_model_analysis(
         
         # Apply date filters
         if from_date:
-            start = datetime.fromisoformat(from_date)
+            start = _parse_date(from_date)
             statement = statement.where(SessionModel.date >= start)
         if to_date:
-            end = datetime.fromisoformat(to_date)
+            end = _parse_date(to_date)
             statement = statement.where(SessionModel.date <= end)
         
         sessions = db.exec(statement).all()
@@ -633,11 +641,11 @@ def get_score_context(
         statement = statement.where(SessionModel.round_type.in_(round_types))
     
     if from_date:
-        start = datetime.fromisoformat(from_date)
+        start = _parse_date(from_date)
         statement = statement.where(SessionModel.date >= start)
     
     if to_date:
-        end = datetime.fromisoformat(to_date)
+        end = _parse_date(to_date)
         statement = statement.where(SessionModel.date <= end)
     
     sessions = db.exec(statement).all()
@@ -733,11 +741,11 @@ def get_bias_analysis(
         statement = statement.where(SessionModel.round_type.in_(round_types))
     
     if from_date:
-        start = datetime.fromisoformat(from_date)
+        start = _parse_date(from_date)
         statement = statement.where(SessionModel.date >= start)
     
     if to_date:
-        end_dt = datetime.fromisoformat(to_date)
+        end_dt = _parse_date(to_date)
         statement = statement.where(SessionModel.date <= end_dt)
     
     sessions = db.exec(statement).all()
@@ -758,7 +766,7 @@ def get_bias_analysis(
             if end_num not in end_data:
                 end_data[end_num] = []
             
-            for idx, shot in enumerate(end.shots):
+            for idx, shot in enumerate(sorted(end.shots, key=lambda s: (s.arrow_number or 0, s.id))):
                 all_x.append(shot.x)
                 all_y.append(shot.y)
                 all_scores.append(shot.score)
@@ -945,11 +953,11 @@ def get_advanced_precision(
         statement = statement.where(SessionModel.round_type.in_(round_types))
     
     if from_date:
-        start = datetime.fromisoformat(from_date)
+        start = _parse_date(from_date)
         statement = statement.where(SessionModel.date >= start)
     
     if to_date:
-        end_dt = datetime.fromisoformat(to_date)
+        end_dt = _parse_date(to_date)
         statement = statement.where(SessionModel.date <= end_dt)
     
     sessions = db.exec(statement).all()
@@ -1047,11 +1055,11 @@ def get_trends(
         statement = statement.where(SessionModel.round_type.in_(round_types))
     
     if from_date:
-        start = datetime.fromisoformat(from_date)
+        start = _parse_date(from_date)
         statement = statement.where(SessionModel.date >= start)
     
     if to_date:
-        end_dt = datetime.fromisoformat(to_date)
+        end_dt = _parse_date(to_date)
         statement = statement.where(SessionModel.date <= end_dt)
     
     sessions = db.exec(statement).all()
@@ -1154,11 +1162,11 @@ def get_within_end_analysis(
         statement = statement.where(SessionModel.round_type.in_(round_types))
     
     if from_date:
-        start = datetime.fromisoformat(from_date)
+        start = _parse_date(from_date)
         statement = statement.where(SessionModel.date >= start)
     
     if to_date:
-        end_dt = datetime.fromisoformat(to_date)
+        end_dt = _parse_date(to_date)
         statement = statement.where(SessionModel.date <= end_dt)
     
     sessions = db.exec(statement).all()
@@ -1173,7 +1181,7 @@ def get_within_end_analysis(
             total_ends += 1
             arrows_per_end_counts.append(len(end.shots))
             
-            for idx, shot in enumerate(end.shots):
+            for idx, shot in enumerate(sorted(end.shots, key=lambda s: (s.arrow_number or 0, s.id))):
                 if idx not in shots_by_position:
                     shots_by_position[idx] = []
                 shots_by_position[idx].append(float(shot.score))
@@ -1228,11 +1236,11 @@ def get_hit_probability(
     
     # Apply date filters
     if from_date:
-        start = datetime.fromisoformat(from_date)
+        start = _parse_date(from_date)
         statement = statement.where(SessionModel.date >= start)
     
     if to_date:
-        end_dt = datetime.fromisoformat(to_date)
+        end_dt = _parse_date(to_date)
         statement = statement.where(SessionModel.date <= end_dt)
     
     sessions = db.exec(statement).all()
@@ -1332,10 +1340,10 @@ def get_equipment_comparison(
         
         # Apply date filters
         if from_date:
-            start = datetime.fromisoformat(from_date)
+            start = _parse_date(from_date)
             statement = statement.where(SessionModel.date >= start)
         if to_date:
-            end_dt = datetime.fromisoformat(to_date)
+            end_dt = _parse_date(to_date)
             statement = statement.where(SessionModel.date <= end_dt)
         
         sessions = db.exec(statement).all()
@@ -1604,9 +1612,9 @@ def arrow_performance(
         round_types = [rt.strip() for rt in round_type.split(",")]
         statement = statement.where(SessionModel.round_type.in_(round_types))
     if from_date:
-        statement = statement.where(SessionModel.date >= datetime.fromisoformat(from_date))
+        statement = statement.where(SessionModel.date >= _parse_date(from_date))
     if to_date:
-        statement = statement.where(SessionModel.date <= datetime.fromisoformat(to_date))
+        statement = statement.where(SessionModel.date <= _parse_date(to_date))
 
     sessions = db.exec(statement).all()
 

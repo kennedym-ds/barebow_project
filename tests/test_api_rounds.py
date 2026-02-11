@@ -9,15 +9,17 @@ def test_list_round_presets(client: TestClient):
     
     data = response.json()
     assert isinstance(data, list)
-    assert len(data) == 6
+    assert len(data) == 21
     
     # Check that all expected rounds are present
     round_names = [r["name"] for r in data]
-    assert "WA 18m" in round_names
-    assert "WA 25m" in round_names
-    assert "WA 50m" in round_names
+    assert "WA 18m (Indoor)" in round_names
+    assert "WA 25m (Indoor)" in round_names
+    assert "WA 50m (Barebow)" in round_names
     assert "Half WA 50m" in round_names
-    assert "Indoor Field" in round_names
+    assert "IFAA Flint (Indoor)" in round_names
+    # Legacy aliases
+    assert "WA 18m" in round_names
     assert "Flint" in round_names
     
     # Verify structure of first preset

@@ -107,7 +107,7 @@ def delete_tab(tab_id: str, db: SQLModelSession = Depends(get_db)):
 
 
 @router.post("/{tab_id}/image", response_model=TabSetup)
-async def upload_tab_image(
+def upload_tab_image(
     tab_id: str,
     file: UploadFile = File(...),
     db: SQLModelSession = Depends(get_db),
@@ -127,12 +127,15 @@ async def upload_tab_image(
         if old_path.exists():
             old_path.unlink()
     
-    # Save with unique filename
-    ext = file.filename.rsplit(".", 1)[-1] if file.filename and "." in file.filename else "jpg"
+    # Save with unique filename — only allow safe extensions
+    ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp"}
+    ext = file.filename.rsplit(".", 1)[-1].lower() if file.filename and "." in file.filename else "jpg"
+    if ext not in ALLOWED_EXTENSIONS:
+        ext = "jpg"
     filename = f"{tab_id}_{uuid_mod.uuid4().hex[:8]}.{ext}"
     dest = UPLOAD_DIR / filename
     
-    contents = await file.read()
+    contents = file.file.read()
     dest.write_bytes(contents)
     
     tab.tab_image_path = filename

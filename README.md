@@ -2,6 +2,9 @@
 
 Barebow archery analysis tool. Tracks sessions, analyzes precision, calculates crawl marks for string-walking.
 
+New to BareTrack? See the [Getting Started](docs/getting-started.md) guide.  
+For a full walkthrough of every feature, see the [User Guide](docs/user-guide.md).
+
 ## Key Features
 
 *   **James Park Model Analysis**: Separates archer skill (angular deviation) from equipment drag loss using two-distance comparison.
@@ -19,7 +22,7 @@ Monorepo with a **FastAPI** backend and **React + TypeScript** frontend:
 ```
 barebow_project/
 ├── src/              # Python domain logic (models, physics, analysis)
-├── api/              # FastAPI REST API (49 REST endpoints)
+├── api/              # FastAPI REST API (49 endpoints across 9 routers)
 │   ├── main.py       # App entry point, CORS, router mounting
 │   ├── deps.py       # Database session dependency
 │   └── routers/      # Route modules (bows, arrows, tabs, sessions, etc.)
@@ -30,8 +33,10 @@ barebow_project/
 │       ├── pages/    # Route pages
 │       ├── types/    # TypeScript interfaces
 │       └── utils/    # Client-side scoring
-├── tests/            # pytest suite (models, API endpoints)
-└── tests/            # pytest suite (models, API endpoints)
+├── tests/            # pytest suite (93 tests)
+├── docs/             # User guide, getting started, developer notes
+├── desktop.py        # pywebview entry point for desktop app
+└── seed_data.py      # Generate sample sessions for testing
 ```
 
 ## Getting Started
@@ -109,7 +114,7 @@ Tests use in-memory SQLite with `StaticPool` for isolation — no database file 
 
 ## Recent Features
 
-*   **Round Presets** (17 standard rounds): Portsmouth, Bray I/II, WA indoor (18m), WA outdoor (50m, 70m), National Field, NFAA, and more.
+*   **21 Round Presets**: Portsmouth, Bray I/II, WA indoor/outdoor, Lancaster, National, IFAA Flint, and more.
 *   **CSV Data Export**: Download full session histories with shot coordinates, scores, and equipment settings.
 *   **Point-On Distance Calculator**: Find the zero-crawl distance using polynomial root-finding.
 *   **Per-Arrow Heatmaps**: Individual arrow performance with alpha-blended shot clusters, centre-of-mass markers, and optional density heatmap overlay.
@@ -117,6 +122,7 @@ Tests use in-memory SQLite with `StaticPool` for isolation — no database file 
 *   **Session Notes & Replay**: Annotate shooting sessions and replay arrow-by-arrow progress.
 *   **Dashboard Home**: Personal bests, recent performance, and equipment status.
 *   **Score Goal Simulator**: Predict scores for untested distances using the James Park Model.
+*   **Desktop App**: Standalone Windows application via pywebview + PyInstaller.
 
 ## Routes
 
@@ -131,3 +137,12 @@ Tests use in-memory SQLite with `StaticPool` for isolation — no database file 
 | `/analytics` | Analytics Dashboard | CEP50, sigma tracking, arrow precision tiers, trends |
 | `/tuning` | Tuning Wizard | Step-by-step barebow tuning guides |
 
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [Getting Started](docs/getting-started.md) | 5-minute setup and first session |
+| [User Guide](docs/user-guide.md) | Full walkthrough of every feature |
+| [FEATURES.md](FEATURES.md) | Complete feature checklist |
+| [CHANGELOG.md](CHANGELOG.md) | Version history and release notes |
+| [Frontend README](frontend/README.md) | Frontend dev setup and conventions |

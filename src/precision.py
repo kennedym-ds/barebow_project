@@ -7,9 +7,9 @@ from scipy import stats as scipy_stats
 
 def compute_drms(xs: np.ndarray, ys: np.ndarray) -> float:
     """Distance Root Mean Square — √(σ_x² + σ_y²). Contains ~63.2% of shots for circular normal."""
-    sigma_x = np.std(xs, ddof=0)
-    sigma_y = np.std(ys, ddof=0)
-    return float(np.sqrt(sigma_x**2 + sigma_y**2))
+    var_x = np.var(xs, ddof=0)
+    var_y = np.var(ys, ddof=0)
+    return float(np.sqrt(var_x + var_y))
 
 
 def compute_r95(xs: np.ndarray, ys: np.ndarray) -> float:

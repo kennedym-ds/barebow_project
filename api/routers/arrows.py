@@ -1,6 +1,6 @@
 """Arrow Setup CRUD endpoints with shaft sub-resource."""
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlmodel import Session as SQLModelSession, select
+from sqlmodel import Session as SQLModelSession, select, delete
 from typing import List
 from pydantic import BaseModel
 from src.models import ArrowSetup, ArrowShaft
@@ -124,11 +124,9 @@ def import_shafts(arrow_id: str, shafts: List[ArrowShaftData], db: SQLModelSessi
     
     db.commit()
     
-    # Refresh all to get IDs
-    for shaft in created_shafts:
-        db.refresh(shaft)
-    
-    return created_shafts
+    # Re-query all shafts in one statement instead of N refreshes
+    statement = select(ArrowShaft).where(ArrowShaft.arrow_setup_id == arrow_id)
+    return db.exec(statement).all()
 
 
 @router.get("/{arrow_id}/shafts", response_model=List[ArrowShaft])
@@ -150,11 +148,6 @@ def clear_shafts(arrow_id: str, db: SQLModelSession = Depends(get_db)):
     if not arrow:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Arrow setup not found")
     
-    statement = select(ArrowShaft).where(ArrowShaft.arrow_setup_id == arrow_id)
-    shafts = db.exec(statement).all()
-    
-    for shaft in shafts:
-        db.delete(shaft)
-    
+    db.exec(delete(ArrowShaft).where(ArrowShaft.arrow_setup_id == arrow_id))
     db.commit()
     return None

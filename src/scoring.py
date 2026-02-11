@@ -10,6 +10,10 @@ def get_ring_score(radius_cm, face_size_cm, x_is_11=False):
     """
     ring_width = face_size_cm / 20.0
     
+    # Guard against zero face size
+    if ring_width <= 0:
+        return 0
+    
     # Ring 10 outer edge = 1 * ring_width
     # Ring 9 outer edge = 2 * ring_width
     # ...

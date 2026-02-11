@@ -412,9 +412,9 @@ def test_bias_analysis_first_arrow_penalty(client: TestClient):
         end_data = {
             "end_number": end_num,
             "shots": [
-                {"score": 7, "is_x": False, "x": 3.0, "y": 2.0},    # First: worse
-                {"score": 9, "is_x": False, "x": 1.0, "y": 0.5},    # Second: better
-                {"score": 9, "is_x": False, "x": 1.2, "y": -0.3}    # Third: better
+                {"score": 7, "is_x": False, "x": 3.0, "y": 2.0, "arrow_number": 1},    # First: worse
+                {"score": 9, "is_x": False, "x": 1.0, "y": 0.5, "arrow_number": 2},    # Second: better
+                {"score": 9, "is_x": False, "x": 1.2, "y": -0.3, "arrow_number": 3}    # Third: better
             ]
         }
         client.post(f"/api/sessions/{session_id}/ends", json=end_data)
