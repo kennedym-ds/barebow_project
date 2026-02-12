@@ -5,6 +5,20 @@ Barebow archery analysis tool. Tracks sessions, analyzes precision, calculates c
 New to BareTrack? See the [Getting Started](docs/getting-started.md) guide.  
 For a full walkthrough of every feature, see the [User Guide](docs/user-guide.md).
 
+## Download
+
+**No coding required** — install BareTrack like any other Windows app:
+
+1. Download **[BareTrackSetup.exe](https://github.com/kennedym-ds/barebow_project/releases/latest/download/BareTrackSetup.exe)**
+2. Run the installer and follow the prompts
+3. Launch BareTrack from the Start Menu or Desktop shortcut
+
+**Requirements:** Windows 10 or later (64-bit). WebView2 runtime is required (pre-installed on Windows 10 1803+ and Windows 11).
+
+Your data is stored locally in `%LOCALAPPDATA%\BareTrack\baretrack.db` — nothing is sent to the cloud.
+
+> For developers who want to run from source, see [Getting Started](#getting-started) below.
+
 ## Key Features
 
 *   **James Park Model Analysis**: Separates archer skill (angular deviation) from equipment drag loss using two-distance comparison.
