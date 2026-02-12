@@ -46,6 +46,7 @@ app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"]
 app.include_router(rounds.router, prefix="/api/rounds", tags=["Rounds"])
 
 
+@app.get("/api/health")
 @app.get("/")
 def root():
     """Health check endpoint."""

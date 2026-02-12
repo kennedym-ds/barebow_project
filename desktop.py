@@ -63,6 +63,8 @@ def _mount_frontend(app):
 
     frontend_dist = os.path.join(_bundle_dir(), "frontend", "dist")
     if os.path.isdir(frontend_dist):
+        # Remove the "/" health-check route so StaticFiles can serve index.html
+        app.routes[:] = [r for r in app.routes if not (hasattr(r, 'path') and r.path == '/')]
         # html=True enables SPA fallback (index.html for unknown routes)
         app.mount("/", StaticFiles(directory=frontend_dist, html=True), name="frontend")
     else:
@@ -82,20 +84,30 @@ def _wait_for_server(host: str, port: int, timeout: float = 10.0) -> bool:
     return False
 
 
+_server_error = None  # Shared between threads
+
+
 def _start_server():
     """Run uvicorn in the current thread (called from a daemon thread)."""
-    from api.main import app  # import here so env vars are set first
+    global _server_error
+    try:
+        from api.main import app  # import here so env vars are set first
 
-    _mount_frontend(app)
+        _mount_frontend(app)
 
-    uvicorn.run(
-        app,
-        host=HOST,
-        port=PORT,
-        log_level="warning",
-        # Disable signal handlers — pywebview owns the main thread
-        # and will handle process shutdown.
-    )
+        uvicorn.run(
+            app,
+            host=HOST,
+            port=PORT,
+            log_level="warning",
+            # Disable signal handlers — pywebview owns the main thread
+            # and will handle process shutdown.
+        )
+    except Exception as exc:
+        import traceback
+        _server_error = traceback.format_exc()
+        print(f"[desktop] SERVER ERROR: {exc}")
+        traceback.print_exc()
 
 
 # ---------------------------------------------------------------------------
@@ -117,7 +129,12 @@ def main():
     server_thread.start()
 
     if not _wait_for_server(HOST, PORT):
-        print("[desktop] ERROR: Server failed to start within 10 seconds.")
+        # Give thread a moment to write its error
+        time.sleep(1)
+        if _server_error:
+            print(f"[desktop] Server traceback:\n{_server_error}")
+        else:
+            print("[desktop] ERROR: Server failed to start within 10 seconds (no traceback captured).")
         sys.exit(1)
 
     url = f"http://{HOST}:{PORT}"
