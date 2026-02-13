@@ -19,15 +19,6 @@ Your data is stored locally in `%LOCALAPPDATA%\BareTrack\baretrack.db` — nothi
 
 > For developers who want to run from source, see [Getting Started](#getting-started) below.
 
-### Latest Release: v1.0.1
-
-This release focuses on stability and polish:
-
-* Fixed a History page blank-screen issue caused by edge-case session payloads.
-* Improved session save and analytics ordering consistency (deterministic shot sequencing).
-* Hardened tab image uploads and frontend numeric input handling.
-* Includes a freshly rebuilt Windows installer (`BareTrackSetup.exe`).
-
 ## Key Features
 
 * **James Park Model Analysis**: Separates archer skill (angular deviation) from equipment drag loss using two-distance comparison.
