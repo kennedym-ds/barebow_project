@@ -1,7 +1,6 @@
 import os
 
-from sqlmodel import SQLModel, create_engine, Session
-from src.models import BowSetup, ArrowSetup, Session as SessionModel, End, Shot, ArrowShaft
+from sqlmodel import Session, SQLModel, create_engine
 
 
 def _get_db_url() -> str:
@@ -18,8 +17,10 @@ def _get_db_url() -> str:
 
 engine = create_engine(_get_db_url())
 
+
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
+
 
 def get_session():
     with Session(engine) as session:

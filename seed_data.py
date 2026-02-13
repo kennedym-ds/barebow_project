@@ -8,13 +8,19 @@ off-centre (simulating mild left-low bias).
 
 import math
 import random
-import uuid
 from datetime import datetime, timedelta
 
-from sqlmodel import Session, select, delete
-from src.db import engine, create_db_and_tables
+from sqlmodel import Session, delete, select
+
+from src.db import create_db_and_tables, engine
 from src.models import (
-    BowSetup, ArrowSetup, Session as SessionModel, End, Shot, ArrowShaft,
+    ArrowSetup,
+    BowSetup,
+    End,
+    Shot,
+)
+from src.models import (
+    Session as SessionModel,
 )
 
 random.seed(42)
@@ -28,7 +34,7 @@ FACE_RADIUS_CM = 20.0
 
 def score_from_coords(x_cm: float, y_cm: float) -> tuple[int, bool]:
     """Return (score, is_x) from coordinates in cm from centre."""
-    r = math.sqrt(x_cm ** 2 + y_cm ** 2)
+    r = math.sqrt(x_cm**2 + y_cm**2)
     if r <= X_RADIUS_CM:
         return 10, True
     for ring_idx, boundary in enumerate(RING_RADII_CM):
@@ -63,16 +69,24 @@ def main():
         if not bow:
             bow = BowSetup(
                 name="Gillo GQ 25",
-                riser_make="Gillo", riser_model="GQ 25", riser_length_in=25,
-                limbs_make="WNS", limbs_model="Axiom Alpha", limbs_length="Medium",
+                riser_make="Gillo",
+                riser_model="GQ 25",
+                riser_length_in=25,
+                limbs_make="WNS",
+                limbs_model="Axiom Alpha",
+                limbs_length="Medium",
                 limbs_marked_poundage=34,
                 draw_weight_otf=32.5,
                 brace_height_in=8.25,
-                tiller_top_mm=3.0, tiller_bottom_mm=0.0, tiller_type="positive",
-                plunger_spring_tension=3.0, plunger_center_shot_mm=0.5,
+                tiller_top_mm=3.0,
+                tiller_bottom_mm=0.0,
+                tiller_type="positive",
+                plunger_spring_tension=3.0,
+                plunger_center_shot_mm=0.5,
                 nocking_point_height_mm=6.0,
                 total_mass_g=1350,
-                string_material="BCY-X", strand_count=16,
+                string_material="BCY-X",
+                strand_count=16,
             )
             db.add(bow)
             db.commit()
@@ -81,10 +95,15 @@ def main():
 
         if not arrow:
             arrow = ArrowSetup(
-                make="Easton", model="ACE", spine=620,
-                length_in=28.5, point_weight_gr=100, total_arrow_weight_gr=285,
+                make="Easton",
+                model="ACE",
+                spine=620,
+                length_in=28.5,
+                point_weight_gr=100,
+                total_arrow_weight_gr=285,
                 shaft_diameter_mm=5.2,
-                fletching_type="Spin Wing", nock_type="Pin",
+                fletching_type="Spin Wing",
+                nock_type="Pin",
                 arrow_count=12,
             )
             db.add(arrow)
@@ -99,8 +118,8 @@ def main():
             {"days_ago": 17, "sigma": 3.1, "bias_x": -0.7, "bias_y": -0.4},
             {"days_ago": 14, "sigma": 3.0, "bias_x": -0.6, "bias_y": -0.3},
             {"days_ago": 10, "sigma": 2.9, "bias_x": -0.5, "bias_y": -0.3},
-            {"days_ago": 6,  "sigma": 2.8, "bias_x": -0.4, "bias_y": -0.2},
-            {"days_ago": 2,  "sigma": 2.7, "bias_x": -0.3, "bias_y": -0.2},
+            {"days_ago": 6, "sigma": 2.8, "bias_x": -0.4, "bias_y": -0.2},
+            {"days_ago": 2, "sigma": 2.7, "bias_x": -0.3, "bias_y": -0.2},
         ]
 
         for cfg in session_configs:
@@ -154,8 +173,10 @@ def main():
 
                 db.commit()
 
-            print(f"Session {sess_date.strftime('%Y-%m-%d')}: {session_score}/300 "
-                  f"(avg {session_score/30:.2f}) σ={cfg['sigma']}")
+            print(
+                f"Session {sess_date.strftime('%Y-%m-%d')}: {session_score}/300 "
+                f"(avg {session_score / 30:.2f}) σ={cfg['sigma']}"
+            )
 
     print("\nDone! 6 sessions seeded.")
 

@@ -1,6 +1,6 @@
 """Tests for Analysis endpoints."""
-from fastapi.testclient import TestClient
 
+from fastapi.testclient import TestClient
 
 # --- helpers ---
 
@@ -45,14 +45,18 @@ def _create_equipment(client: TestClient):
 
 # --- tests ---
 
+
 def test_predict_score(client: TestClient):
-    response = client.post("/api/analysis/predict-score", json={
-        "known_score": 9.0,
-        "known_distance_m": 18,
-        "known_face_cm": 40,
-        "target_distance_m": 30,
-        "target_face_cm": 80,
-    })
+    response = client.post(
+        "/api/analysis/predict-score",
+        json={
+            "known_score": 9.0,
+            "known_distance_m": 18,
+            "known_face_cm": 40,
+            "target_distance_m": 30,
+            "target_face_cm": 80,
+        },
+    )
     assert response.status_code == 200
     data = response.json()
     assert "predicted_score" in data
@@ -62,45 +66,61 @@ def test_predict_score(client: TestClient):
 def test_virtual_coach(client: TestClient):
     bow_id, arrow_id = _create_equipment(client)
 
-    response = client.post("/api/analysis/virtual-coach", json={
-        "bow_id": bow_id,
-        "arrow_id": arrow_id,
-        "short_score": 9.0,
-        "short_distance_m": 18,
-        "short_face_cm": 40,
-        "long_score": 7.5,
-        "long_distance_m": 50,
-        "long_face_cm": 122,
-    })
+    response = client.post(
+        "/api/analysis/virtual-coach",
+        json={
+            "bow_id": bow_id,
+            "arrow_id": arrow_id,
+            "short_score": 9.0,
+            "short_distance_m": 18,
+            "short_face_cm": 40,
+            "long_score": 7.5,
+            "long_distance_m": 50,
+            "long_face_cm": 122,
+        },
+    )
     assert response.status_code == 200
 
 
 def test_virtual_coach_bow_not_found(client: TestClient):
     _, arrow_id = _create_equipment(client)
-    response = client.post("/api/analysis/virtual-coach", json={
-        "bow_id": "nonexistent",
-        "arrow_id": arrow_id,
-        "short_score": 9, "short_distance_m": 18, "short_face_cm": 40,
-        "long_score": 7, "long_distance_m": 50, "long_face_cm": 122,
-    })
+    response = client.post(
+        "/api/analysis/virtual-coach",
+        json={
+            "bow_id": "nonexistent",
+            "arrow_id": arrow_id,
+            "short_score": 9,
+            "short_distance_m": 18,
+            "short_face_cm": 40,
+            "long_score": 7,
+            "long_distance_m": 50,
+            "long_face_cm": 122,
+        },
+    )
     assert response.status_code == 404
 
 
 def test_safety_check(client: TestClient):
     bow_id, arrow_id = _create_equipment(client)
-    response = client.post("/api/analysis/safety-check", json={
-        "bow_id": bow_id,
-        "arrow_id": arrow_id,
-    })
+    response = client.post(
+        "/api/analysis/safety-check",
+        json={
+            "bow_id": bow_id,
+            "arrow_id": arrow_id,
+        },
+    )
     assert response.status_code == 200
     assert "warnings" in response.json()
 
 
 def test_setup_efficiency(client: TestClient):
     bow_id, arrow_id = _create_equipment(client)
-    response = client.post("/api/analysis/setup-efficiency", json={
-        "bow_id": bow_id,
-        "arrow_id": arrow_id,
-        "discipline": "indoor",
-    })
+    response = client.post(
+        "/api/analysis/setup-efficiency",
+        json={
+            "bow_id": bow_id,
+            "arrow_id": arrow_id,
+            "discipline": "indoor",
+        },
+    )
     assert response.status_code == 200

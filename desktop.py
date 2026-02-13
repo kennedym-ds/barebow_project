@@ -8,8 +8,8 @@ Usage (built): dist/BareTrack/BareTrack.exe
 """
 
 import os
-import sys
 import socket
+import sys
 import threading
 import time
 
@@ -19,6 +19,7 @@ import webview
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
+
 
 def _is_frozen() -> bool:
     """True when running inside a PyInstaller bundle."""
@@ -64,7 +65,7 @@ def _mount_frontend(app):
     frontend_dist = os.path.join(_bundle_dir(), "frontend", "dist")
     if os.path.isdir(frontend_dist):
         # Remove the "/" health-check route so StaticFiles can serve index.html
-        app.routes[:] = [r for r in app.routes if not (hasattr(r, 'path') and r.path == '/')]
+        app.routes[:] = [r for r in app.routes if not (hasattr(r, "path") and r.path == "/")]
         # html=True enables SPA fallback (index.html for unknown routes)
         app.mount("/", StaticFiles(directory=frontend_dist, html=True), name="frontend")
     else:
@@ -105,6 +106,7 @@ def _start_server():
         )
     except Exception as exc:
         import traceback
+
         _server_error = traceback.format_exc()
         print(f"[desktop] SERVER ERROR: {exc}")
         traceback.print_exc()
@@ -113,6 +115,7 @@ def _start_server():
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+
 
 def main():
     # Check WebView2 availability on Windows
@@ -141,7 +144,7 @@ def main():
     print(f"[desktop] BareTrack running at {url}")
 
     # Create native window (blocks until window is closed)
-    window = webview.create_window(
+    webview.create_window(
         title="BareTrack",
         url=url,
         width=1280,

@@ -28,8 +28,8 @@ jobs:
 
       - name: Lint with ruff
         run: |
-          ruff check src/ api/ tests/
-          ruff format --check src/ api/ tests/
+          ruff check .
+          ruff format --check .
 
       - name: Run tests
         run: python -m pytest --tb=short -q
@@ -58,7 +58,7 @@ jobs:
 
       - name: ESLint
         working-directory: frontend
-        run: npm run lint
+        run: npm run lint -- --max-warnings 0
 
       - name: Build
         working-directory: frontend

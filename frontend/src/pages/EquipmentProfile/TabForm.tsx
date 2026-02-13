@@ -29,6 +29,7 @@ export default function TabForm() {
       setMarksError('');
     } else if (tab) {
       const { id, ...rest } = tab;
+      void id;
       setFormData(rest);
       setMarksError('');
     }

@@ -1,11 +1,12 @@
 """Round preset definitions and utilities for standard archery round types."""
+
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass
 class RoundPreset:
     """Standard archery round configuration."""
+
     name: str
     arrow_count: int
     ends: int
@@ -258,13 +259,13 @@ _ROUND_PRESETS: dict[str, RoundPreset] = {
 }
 
 
-def get_round_preset(name: str) -> Optional[RoundPreset]:
+def get_round_preset(name: str) -> RoundPreset | None:
     """
     Lookup a round preset by name (case-insensitive).
-    
+
     Args:
         name: The round type name (e.g., "WA 18m", "flint")
-    
+
     Returns:
         RoundPreset if found, None otherwise
     """
@@ -278,7 +279,7 @@ def get_round_preset(name: str) -> Optional[RoundPreset]:
 def get_all_presets() -> list[RoundPreset]:
     """
     Get all defined round presets.
-    
+
     Returns:
         List of all RoundPreset instances
     """
@@ -288,21 +289,21 @@ def get_all_presets() -> list[RoundPreset]:
 def get_max_score(round_type: str, arrow_count: int) -> int:
     """
     Calculate maximum possible score for a round.
-    
+
     Args:
         round_type: The round type name
         arrow_count: Actual number of arrows shot
-    
+
     Returns:
         Maximum possible score based on round type and arrow count
     """
     preset = get_round_preset(round_type)
-    
+
     if preset:
         # If arrow count matches preset, use preset max
         if arrow_count == preset.arrow_count:
             return preset.max_score
-        
+
         # Otherwise, calculate proportionally
         if preset.scoring_type == "field":
             # Field scoring: max 5 per arrow
@@ -313,7 +314,7 @@ def get_max_score(round_type: str, arrow_count: int) -> int:
         elif preset.scoring_type == "flint":
             # Flint scoring: max 5 per arrow
             return arrow_count * 5
-    
+
     # Fallback: assume WA scoring (max 10 per arrow)
     return arrow_count * 10
 
@@ -321,12 +322,12 @@ def get_max_score(round_type: str, arrow_count: int) -> int:
 def get_score_percentage(total_score: int, round_type: str, arrow_count: int) -> float:
     """
     Calculate score as percentage of maximum possible.
-    
+
     Args:
         total_score: Archer's total score
         round_type: The round type name
         arrow_count: Number of arrows shot
-    
+
     Returns:
         Percentage (0.0 to 100.0)
     """

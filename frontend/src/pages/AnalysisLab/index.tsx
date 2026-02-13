@@ -18,6 +18,7 @@ import {
   type HitProbabilityAnalysis,
   type TrendAnalysis,
 } from '../../api/analytics';
+import type { Data } from 'plotly.js';
 import type { SessionSummary } from '../../types/models';
 import { useToast } from '../../components/Toast';
 import './AnalysisLab.css';
@@ -895,7 +896,7 @@ export default function AnalysisLab() {
                   });
 
                 // Build heatmap contour traces per selected arrow
-                const heatmapTraces: any[] = [];
+                const heatmapTraces: Data[] = [];
                 if (showHeatmap) {
                   const faceCm = arrowPerfQuery.data.face_cm;
                   arrowPerfQuery.data.arrows
@@ -916,9 +917,7 @@ export default function AnalysisLab() {
                         xaxis: 'x',
                         yaxis: 'y',
                         autobinx: false,
-                        autobiny: false,
                         xbins: { start: -faceCm / 2, end: faceCm / 2, size: faceCm / 20 },
-                        ybins: { start: -faceCm / 2, end: faceCm / 2, size: faceCm / 20 },
                       });
                     });
                 }

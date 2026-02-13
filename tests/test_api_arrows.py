@@ -1,6 +1,6 @@
 """Tests for Arrow Setup CRUD endpoints."""
-from fastapi.testclient import TestClient
 
+from fastapi.testclient import TestClient
 
 ARROW_DATA = {
     "make": "Easton",

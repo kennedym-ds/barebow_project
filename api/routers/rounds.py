@@ -1,13 +1,16 @@
 """Round preset endpoints."""
+
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel
-from src.rounds import get_round_preset, get_all_presets, RoundPreset
+
+from src.rounds import RoundPreset, get_all_presets, get_round_preset
 
 router = APIRouter()
 
 
 class RoundPresetResponse(BaseModel):
     """Response schema for round preset."""
+
     name: str
     arrow_count: int
     ends: int
@@ -38,7 +41,7 @@ def _preset_to_response(preset: RoundPreset) -> RoundPresetResponse:
 def list_round_presets():
     """
     Get all available round presets.
-    
+
     Returns all standard round configurations with arrow counts,
     distances, target face sizes, and maximum scores.
     """
@@ -50,20 +53,17 @@ def list_round_presets():
 def get_round_preset_by_name(name: str):
     """
     Get a specific round preset by name.
-    
+
     Args:
         name: Round type name (case-insensitive), e.g., "WA 18m", "Flint"
-    
+
     Returns:
         Round preset details
-    
+
     Raises:
         404: Round preset not found
     """
     preset = get_round_preset(name)
     if not preset:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Round preset '{name}' not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Round preset '{name}' not found")
     return _preset_to_response(preset)

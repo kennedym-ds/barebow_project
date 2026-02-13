@@ -1,12 +1,21 @@
 """Tests for src/precision.py"""
+
 import numpy as np
-import pytest
+
 from src.precision import (
-    compute_drms, compute_r95, compute_extreme_spread,
-    compute_rayleigh_sigma_with_ci, compute_accuracy_precision_ratio,
-    compute_practice_consistency, compute_ewma, compute_within_end_trend,
-    compute_confidence_ellipse, detect_fliers, compute_hit_probability,
-    compute_multi_distance_profile, compute_equipment_comparison,
+    compute_accuracy_precision_ratio,
+    compute_confidence_ellipse,
+    compute_drms,
+    compute_equipment_comparison,
+    compute_ewma,
+    compute_extreme_spread,
+    compute_hit_probability,
+    compute_multi_distance_profile,
+    compute_practice_consistency,
+    compute_r95,
+    compute_rayleigh_sigma_with_ci,
+    compute_within_end_trend,
+    detect_fliers,
 )
 
 # Test data: clustered shots near center
@@ -105,8 +114,8 @@ class TestEWMA:
 
     def test_ucl_above_lcl(self):
         result = compute_ewma([8.0, 7.5, 8.2, 7.8, 8.5])
-        for u, l in zip(result["ucl"], result["lcl"]):
-            assert u > l
+        for upper, lower in zip(result["ucl"], result["lcl"], strict=True):
+            assert upper > lower
 
 
 class TestWithinEndTrend:
@@ -180,19 +189,13 @@ class TestEquipmentComparison:
     def test_clear_difference(self):
         a_scores = [8.5, 8.6, 8.4, 8.5, 8.7]
         b_scores = [7.0, 7.1, 6.9, 7.0, 7.2]
-        result = compute_equipment_comparison(
-            a_scores, [2.0]*5, "Setup A",
-            b_scores, [3.0]*5, "Setup B"
-        )
+        result = compute_equipment_comparison(a_scores, [2.0] * 5, "Setup A", b_scores, [3.0] * 5, "Setup B")
         assert result["score_significant"] is True
         assert result["score_diff"] > 0
 
     def test_no_difference(self):
         scores = [8.0, 8.1, 7.9, 8.0, 8.2]
-        result = compute_equipment_comparison(
-            scores, [2.5]*5, "Setup A",
-            scores, [2.5]*5, "Setup B"
-        )
+        result = compute_equipment_comparison(scores, [2.5] * 5, "Setup A", scores, [2.5] * 5, "Setup B")
         assert result["score_significant"] is False
 
     def test_insufficient_data(self):

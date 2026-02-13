@@ -44,6 +44,7 @@ export default function BowForm() {
       setFormData(DEFAULT_BOW);
     } else if (bow) {
       const { id, ...rest } = bow;
+      void id;
       setFormData(rest);
     }
   }, [selectedId, bow]);
@@ -54,7 +55,7 @@ export default function BowForm() {
 
   const handleNumericChange = (field: keyof BowSetupCreate, raw: string) => {
     const parsed = parseFloat(raw);
-    handleChange(field, isNaN(parsed) ? '' as any : parsed);
+    handleChange(field, isNaN(parsed) ? '' : parsed);
   };
 
   const handleSave = async () => {

@@ -36,6 +36,7 @@ export default function ArrowForm() {
       setFormData(DEFAULT_ARROW);
     } else if (arrow) {
       const { id, ...rest } = arrow;
+      void id;
       setFormData(rest);
     }
   }, [selectedId, arrow]);
@@ -46,7 +47,7 @@ export default function ArrowForm() {
 
   const handleNumericChange = (field: keyof ArrowSetupCreate, raw: string) => {
     const parsed = parseFloat(raw);
-    handleChange(field, isNaN(parsed) ? '' as any : parsed);
+    handleChange(field, isNaN(parsed) ? '' : parsed);
   };
 
   const handleSave = async () => {

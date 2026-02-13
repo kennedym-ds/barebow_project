@@ -1,13 +1,13 @@
-from typing import Optional
-
 import numpy as np
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import selectinload
-from sqlmodel import Session as SQLModelSession, select
+from sqlmodel import Session as SQLModelSession
+from sqlmodel import select
 
 from api.deps import get_db
 from src import precision
-from src.models import End, Session as SessionModel
+from src.models import End
+from src.models import Session as SessionModel
 from src.park_model import calculate_sigma_from_score, predict_score_at_distance
 
 from ._schemas import ConsistencyByRound, EquipmentComparison, ParkModelAnalysis, TrendAnalysis
@@ -20,9 +20,9 @@ router = APIRouter()
 def get_park_model_analysis(
     short_round_type: str = Query(..., description="Short distance round type (e.g., 'WA 18m')"),
     long_round_type: str = Query(..., description="Long distance round type (e.g., 'WA 50m')"),
-    from_date: Optional[str] = Query(None, description="Start date filter (ISO format)"),
-    to_date: Optional[str] = Query(None, description="End date filter (ISO format)"),
-    db: SQLModelSession = Depends(get_db)
+    from_date: str | None = Query(None, description="Start date filter (ISO format)"),
+    to_date: str | None = Query(None, description="End date filter (ISO format)"),
+    db: SQLModelSession = Depends(get_db),
 ):
     """
     Cross-distance analysis using the James Park Model.
@@ -30,11 +30,14 @@ def get_park_model_analysis(
     Compares archer performance at two distances to separate skill (sigma)
     from equipment drag loss.
     """
+
     # Helper function to get sessions and calculate average score
     def get_average_score_for_round(round_type: str):
-        statement = select(SessionModel).options(
-            selectinload(SessionModel.ends).selectinload(End.shots)
-        ).where(SessionModel.round_type == round_type)
+        statement = (
+            select(SessionModel)
+            .options(selectinload(SessionModel.ends).selectinload(End.shots))
+            .where(SessionModel.round_type == round_type)
+        )
 
         # Apply date filters
         if from_date:
@@ -85,7 +88,7 @@ def get_park_model_analysis(
             predicted_long_sigma=0.0,
             drag_loss_points=0.0,
             drag_loss_percent=0.0,
-            sigma_theta_mrad=0.0
+            sigma_theta_mrad=0.0,
         )
 
     # Calculate sigma at each distance
@@ -100,8 +103,7 @@ def get_park_model_analysis(
 
     # Predict long distance score from short distance skill
     predicted_long, predicted_long_sigma = predict_score_at_distance(
-        short_avg, short_dist, short_face,
-        long_dist, long_face
+        short_avg, short_dist, short_face, long_dist, long_face
     )
 
     # Calculate drag loss
@@ -121,16 +123,16 @@ def get_park_model_analysis(
         predicted_long_sigma=round(predicted_long_sigma, 2),
         drag_loss_points=round(drag_loss, 2),
         drag_loss_percent=round(drag_loss_pct, 1),
-        sigma_theta_mrad=round(sigma_theta_mrad, 3)
+        sigma_theta_mrad=round(sigma_theta_mrad, 3),
     )
 
 
 @router.get("/trends", response_model=TrendAnalysis)
 def get_trends(
-    round_type: Optional[str] = Query(None, description="Comma-separated round types to filter"),
-    from_date: Optional[str] = Query(None, description="Start date filter (ISO format)"),
-    to_date: Optional[str] = Query(None, description="End date filter (ISO format)"),
-    db: SQLModelSession = Depends(get_db)
+    round_type: str | None = Query(None, description="Comma-separated round types to filter"),
+    from_date: str | None = Query(None, description="Start date filter (ISO format)"),
+    to_date: str | None = Query(None, description="End date filter (ISO format)"),
+    db: SQLModelSession = Depends(get_db),
 ):
     """
     EWMA trends for scores and sigma, plus practice consistency.
@@ -139,9 +141,11 @@ def get_trends(
     plus coefficient of variation grouped by round type.
     """
     # Build query
-    statement = select(SessionModel).options(
-        selectinload(SessionModel.ends).selectinload(End.shots)
-    ).order_by(SessionModel.date)
+    statement = (
+        select(SessionModel)
+        .options(selectinload(SessionModel.ends).selectinload(End.shots))
+        .order_by(SessionModel.date)
+    )
 
     # Apply filters
     if round_type:
@@ -201,21 +205,35 @@ def get_trends(
         sigma_ewma_result = precision.compute_ewma(sigmas, lam=0.3)
     else:
         # Not enough data for EWMA
-        score_ewma_result = {"ewma": scores, "ucl": scores, "lcl": scores, "mean": scores[0] if scores else 0.0, "sigma": 0.0}
-        sigma_ewma_result = {"ewma": sigmas, "ucl": sigmas, "lcl": sigmas, "mean": sigmas[0] if sigmas else 0.0, "sigma": 0.0}
+        score_ewma_result = {
+            "ewma": scores,
+            "ucl": scores,
+            "lcl": scores,
+            "mean": scores[0] if scores else 0.0,
+            "sigma": 0.0,
+        }
+        sigma_ewma_result = {
+            "ewma": sigmas,
+            "ucl": sigmas,
+            "lcl": sigmas,
+            "mean": sigmas[0] if sigmas else 0.0,
+            "sigma": 0.0,
+        }
 
     # Compute consistency per round type
     consistency_list = []
     for rt, total_scores in by_round_type.items():
         consistency_result = precision.compute_practice_consistency(total_scores)
-        consistency_list.append(ConsistencyByRound(
-            round_type=rt,
-            cv=consistency_result["cv"],
-            mean=consistency_result["mean"],
-            std=consistency_result["std"],
-            interpretation=consistency_result["interpretation"],
-            session_count=len(total_scores)
-        ))
+        consistency_list.append(
+            ConsistencyByRound(
+                round_type=rt,
+                cv=consistency_result["cv"],
+                mean=consistency_result["mean"],
+                std=consistency_result["std"],
+                interpretation=consistency_result["interpretation"],
+                session_count=len(total_scores),
+            )
+        )
 
     return TrendAnalysis(
         dates=dates,
@@ -228,20 +246,20 @@ def get_trends(
         sigma_ewma=sigma_ewma_result["ewma"],
         sigma_ucl=sigma_ewma_result["ucl"],
         sigma_lcl=sigma_ewma_result["lcl"],
-        consistency=consistency_list
+        consistency=consistency_list,
     )
 
 
 @router.get("/equipment-comparison", response_model=EquipmentComparison)
 def get_equipment_comparison(
-    setup_a_bow_id: Optional[str] = Query(None, description="Bow ID for setup A"),
-    setup_a_arrow_id: Optional[str] = Query(None, description="Arrow ID for setup A"),
-    setup_b_bow_id: Optional[str] = Query(None, description="Bow ID for setup B"),
-    setup_b_arrow_id: Optional[str] = Query(None, description="Arrow ID for setup B"),
-    round_type: Optional[str] = Query(None, description="Filter to specific round type"),
-    from_date: Optional[str] = Query(None, description="Start date filter (ISO format)"),
-    to_date: Optional[str] = Query(None, description="End date filter (ISO format)"),
-    db: SQLModelSession = Depends(get_db)
+    setup_a_bow_id: str | None = Query(None, description="Bow ID for setup A"),
+    setup_a_arrow_id: str | None = Query(None, description="Arrow ID for setup A"),
+    setup_b_bow_id: str | None = Query(None, description="Bow ID for setup B"),
+    setup_b_arrow_id: str | None = Query(None, description="Arrow ID for setup B"),
+    round_type: str | None = Query(None, description="Filter to specific round type"),
+    from_date: str | None = Query(None, description="Start date filter (ISO format)"),
+    to_date: str | None = Query(None, description="End date filter (ISO format)"),
+    db: SQLModelSession = Depends(get_db),
 ):
     """
     Compare two equipment setups statistically.
@@ -249,12 +267,13 @@ def get_equipment_comparison(
     Performs Welch's t-test on scores and sigmas to determine if there's
     a significant difference between two bow/arrow configurations.
     """
-    def get_setup_stats(bow_id: Optional[str], arrow_id: Optional[str]):
+
+    def get_setup_stats(bow_id: str | None, arrow_id: str | None):
         """Helper to get sessions and compute stats for one setup."""
         statement = select(SessionModel).options(
             selectinload(SessionModel.ends).selectinload(End.shots),
             selectinload(SessionModel.bow),
-            selectinload(SessionModel.arrow)
+            selectinload(SessionModel.arrow),
         )
 
         # Filter by equipment
@@ -320,10 +339,7 @@ def get_equipment_comparison(
     b_scores, b_sigmas, b_name, b_count = get_setup_stats(setup_b_bow_id, setup_b_arrow_id)
 
     # Use precision module for comparison
-    comparison_result = precision.compute_equipment_comparison(
-        a_scores, a_sigmas, a_name,
-        b_scores, b_sigmas, b_name
-    )
+    comparison_result = precision.compute_equipment_comparison(a_scores, a_sigmas, a_name, b_scores, b_sigmas, b_name)
 
     return EquipmentComparison(
         setup_a=comparison_result["setup_a"],
@@ -337,5 +353,5 @@ def get_equipment_comparison(
         sigma_p_value=comparison_result["sigma_p_value"],
         score_significant=comparison_result["score_significant"],
         sigma_significant=comparison_result["sigma_significant"],
-        interpretation=comparison_result["interpretation"]
+        interpretation=comparison_result["interpretation"],
     )

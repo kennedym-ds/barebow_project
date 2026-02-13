@@ -1,11 +1,13 @@
 """Test fixtures and configuration for API tests."""
+
 import pytest
 from fastapi.testclient import TestClient
-from sqlmodel import SQLModel, create_engine, Session as SQLModelSession
 from sqlalchemy.pool import StaticPool
+from sqlmodel import Session as SQLModelSession
+from sqlmodel import SQLModel, create_engine
 
 # Import all models to ensure they're registered with SQLModel.metadata
-from src.models import BowSetup, ArrowSetup, ArrowShaft, TabSetup, Session as SessionModel, End, Shot
+from src.models import ArrowSetup, ArrowShaft, BowSetup, End, Session, Shot, TabSetup  # noqa: F401
 
 
 @pytest.fixture(name="client")
@@ -19,8 +21,8 @@ def client_fixture():
     )
     SQLModel.metadata.create_all(test_engine)
 
-    from api.main import app
     from api.deps import get_db
+    from api.main import app
 
     def get_db_override():
         with SQLModelSession(test_engine) as session:

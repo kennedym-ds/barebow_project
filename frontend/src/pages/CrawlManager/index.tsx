@@ -9,6 +9,8 @@ interface MarkRow {
   crawl: number;
 }
 
+const EMPTY_CHART: CrawlPoint[] = [];
+
 function getMarkInstruction(crawlMm: number, tabMarks: number[]): string {
   if (tabMarks.length === 0) return '';
   const closest = tabMarks.reduce((prev, curr) =>
@@ -41,6 +43,7 @@ export default function CrawlManager() {
 
   const { data: tabs } = useTabs();
   const calculateCrawl = useCalculateCrawl();
+  const { mutate: mutateCrawl } = calculateCrawl;
   const uploadImage = useUploadTabImage();
   const deleteImage = useDeleteTabImage();
   const updateTab = useUpdateTab();
@@ -72,7 +75,7 @@ export default function CrawlManager() {
     debounceRef.current = setTimeout(() => {
       const validMarks = marks.filter(m => m.distance > 0 && !isNaN(m.distance) && !isNaN(m.crawl));
       if (validMarks.length >= 2) {
-        calculateCrawl.mutate({
+        mutateCrawl({
           known_distances: validMarks.map(m => m.distance),
           known_crawls: validMarks.map(m => m.crawl),
           min_dist: 5,
@@ -82,9 +85,12 @@ export default function CrawlManager() {
       }
     }, 400);
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
-  }, [marks]);
+  }, [marks, mutateCrawl]);
 
-  const chartData: CrawlPoint[] = calculateCrawl.data?.chart || [];
+  const chartData = useMemo(
+    () => calculateCrawl.data?.chart ?? EMPTY_CHART,
+    [calculateCrawl.data?.chart],
+  );
 
   const predictedCrawl = useMemo(() => {
     if (chartData.length === 0) return null;

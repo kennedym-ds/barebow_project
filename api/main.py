@@ -1,4 +1,5 @@
 """FastAPI main application for BareTrack."""
+
 import logging
 import time
 from contextlib import asynccontextmanager
@@ -6,8 +7,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+
+from api.routers import analysis, analytics, arrows, bows, crawls, rounds, scoring, sessions, tabs
 from src.db import create_db_and_tables
-from api.routers import bows, arrows, tabs, sessions, scoring, analysis, crawls, analytics, rounds
 
 logger = logging.getLogger("baretrack")
 logging.basicConfig(
@@ -31,7 +33,7 @@ app = FastAPI(
     title="BareTrack API",
     description="REST API for BareTrack archery management system",
     version="1.0.2",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 # CORS Configuration
@@ -62,6 +64,7 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
     """Catch-all for unhandled exceptions — log and return 500."""
     logger.exception("Unhandled error on %s %s", request.method, request.url.path)
     return JSONResponse(status_code=500, content={"detail": "Internal server error"})
+
 
 # Mount routers
 app.include_router(bows.router, prefix="/api/bows", tags=["Bow Setups"])

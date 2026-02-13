@@ -1,11 +1,11 @@
 from datetime import datetime
-from typing import List, Optional
 
 from pydantic import BaseModel
 
 
 class SessionSummaryStats(BaseModel):
     """Session summary with computed statistics."""
+
     session_id: str
     date: datetime
     round_type: str
@@ -18,17 +18,18 @@ class SessionSummaryStats(BaseModel):
     sigma_x: float
     sigma_y: float
     cep_50: float
-    bow_name: Optional[str] = None
-    arrow_name: Optional[str] = None
+    bow_name: str | None = None
+    arrow_name: str | None = None
 
 
 class ShotDetail(BaseModel):
     """Individual shot with session context."""
+
     session_id: str
     session_date: datetime
     round_type: str
     end_number: int
-    arrow_number: Optional[int] = None
+    arrow_number: int | None = None
     score: int
     is_x: bool
     x: float
@@ -38,6 +39,7 @@ class ShotDetail(BaseModel):
 
 class PersonalBest(BaseModel):
     """Personal best for a round type."""
+
     round_type: str
     total_score: int
     avg_score: float
@@ -47,6 +49,7 @@ class PersonalBest(BaseModel):
 
 class ParkModelAnalysis(BaseModel):
     """Cross-distance analysis using James Park Model."""
+
     short_round: str
     short_avg_score: float  # per-arrow average
     short_session_count: int
@@ -64,6 +67,7 @@ class ParkModelAnalysis(BaseModel):
 
 class SessionScoreContext(BaseModel):
     """Session summary with round context and scoring percentage."""
+
     session_id: str
     date: datetime
     round_type: str
@@ -75,12 +79,13 @@ class SessionScoreContext(BaseModel):
     score_percentage: float  # total_score / max_score * 100
     sigma_cm: float  # radial sigma from park model
     cep_50: float
-    preset_arrow_count: Optional[int] = None  # expected arrow count from preset
+    preset_arrow_count: int | None = None  # expected arrow count from preset
     round_complete: bool  # did they shoot the full round?
 
 
 class EndScore(BaseModel):
     """End score summary for fatigue analysis."""
+
     end_number: int
     avg_score: float
     shot_count: int
@@ -88,6 +93,7 @@ class EndScore(BaseModel):
 
 class BiasAnalysis(BaseModel):
     """Shot pattern bias and fatigue analysis."""
+
     total_shots: int
     # MPI
     mpi_x_cm: float
@@ -107,7 +113,7 @@ class BiasAnalysis(BaseModel):
     fatigue_slope: float
     fatigue_correlation: float
     fatigue_interpretation: str  # "No fatigue detected", "Mild fatigue (last ends drop ~X pts)", etc.
-    end_scores: List[EndScore]
+    end_scores: list[EndScore]
     # First arrow
     first_arrow_avg: float
     other_arrows_avg: float
@@ -117,6 +123,7 @@ class BiasAnalysis(BaseModel):
 
 class AdvancedPrecision(BaseModel):
     """Advanced precision metrics from src.precision module."""
+
     total_shots: int
     drms_cm: float
     r95_cm: float
@@ -146,6 +153,7 @@ class AdvancedPrecision(BaseModel):
 
 class ConsistencyByRound(BaseModel):
     """Practice consistency metrics per round type."""
+
     round_type: str
     cv: float
     mean: float
@@ -156,24 +164,26 @@ class ConsistencyByRound(BaseModel):
 
 class TrendAnalysis(BaseModel):
     """EWMA trends and practice consistency."""
+
     # Per-session data points (in date order)
-    dates: List[str]
-    round_types: List[str]
-    scores: List[float]  # avg arrow score per session
-    sigmas: List[float]  # sigma_r per session
+    dates: list[str]
+    round_types: list[str]
+    scores: list[float]  # avg arrow score per session
+    sigmas: list[float]  # sigma_r per session
     # EWMA
-    score_ewma: List[float]
-    score_ucl: List[float]
-    score_lcl: List[float]
-    sigma_ewma: List[float]
-    sigma_ucl: List[float]
-    sigma_lcl: List[float]
+    score_ewma: list[float]
+    score_ucl: list[float]
+    score_lcl: list[float]
+    sigma_ewma: list[float]
+    sigma_ucl: list[float]
+    sigma_lcl: list[float]
     # Consistency per round type
-    consistency: List[ConsistencyByRound]
+    consistency: list[ConsistencyByRound]
 
 
 class ShotPosition(BaseModel):
     """Shot position within end."""
+
     position: int  # 1-indexed
     avg_score: float
     count: int
@@ -181,7 +191,8 @@ class ShotPosition(BaseModel):
 
 class WithinEndAnalysis(BaseModel):
     """Within-end shot position analysis."""
-    positions: List[ShotPosition]
+
+    positions: list[ShotPosition]
     best_position: int
     worst_position: int
     interpretation: str
@@ -191,12 +202,14 @@ class WithinEndAnalysis(BaseModel):
 
 class RingProbability(BaseModel):
     """Probability of hitting a specific ring."""
+
     ring: int
     probability: float
 
 
 class HitProbabilityAnalysis(BaseModel):
     """Hit probability for each scoring ring."""
+
     round_type: str
     total_shots: int
     sigma_x_cm: float
@@ -204,12 +217,13 @@ class HitProbabilityAnalysis(BaseModel):
     mpi_x_cm: float
     mpi_y_cm: float
     face_size_cm: int
-    ring_probs: List[RingProbability]
+    ring_probs: list[RingProbability]
     expected_score: float
 
 
 class EquipmentComparison(BaseModel):
     """Statistical comparison of two equipment setups."""
+
     setup_a: str
     setup_b: str
     setup_a_sessions: int
@@ -226,28 +240,30 @@ class EquipmentComparison(BaseModel):
 
 class DashboardStats(BaseModel):
     """Dashboard statistics summary."""
+
     total_sessions: int
     total_arrows: int
-    days_since_last_practice: Optional[int] = None
-    last_session_score: Optional[int] = None
-    last_session_round: Optional[str] = None
-    last_session_date: Optional[str] = None
-    rolling_avg_score: Optional[float] = None
-    personal_best_score: Optional[int] = None
-    personal_best_round: Optional[str] = None
-    personal_best_date: Optional[str] = None
-    sparkline_dates: List[str]
-    sparkline_scores: List[float]
+    days_since_last_practice: int | None = None
+    last_session_score: int | None = None
+    last_session_round: str | None = None
+    last_session_date: str | None = None
+    rolling_avg_score: float | None = None
+    personal_best_score: int | None = None
+    personal_best_round: str | None = None
+    personal_best_date: str | None = None
+    sparkline_dates: list[str]
+    sparkline_scores: list[float]
 
 
 class ScoreGoalSimulation(BaseModel):
     """Result of a score-goal simulation."""
+
     goal_total_score: int
     goal_avg_arrow: float
     required_sigma_cm: float
-    current_sigma_cm: Optional[float] = None
-    current_avg_arrow: Optional[float] = None
-    sigma_improvement_pct: Optional[float] = None  # how much tighter groups need to be
+    current_sigma_cm: float | None = None
+    current_avg_arrow: float | None = None
+    sigma_improvement_pct: float | None = None  # how much tighter groups need to be
     distance_m: float
     face_cm: int
     feasible: bool  # is the goal physically achievable?
@@ -256,6 +272,7 @@ class ScoreGoalSimulation(BaseModel):
 
 class ArrowShotCoord(BaseModel):
     """Individual shot coordinates for arrow heatmap."""
+
     x: float
     y: float
     score: int
@@ -264,6 +281,7 @@ class ArrowShotCoord(BaseModel):
 
 class ArrowPerformance(BaseModel):
     """Per-arrow performance statistics."""
+
     arrow_number: int
     total_shots: int
     avg_score: float
@@ -272,17 +290,18 @@ class ArrowPerformance(BaseModel):
     x_count: int
     ten_count: int
     miss_count: int
-    shots: List[ArrowShotCoord]
+    shots: list[ArrowShotCoord]
     precision_score: float  # composite metric (lower = more precise)
-    precision_rank: int     # 1 = best precision
-    tier: str               # 'primary', 'secondary', or 'reserve'
+    precision_rank: int  # 1 = best precision
+    tier: str  # 'primary', 'secondary', or 'reserve'
 
 
 class ArrowTier(BaseModel):
     """A group of arrows with similar precision."""
-    name: str       # 'primary', 'secondary', 'reserve'
-    label: str      # 'Primary Set', 'Secondary', 'Reserve'
-    arrow_numbers: List[int]
+
+    name: str  # 'primary', 'secondary', 'reserve'
+    label: str  # 'Primary Set', 'Secondary', 'Reserve'
+    arrow_numbers: list[int]
     avg_precision_score: float
     avg_score: float
     avg_radius: float
@@ -290,13 +309,14 @@ class ArrowTier(BaseModel):
 
 class ArrowPerformanceSummary(BaseModel):
     """Arrow performance across the quiver."""
-    arrows: List[ArrowPerformance]
-    best_arrow: Optional[int] = None
-    worst_arrow: Optional[int] = None
+
+    arrows: list[ArrowPerformance]
+    best_arrow: int | None = None
+    worst_arrow: int | None = None
     total_shots_with_number: int
     total_shots_without_number: int
     interpretation: str
     face_cm: int
-    tiers: List[ArrowTier]
-    primary_set: List[int]          # recommended competition arrows
-    group_size: int                 # how many in primary set
+    tiers: list[ArrowTier]
+    primary_set: list[int]  # recommended competition arrows
+    group_size: int  # how many in primary set

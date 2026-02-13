@@ -1,13 +1,14 @@
 from datetime import datetime
-from typing import List, Optional
 
 import numpy as np
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import selectinload
-from sqlmodel import Session as SQLModelSession, select
+from sqlmodel import Session as SQLModelSession
+from sqlmodel import select
 
 from api.deps import get_db
-from src.models import End, Session as SessionModel
+from src.models import End
+from src.models import Session as SessionModel
 from src.park_model import calculate_sigma_from_score
 from src.rounds import get_round_preset
 
@@ -17,12 +18,12 @@ from ._shared import _parse_date
 router = APIRouter()
 
 
-@router.get("/summary", response_model=List[SessionSummaryStats])
+@router.get("/summary", response_model=list[SessionSummaryStats])
 def get_session_summaries(
-    round_type: Optional[str] = Query(None, description="Comma-separated round types to filter"),
-    from_date: Optional[str] = Query(None, description="Start date filter (ISO format)"),
-    to_date: Optional[str] = Query(None, description="End date filter (ISO format)"),
-    db: SQLModelSession = Depends(get_db)
+    round_type: str | None = Query(None, description="Comma-separated round types to filter"),
+    from_date: str | None = Query(None, description="Start date filter (ISO format)"),
+    to_date: str | None = Query(None, description="End date filter (ISO format)"),
+    db: SQLModelSession = Depends(get_db),
 ):
     """
     Get session summaries with computed statistics.
@@ -30,11 +31,15 @@ def get_session_summaries(
     Computes: total_score, shot_count, avg_score, mean_radius, sigma_x, sigma_y, cep_50
     """
     # Build query
-    statement = select(SessionModel).options(
-        selectinload(SessionModel.ends).selectinload(End.shots),
-        selectinload(SessionModel.bow),
-        selectinload(SessionModel.arrow)
-    ).order_by(SessionModel.date.desc())
+    statement = (
+        select(SessionModel)
+        .options(
+            selectinload(SessionModel.ends).selectinload(End.shots),
+            selectinload(SessionModel.bow),
+            selectinload(SessionModel.arrow),
+        )
+        .order_by(SessionModel.date.desc())
+    )
 
     # Apply filters
     if round_type:
@@ -71,7 +76,7 @@ def get_session_summaries(
             avg_score = total_score / shot_count
 
             # Mean radius
-            r_dists = [np.sqrt(x**2 + y**2) for x, y in zip(shots_x, shots_y)]
+            r_dists = [np.sqrt(x**2 + y**2) for x, y in zip(shots_x, shots_y, strict=True)]
             mean_radius = float(np.mean(r_dists))
 
             # Dispersion metrics
@@ -85,32 +90,34 @@ def get_session_summaries(
             sigma_y = 0.0
             cep_50 = 0.0
 
-        summaries.append(SessionSummaryStats(
-            session_id=session.id,
-            date=session.date,
-            round_type=session.round_type,
-            distance_m=session.distance_m,
-            face_cm=session.target_face_size_cm,
-            total_score=total_score,
-            shot_count=shot_count,
-            avg_score=round(avg_score, 2),
-            mean_radius=round(mean_radius, 2),
-            sigma_x=round(sigma_x, 2),
-            sigma_y=round(sigma_y, 2),
-            cep_50=round(cep_50, 2),
-            bow_name=session.bow.name if session.bow else None,
-            arrow_name=f"{session.arrow.make} {session.arrow.model}" if session.arrow else None
-        ))
+        summaries.append(
+            SessionSummaryStats(
+                session_id=session.id,
+                date=session.date,
+                round_type=session.round_type,
+                distance_m=session.distance_m,
+                face_cm=session.target_face_size_cm,
+                total_score=total_score,
+                shot_count=shot_count,
+                avg_score=round(avg_score, 2),
+                mean_radius=round(mean_radius, 2),
+                sigma_x=round(sigma_x, 2),
+                sigma_y=round(sigma_y, 2),
+                cep_50=round(cep_50, 2),
+                bow_name=session.bow.name if session.bow else None,
+                arrow_name=f"{session.arrow.make} {session.arrow.model}" if session.arrow else None,
+            )
+        )
 
     return summaries
 
 
-@router.get("/shots", response_model=List[ShotDetail])
+@router.get("/shots", response_model=list[ShotDetail])
 def get_all_shots(
-    round_type: Optional[str] = Query(None, description="Comma-separated round types to filter"),
-    from_date: Optional[str] = Query(None, description="Start date filter (ISO format)"),
-    to_date: Optional[str] = Query(None, description="End date filter (ISO format)"),
-    db: SQLModelSession = Depends(get_db)
+    round_type: str | None = Query(None, description="Comma-separated round types to filter"),
+    from_date: str | None = Query(None, description="Start date filter (ISO format)"),
+    to_date: str | None = Query(None, description="End date filter (ISO format)"),
+    db: SQLModelSession = Depends(get_db),
 ):
     """
     Get all individual shots with session context.
@@ -118,9 +125,11 @@ def get_all_shots(
     Useful for arrow consistency analysis and heatmaps.
     """
     # Build query
-    statement = select(SessionModel).options(
-        selectinload(SessionModel.ends).selectinload(End.shots)
-    ).order_by(SessionModel.date)
+    statement = (
+        select(SessionModel)
+        .options(selectinload(SessionModel.ends).selectinload(End.shots))
+        .order_by(SessionModel.date)
+    )
 
     # Apply filters
     if round_type:
@@ -142,23 +151,25 @@ def get_all_shots(
     for session in sessions:
         for end in session.ends:
             for shot in end.shots:
-                shots.append(ShotDetail(
-                    session_id=session.id,
-                    session_date=session.date,
-                    round_type=session.round_type,
-                    end_number=end.end_number,
-                    arrow_number=shot.arrow_number,
-                    score=shot.score,
-                    is_x=shot.is_x,
-                    x=shot.x,
-                    y=shot.y,
-                    face_size=session.target_face_size_cm
-                ))
+                shots.append(
+                    ShotDetail(
+                        session_id=session.id,
+                        session_date=session.date,
+                        round_type=session.round_type,
+                        end_number=end.end_number,
+                        arrow_number=shot.arrow_number,
+                        score=shot.score,
+                        is_x=shot.is_x,
+                        x=shot.x,
+                        y=shot.y,
+                        face_size=session.target_face_size_cm,
+                    )
+                )
 
     return shots
 
 
-@router.get("/personal-bests", response_model=List[PersonalBest])
+@router.get("/personal-bests", response_model=list[PersonalBest])
 def get_personal_bests(db: SQLModelSession = Depends(get_db)):
     """
     Get personal bests grouped by round type.
@@ -166,9 +177,11 @@ def get_personal_bests(db: SQLModelSession = Depends(get_db)):
     Returns the highest scoring session for each round type.
     """
     # Get all sessions with ends and shots
-    statement = select(SessionModel).options(
-        selectinload(SessionModel.ends).selectinload(End.shots)
-    ).order_by(SessionModel.date)
+    statement = (
+        select(SessionModel)
+        .options(selectinload(SessionModel.ends).selectinload(End.shots))
+        .order_by(SessionModel.date)
+    )
 
     sessions = db.exec(statement).all()
 
@@ -193,7 +206,7 @@ def get_personal_bests(db: SQLModelSession = Depends(get_db)):
                 "total_score": total_score,
                 "avg_score": round(avg_score, 2),
                 "date": session.date,
-                "session_id": session.id
+                "session_id": session.id,
             }
 
     # Convert to list of PersonalBest objects
@@ -205,12 +218,12 @@ def get_personal_bests(db: SQLModelSession = Depends(get_db)):
     return pbs
 
 
-@router.get("/score-context", response_model=List[SessionScoreContext])
+@router.get("/score-context", response_model=list[SessionScoreContext])
 def get_score_context(
-    round_type: Optional[str] = Query(None, description="Comma-separated round types to filter"),
-    from_date: Optional[str] = Query(None, description="Start date filter (ISO format)"),
-    to_date: Optional[str] = Query(None, description="End date filter (ISO format)"),
-    db: SQLModelSession = Depends(get_db)
+    round_type: str | None = Query(None, description="Comma-separated round types to filter"),
+    from_date: str | None = Query(None, description="Start date filter (ISO format)"),
+    to_date: str | None = Query(None, description="End date filter (ISO format)"),
+    db: SQLModelSession = Depends(get_db),
 ):
     """
     Get session summaries with round context (max score, percentage, completion status).
@@ -218,9 +231,11 @@ def get_score_context(
     Adds round preset information to show how close the archer is to a perfect score.
     """
     # Build query (reuse pattern from summary endpoint)
-    statement = select(SessionModel).options(
-        selectinload(SessionModel.ends).selectinload(End.shots)
-    ).order_by(SessionModel.date.desc())
+    statement = (
+        select(SessionModel)
+        .options(selectinload(SessionModel.ends).selectinload(End.shots))
+        .order_by(SessionModel.date.desc())
+    )
 
     # Apply filters
     if round_type:
@@ -275,26 +290,28 @@ def get_score_context(
 
         # Calculate CEP 50
         if shot_count > 1:
-            r_dists = [np.sqrt(x**2 + y**2) for x, y in zip(shots_x, shots_y)]
+            r_dists = [np.sqrt(x**2 + y**2) for x, y in zip(shots_x, shots_y, strict=True)]
             cep_50 = float(np.percentile(r_dists, 50))
         else:
             cep_50 = 0.0
 
-        results.append(SessionScoreContext(
-            session_id=session.id,
-            date=session.date,
-            round_type=session.round_type,
-            distance_m=session.distance_m,
-            total_score=total_score,
-            shot_count=shot_count,
-            avg_score=round(avg_score, 2),
-            max_score=max_score,
-            score_percentage=round(score_percentage, 1),
-            sigma_cm=round(sigma_cm, 2),
-            cep_50=round(cep_50, 2),
-            preset_arrow_count=preset_arrow_count,
-            round_complete=round_complete
-        ))
+        results.append(
+            SessionScoreContext(
+                session_id=session.id,
+                date=session.date,
+                round_type=session.round_type,
+                distance_m=session.distance_m,
+                total_score=total_score,
+                shot_count=shot_count,
+                avg_score=round(avg_score, 2),
+                max_score=max_score,
+                score_percentage=round(score_percentage, 1),
+                sigma_cm=round(sigma_cm, 2),
+                cep_50=round(cep_50, 2),
+                preset_arrow_count=preset_arrow_count,
+                round_complete=round_complete,
+            )
+        )
 
     return results
 
@@ -312,9 +329,11 @@ def get_dashboard_stats(db: SQLModelSession = Depends(get_db)):
     - Sparkline data (last 20 sessions)
     """
     # Load all sessions with eager loading
-    statement = select(SessionModel).options(
-        selectinload(SessionModel.ends).selectinload(End.shots)
-    ).order_by(SessionModel.date.desc())
+    statement = (
+        select(SessionModel)
+        .options(selectinload(SessionModel.ends).selectinload(End.shots))
+        .order_by(SessionModel.date.desc())
+    )
 
     sessions = db.exec(statement).all()
 
@@ -332,7 +351,7 @@ def get_dashboard_stats(db: SQLModelSession = Depends(get_db)):
             personal_best_round=None,
             personal_best_date=None,
             sparkline_dates=[],
-            sparkline_scores=[]
+            sparkline_scores=[],
         )
 
     # Calculate total arrows across all sessions
@@ -393,5 +412,5 @@ def get_dashboard_stats(db: SQLModelSession = Depends(get_db)):
         personal_best_round=best_session.round_type,
         personal_best_date=best_session.date.isoformat(),
         sparkline_dates=sparkline_dates,
-        sparkline_scores=sparkline_scores
+        sparkline_scores=sparkline_scores,
     )

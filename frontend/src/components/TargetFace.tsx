@@ -196,7 +196,7 @@ export default function TargetFace({
         type: 'scatter',
         x: shots.map(s => s.x),
         y: shots.map(s => s.y),
-        mode: 'markers+text' as any,
+        mode: 'text+markers' as const,
         marker: {
           color: shots.map(s => s.color || '#00FF00'),
           size: 18,
@@ -205,7 +205,7 @@ export default function TargetFace({
         },
         text: shots.map(s => s.arrow_number?.toString() || ''),
         textfont: { color: 'black', size: 11 },
-        textposition: 'middle center' as any,
+        textposition: 'middle center' as const,
         hovertext: shots.map(s => `Arrow #${s.arrow_number || '?'}: ${s.score}`),
         hoverinfo: 'text',
       } as Data);
@@ -217,16 +217,16 @@ export default function TargetFace({
         type: 'scatter',
         x: centroids.map(c => c.x),
         y: centroids.map(c => c.y),
-        mode: 'markers+text' as any,
+        mode: 'text+markers' as const,
         marker: {
-          symbol: 'x' as any,
+          symbol: 'x' as const,
           color: centroids.map(c => c.color),
           size: 16,
           line: { color: 'black', width: 2 },
         },
         text: centroids.map(c => c.label),
         textfont: { color: 'black', size: 10 },
-        textposition: 'top center' as any,
+        textposition: 'top center' as const,
         hovertext: centroids.map(c => `${c.label} centre`),
         hoverinfo: 'text',
       } as Data);
@@ -241,9 +241,9 @@ export default function TargetFace({
         type: 'scatter',
         x: [medianX],
         y: [medianY],
-        mode: 'markers' as any,
+        mode: 'markers' as const,
         marker: {
-          symbol: 'cross' as any,
+          symbol: 'cross' as const,
           color: 'red',
           size: 25,
           line: { color: 'black', width: 3 },
@@ -254,7 +254,7 @@ export default function TargetFace({
     }
 
     return data;
-  }, [shots, maxR, showMedianCenter, markerOpacity, centroids, extraTraces]);
+  }, [shots, showMedianCenter, markerOpacity, centroids, extraTraces]);
 
   const layout: Partial<Layout> = useMemo(() => ({
     shapes,

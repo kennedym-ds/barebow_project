@@ -1,15 +1,23 @@
-from typing import Optional
-
 import numpy as np
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import selectinload
-from sqlmodel import Session as SQLModelSession, select
+from sqlmodel import Session as SQLModelSession
+from sqlmodel import select
 
 from api.deps import get_db
 from src import precision
-from src.models import End, Session as SessionModel
+from src.models import End
+from src.models import Session as SessionModel
 
-from ._schemas import AdvancedPrecision, BiasAnalysis, EndScore, HitProbabilityAnalysis, RingProbability, ShotPosition, WithinEndAnalysis
+from ._schemas import (
+    AdvancedPrecision,
+    BiasAnalysis,
+    EndScore,
+    HitProbabilityAnalysis,
+    RingProbability,
+    ShotPosition,
+    WithinEndAnalysis,
+)
 from ._shared import _parse_date
 
 router = APIRouter()
@@ -17,10 +25,10 @@ router = APIRouter()
 
 @router.get("/bias-analysis", response_model=BiasAnalysis)
 def get_bias_analysis(
-    round_type: Optional[str] = Query(None, description="Comma-separated round types to filter"),
-    from_date: Optional[str] = Query(None, description="Start date filter (ISO format)"),
-    to_date: Optional[str] = Query(None, description="End date filter (ISO format)"),
-    db: SQLModelSession = Depends(get_db)
+    round_type: str | None = Query(None, description="Comma-separated round types to filter"),
+    from_date: str | None = Query(None, description="Start date filter (ISO format)"),
+    to_date: str | None = Query(None, description="End date filter (ISO format)"),
+    db: SQLModelSession = Depends(get_db),
 ):
     """
     Analyze shot pattern bias and performance trends.
@@ -34,9 +42,11 @@ def get_bias_analysis(
     import math
 
     # Build query
-    statement = select(SessionModel).options(
-        selectinload(SessionModel.ends).selectinload(End.shots)
-    ).order_by(SessionModel.date)
+    statement = (
+        select(SessionModel)
+        .options(selectinload(SessionModel.ends).selectinload(End.shots))
+        .order_by(SessionModel.date)
+    )
 
     # Apply filters
     if round_type:
@@ -111,7 +121,7 @@ def get_bias_analysis(
             first_arrow_avg=0.0,
             other_arrows_avg=0.0,
             first_arrow_penalty=0.0,
-            first_arrow_interpretation="No first-arrow effect"
+            first_arrow_interpretation="No first-arrow effect",
         )
 
     # Calculate average face size for normalization
@@ -162,11 +172,7 @@ def get_bias_analysis(
     for end_num in sorted(end_data.keys()):
         scores = end_data[end_num]
         avg_score = float(np.mean(scores))
-        end_scores_list.append(EndScore(
-            end_number=end_num,
-            avg_score=round(avg_score, 2),
-            shot_count=len(scores)
-        ))
+        end_scores_list.append(EndScore(end_number=end_num, avg_score=round(avg_score, 2), shot_count=len(scores)))
 
     # Calculate fatigue correlation and slope
     if len(end_scores_list) > 1:
@@ -234,16 +240,16 @@ def get_bias_analysis(
         first_arrow_avg=round(first_avg, 2),
         other_arrows_avg=round(other_avg, 2),
         first_arrow_penalty=round(first_penalty, 2),
-        first_arrow_interpretation=first_interp
+        first_arrow_interpretation=first_interp,
     )
 
 
 @router.get("/advanced-precision", response_model=AdvancedPrecision)
 def get_advanced_precision(
-    round_type: Optional[str] = Query(None, description="Comma-separated round types to filter"),
-    from_date: Optional[str] = Query(None, description="Start date filter (ISO format)"),
-    to_date: Optional[str] = Query(None, description="End date filter (ISO format)"),
-    db: SQLModelSession = Depends(get_db)
+    round_type: str | None = Query(None, description="Comma-separated round types to filter"),
+    from_date: str | None = Query(None, description="Start date filter (ISO format)"),
+    to_date: str | None = Query(None, description="End date filter (ISO format)"),
+    db: SQLModelSession = Depends(get_db),
 ):
     """
     Compute advanced precision metrics for filtered shot set.
@@ -252,9 +258,11 @@ def get_advanced_precision(
     accuracy/precision decomposition, confidence ellipse, and flier detection.
     """
     # Build query
-    statement = select(SessionModel).options(
-        selectinload(SessionModel.ends).selectinload(End.shots)
-    ).order_by(SessionModel.date)
+    statement = (
+        select(SessionModel)
+        .options(selectinload(SessionModel.ends).selectinload(End.shots))
+        .order_by(SessionModel.date)
+    )
 
     # Apply filters
     if round_type:
@@ -287,13 +295,27 @@ def get_advanced_precision(
 
     if total_shots == 0:
         return AdvancedPrecision(
-            total_shots=0, drms_cm=0.0, r95_cm=0.0, extreme_spread_cm=0.0,
-            rayleigh_sigma=0.0, rayleigh_ci_lower=0.0, rayleigh_ci_upper=0.0,
-            accuracy_pct=0.0, precision_pct=0.0, accuracy_precision_interpretation="No data",
-            ellipse_center_x=0.0, ellipse_center_y=0.0, ellipse_semi_major=0.0,
-            ellipse_semi_minor=0.0, ellipse_angle_deg=0.0, ellipse_correlation=0.0,
-            flier_count=0, flier_pct=0.0, clean_sigma=0.0, full_sigma=0.0,
-            flier_interpretation="No data"
+            total_shots=0,
+            drms_cm=0.0,
+            r95_cm=0.0,
+            extreme_spread_cm=0.0,
+            rayleigh_sigma=0.0,
+            rayleigh_ci_lower=0.0,
+            rayleigh_ci_upper=0.0,
+            accuracy_pct=0.0,
+            precision_pct=0.0,
+            accuracy_precision_interpretation="No data",
+            ellipse_center_x=0.0,
+            ellipse_center_y=0.0,
+            ellipse_semi_major=0.0,
+            ellipse_semi_minor=0.0,
+            ellipse_angle_deg=0.0,
+            ellipse_correlation=0.0,
+            flier_count=0,
+            flier_pct=0.0,
+            clean_sigma=0.0,
+            full_sigma=0.0,
+            flier_interpretation="No data",
         )
 
     xs = np.array(all_x)
@@ -336,16 +358,16 @@ def get_advanced_precision(
         flier_pct=flier_result["flier_pct"],
         clean_sigma=flier_result["clean_sigma"],
         full_sigma=flier_result["full_sigma"],
-        flier_interpretation=flier_result["interpretation"]
+        flier_interpretation=flier_result["interpretation"],
     )
 
 
 @router.get("/within-end", response_model=WithinEndAnalysis)
 def get_within_end_analysis(
-    round_type: Optional[str] = Query(None, description="Comma-separated round types to filter"),
-    from_date: Optional[str] = Query(None, description="Start date filter (ISO format)"),
-    to_date: Optional[str] = Query(None, description="End date filter (ISO format)"),
-    db: SQLModelSession = Depends(get_db)
+    round_type: str | None = Query(None, description="Comma-separated round types to filter"),
+    from_date: str | None = Query(None, description="Start date filter (ISO format)"),
+    to_date: str | None = Query(None, description="End date filter (ISO format)"),
+    db: SQLModelSession = Depends(get_db),
 ):
     """
     Within-end shot position analysis.
@@ -354,9 +376,11 @@ def get_within_end_analysis(
     consistently score higher or lower.
     """
     # Build query
-    statement = select(SessionModel).options(
-        selectinload(SessionModel.ends).selectinload(End.shots)
-    ).order_by(SessionModel.date)
+    statement = (
+        select(SessionModel)
+        .options(selectinload(SessionModel.ends).selectinload(End.shots))
+        .order_by(SessionModel.date)
+    )
 
     # Apply filters
     if round_type:
@@ -401,11 +425,12 @@ def get_within_end_analysis(
             worst_position=0,
             interpretation="No data",
             total_ends=0,
-            arrows_per_end_mode=0
+            arrows_per_end_mode=0,
         )
 
     # Compute mode of arrows per end
     from collections import Counter
+
     arrows_per_end_mode = Counter(arrows_per_end_counts).most_common(1)[0][0] if arrows_per_end_counts else 0
 
     # Use precision module function
@@ -420,16 +445,16 @@ def get_within_end_analysis(
         worst_position=trend_result["worst_position"],
         interpretation=trend_result["interpretation"],
         total_ends=total_ends,
-        arrows_per_end_mode=arrows_per_end_mode
+        arrows_per_end_mode=arrows_per_end_mode,
     )
 
 
 @router.get("/hit-probability", response_model=HitProbabilityAnalysis)
 def get_hit_probability(
     round_type: str = Query(..., description="Round type (required)"),
-    from_date: Optional[str] = Query(None, description="Start date filter (ISO format)"),
-    to_date: Optional[str] = Query(None, description="End date filter (ISO format)"),
-    db: SQLModelSession = Depends(get_db)
+    from_date: str | None = Query(None, description="Start date filter (ISO format)"),
+    to_date: str | None = Query(None, description="End date filter (ISO format)"),
+    db: SQLModelSession = Depends(get_db),
 ):
     """
     Ring hit probability for a given round type.
@@ -438,9 +463,11 @@ def get_hit_probability(
     based on bivariate normal distribution fitted to shot data.
     """
     # Build query
-    statement = select(SessionModel).options(
-        selectinload(SessionModel.ends).selectinload(End.shots)
-    ).where(SessionModel.round_type == round_type)
+    statement = (
+        select(SessionModel)
+        .options(selectinload(SessionModel.ends).selectinload(End.shots))
+        .where(SessionModel.round_type == round_type)
+    )
 
     # Apply date filters
     if from_date:
@@ -477,7 +504,7 @@ def get_hit_probability(
             mpi_y_cm=0.0,
             face_size_cm=40,
             ring_probs=[],
-            expected_score=0.0
+            expected_score=0.0,
         )
 
     xs_arr = np.array(xs)
@@ -492,9 +519,7 @@ def get_hit_probability(
     face_size_cm = int(np.mean(face_sizes))
 
     # Compute hit probability
-    hit_prob_result = precision.compute_hit_probability(
-        sigma_x, sigma_y, mpi_x, mpi_y, face_size_cm
-    )
+    hit_prob_result = precision.compute_hit_probability(sigma_x, sigma_y, mpi_x, mpi_y, face_size_cm)
 
     ring_probs_list = [RingProbability(**rp) for rp in hit_prob_result["ring_probs"]]
 
@@ -507,5 +532,5 @@ def get_hit_probability(
         mpi_y_cm=round(mpi_y, 3),
         face_size_cm=face_size_cm,
         ring_probs=ring_probs_list,
-        expected_score=hit_prob_result["expected_score"]
+        expected_score=hit_prob_result["expected_score"],
     )

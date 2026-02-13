@@ -1,14 +1,16 @@
 """Tab Setup CRUD endpoints."""
-import os
+
 import uuid as uuid_mod
 from pathlib import Path
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
+
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.responses import FileResponse
-from sqlmodel import Session as SQLModelSession, select
-from typing import List, Optional
 from pydantic import BaseModel
-from src.models import TabSetup
+from sqlmodel import Session as SQLModelSession
+from sqlmodel import select
+
 from api.deps import get_db
+from src.models import TabSetup
 
 router = APIRouter()
 
@@ -18,6 +20,7 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 class TabSetupCreate(BaseModel):
     """Schema for creating a tab setup."""
+
     make: str = "Zniper"
     model: str = "Barebow Tab"
     marks: str = ""
@@ -25,6 +28,7 @@ class TabSetupCreate(BaseModel):
 
 class TabSetupUpdate(BaseModel):
     """Schema for updating a tab setup."""
+
     make: str | None = None
     model: str | None = None
     marks: str | None = None
@@ -32,7 +36,7 @@ class TabSetupUpdate(BaseModel):
     scale_mm_per_px: float | None = None
 
 
-@router.get("", response_model=List[TabSetup])
+@router.get("", response_model=list[TabSetup])
 def list_tabs(db: SQLModelSession = Depends(get_db)):
     """List all tab setups."""
     statement = select(TabSetup)
@@ -54,12 +58,9 @@ def create_tab(tab_data: TabSetupCreate, db: SQLModelSession = Depends(get_db)):
     """Create a new tab setup."""
     # Auto-generate name from make and model
     name = f"{tab_data.make} {tab_data.model}"
-    
-    tab = TabSetup(
-        name=name,
-        **tab_data.model_dump()
-    )
-    
+
+    tab = TabSetup(name=name, **tab_data.model_dump())
+
     db.add(tab)
     db.commit()
     db.refresh(tab)
@@ -72,16 +73,16 @@ def update_tab(tab_id: str, tab_data: TabSetupUpdate, db: SQLModelSession = Depe
     tab = db.get(TabSetup, tab_id)
     if not tab:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tab setup not found")
-    
+
     # Update only provided fields
     update_dict = tab_data.model_dump(exclude_unset=True)
     for key, value in update_dict.items():
         setattr(tab, key, value)
-    
+
     # Regenerate name if make or model changed
     if "make" in update_dict or "model" in update_dict:
         tab.name = f"{tab.make} {tab.model}"
-    
+
     db.add(tab)
     db.commit()
     db.refresh(tab)
@@ -94,13 +95,13 @@ def delete_tab(tab_id: str, db: SQLModelSession = Depends(get_db)):
     tab = db.get(TabSetup, tab_id)
     if not tab:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tab setup not found")
-    
+
     # Clean up image file if present
     if tab.tab_image_path:
         img_path = UPLOAD_DIR / tab.tab_image_path
         if img_path.exists():
             img_path.unlink()
-    
+
     db.delete(tab)
     db.commit()
     return None
@@ -116,21 +117,21 @@ def upload_tab_image(
     tab = db.get(TabSetup, tab_id)
     if not tab:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tab setup not found")
-    
+
     # Validate content type
     if file.content_type not in ("image/jpeg", "image/png", "image/webp"):
         raise HTTPException(status_code=400, detail="Only JPEG, PNG, or WebP images are accepted")
-    
+
     # Delete old image if exists
     if tab.tab_image_path:
         old_path = UPLOAD_DIR / tab.tab_image_path
         if old_path.exists():
             old_path.unlink()
-    
+
     # Enforce max upload size (10 MB)
     MAX_SIZE_MB = 10
     MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024
-    
+
     # Save with unique filename — only allow safe extensions
     ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp"}
     ext = file.filename.rsplit(".", 1)[-1].lower() if file.filename and "." in file.filename else "jpg"
@@ -138,7 +139,7 @@ def upload_tab_image(
         ext = "jpg"
     filename = f"{tab_id}_{uuid_mod.uuid4().hex[:8]}.{ext}"
     dest = UPLOAD_DIR / filename
-    
+
     # Stream in chunks to avoid memory issues with large files
     total_size = 0
     chunk_size = 1024 * 1024  # 1 MB chunks
@@ -148,17 +149,14 @@ def upload_tab_image(
                 total_size += len(chunk)
                 if total_size > MAX_SIZE_BYTES:
                     dest.unlink(missing_ok=True)
-                    raise HTTPException(
-                        status_code=413,
-                        detail=f"File too large. Maximum size: {MAX_SIZE_MB} MB"
-                    )
+                    raise HTTPException(status_code=413, detail=f"File too large. Maximum size: {MAX_SIZE_MB} MB")
                 f.write(chunk)
     except HTTPException:
         raise
     except Exception as e:
         dest.unlink(missing_ok=True)
-        raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
-    
+        raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}") from e
+
     tab.tab_image_path = filename
     db.add(tab)
     db.commit()
@@ -172,11 +170,11 @@ def get_tab_image(tab_id: str, db: SQLModelSession = Depends(get_db)):
     tab = db.get(TabSetup, tab_id)
     if not tab or not tab.tab_image_path:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No image for this tab")
-    
+
     img_path = UPLOAD_DIR / tab.tab_image_path
     if not img_path.exists():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Image file missing")
-    
+
     return FileResponse(img_path)
 
 
@@ -186,7 +184,7 @@ def delete_tab_image(tab_id: str, db: SQLModelSession = Depends(get_db)):
     tab = db.get(TabSetup, tab_id)
     if not tab:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tab setup not found")
-    
+
     if tab.tab_image_path:
         img_path = UPLOAD_DIR / tab.tab_image_path
         if img_path.exists():

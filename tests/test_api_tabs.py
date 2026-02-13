@@ -1,6 +1,6 @@
 """Tests for Tab Setup CRUD endpoints."""
-from fastapi.testclient import TestClient
 
+from fastapi.testclient import TestClient
 
 TAB_DATA = {
     "make": "Zniper",

@@ -1,5 +1,6 @@
 from src.physics import calculate_foc
 
+
 def test_calculate_foc_standard():
     # Example:
     # Arrow Length: 30"
@@ -23,6 +24,7 @@ def test_calculate_foc_standard():
     foc = calculate_foc(30, 150, 450, 10, 15)
     assert abs(foc - 14.1) < 0.2
 
+
 def test_calculate_foc_high():
     # Heavy point
     # Arrow Length: 30"
@@ -42,6 +44,7 @@ def test_calculate_foc_high():
     # FOC: (21.177 - 15) / 30 = 6.177 / 30 = 0.2059 => 20.6%
 
     assert abs(foc - 20.6) < 0.2
+
 
 def test_calculate_foc_zero():
     assert calculate_foc(0, 0, 0) == 0.0

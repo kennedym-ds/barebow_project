@@ -1,11 +1,10 @@
 """Tests for round presets module."""
-import pytest
+
 from src.rounds import (
-    get_round_preset,
     get_all_presets,
     get_max_score,
+    get_round_preset,
     get_score_percentage,
-    RoundPreset,
 )
 
 
@@ -13,7 +12,7 @@ def test_get_all_presets():
     """Test getting all round presets."""
     presets = get_all_presets()
     assert len(presets) == 21
-    
+
     names = [p.name for p in presets]
     # Check primary frontend names
     assert "WA 18m (Indoor)" in names
@@ -48,11 +47,11 @@ def test_get_round_preset_case_insensitive():
     preset = get_round_preset("wa 18m")
     assert preset is not None
     assert preset.name == "WA 18m"
-    
+
     preset = get_round_preset("FLINT")
     assert preset is not None
     assert preset.name == "Flint"
-    
+
     preset = get_round_preset("indoor field")
     assert preset is not None
     assert preset.name == "Indoor Field"
@@ -106,7 +105,7 @@ def test_get_max_score_with_preset_arrow_count():
     # WA 18m with 60 arrows
     max_score = get_max_score("WA 18m", 60)
     assert max_score == 600
-    
+
     # Indoor Field with 60 arrows
     max_score = get_max_score("Indoor Field", 60)
     assert max_score == 300
@@ -117,11 +116,11 @@ def test_get_max_score_with_custom_arrow_count():
     # WA scoring: 10 per arrow
     max_score = get_max_score("WA 18m", 30)
     assert max_score == 300  # 30 × 10
-    
+
     # Field scoring: 5 per arrow
     max_score = get_max_score("Indoor Field", 30)
     assert max_score == 150  # 30 × 5
-    
+
     # Flint scoring: 5 per arrow
     max_score = get_max_score("Flint", 28)
     assert max_score == 140  # 28 × 5
@@ -139,15 +138,15 @@ def test_get_score_percentage():
     # Perfect score
     pct = get_score_percentage(600, "WA 18m", 60)
     assert pct == 100.0
-    
+
     # Half score
     pct = get_score_percentage(300, "WA 18m", 60)
     assert pct == 50.0
-    
+
     # Field scoring
     pct = get_score_percentage(150, "Indoor Field", 60)
     assert pct == 50.0
-    
+
     # Zero score
     pct = get_score_percentage(0, "WA 18m", 60)
     assert pct == 0.0
@@ -158,7 +157,7 @@ def test_get_score_percentage_custom_arrow_count():
     # 30 arrows, 270 score out of 300 max = 90%
     pct = get_score_percentage(270, "WA 18m", 30)
     assert pct == 90.0
-    
+
     # 20 arrows field scoring, 80 score out of 100 max = 80%
     pct = get_score_percentage(80, "Indoor Field", 20)
     assert pct == 80.0
@@ -168,23 +167,21 @@ def test_preset_data_consistency():
     """Test that preset data is internally consistent."""
     for preset in get_all_presets():
         # Arrow count should equal ends × arrows_per_end
-        assert preset.arrow_count == preset.ends * preset.arrows_per_end, \
-            f"{preset.name}: arrow count mismatch"
-        
+        assert preset.arrow_count == preset.ends * preset.arrows_per_end, f"{preset.name}: arrow count mismatch"
+
         # Multi-distance rounds should have distance_m = 0
         if preset.multi_distance:
-            assert preset.distance_m == 0.0, \
-                f"{preset.name}: multi_distance rounds should have distance_m = 0"
-        
+            assert preset.distance_m == 0.0, f"{preset.name}: multi_distance rounds should have distance_m = 0"
+
         # Non-multi-distance rounds should have a positive distance
         if not preset.multi_distance:
-            assert preset.distance_m > 0, \
-                f"{preset.name}: single distance rounds should have distance_m > 0"
+            assert preset.distance_m > 0, f"{preset.name}: single distance rounds should have distance_m > 0"
 
 
 def test_all_round_types_have_valid_scoring():
     """Test that all rounds have valid scoring types."""
     valid_scoring_types = {"wa", "field", "flint"}
     for preset in get_all_presets():
-        assert preset.scoring_type in valid_scoring_types, \
+        assert preset.scoring_type in valid_scoring_types, (
             f"{preset.name}: invalid scoring_type '{preset.scoring_type}'"
+        )

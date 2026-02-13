@@ -1,4 +1,5 @@
 """Analytics aggregation endpoints — split into logical sub-modules."""
+
 from fastapi import APIRouter
 
 from .goals import router as goals_router

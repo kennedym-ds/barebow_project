@@ -1,4 +1,5 @@
 """Tests for Bow Setup CRUD endpoints."""
+
 from fastapi.testclient import TestClient
 
 
@@ -19,14 +20,14 @@ def test_create_bow(client: TestClient):
         "tiller_type": "neutral",
         "plunger_spring_tension": 12,
         "plunger_center_shot_mm": 1.5,
-        "nocking_point_height_mm": 10.0
+        "nocking_point_height_mm": 10.0,
     }
-    
+
     response = client.post("/api/bows", json=bow_data)
     if response.status_code != 201:
         print(f"Response: {response.json()}")
     assert response.status_code == 201
-    
+
     data = response.json()
     assert data["riser_make"] == "Hoyt"
     assert data["limbs_make"] == "SF"
@@ -52,9 +53,9 @@ def test_list_bows(client: TestClient):
         "tiller_type": "neutral",
         "plunger_spring_tension": 12,
         "plunger_center_shot_mm": 1.5,
-        "nocking_point_height_mm": 10.0
+        "nocking_point_height_mm": 10.0,
     }
-    
+
     bow2 = {
         "riser_make": "WNS",
         "riser_model": "Delta LX",
@@ -70,15 +71,15 @@ def test_list_bows(client: TestClient):
         "tiller_type": "neutral",
         "plunger_spring_tension": 10,
         "plunger_center_shot_mm": 1.0,
-        "nocking_point_height_mm": 9.0
+        "nocking_point_height_mm": 9.0,
     }
-    
+
     client.post("/api/bows", json=bow1)
     client.post("/api/bows", json=bow2)
-    
+
     response = client.get("/api/bows")
     assert response.status_code == 200
-    
+
     data = response.json()
     assert len(data) == 2
     assert data[0]["riser_make"] in ["Hoyt", "WNS"]
@@ -101,15 +102,15 @@ def test_get_bow(client: TestClient):
         "tiller_type": "neutral",
         "plunger_spring_tension": 12,
         "plunger_center_shot_mm": 1.5,
-        "nocking_point_height_mm": 10.0
+        "nocking_point_height_mm": 10.0,
     }
-    
+
     create_response = client.post("/api/bows", json=bow_data)
     bow_id = create_response.json()["id"]
-    
+
     response = client.get(f"/api/bows/{bow_id}")
     assert response.status_code == 200
-    
+
     data = response.json()
     assert data["id"] == bow_id
     assert data["draw_weight_otf"] == 32
@@ -132,17 +133,17 @@ def test_update_bow(client: TestClient):
         "tiller_type": "neutral",
         "plunger_spring_tension": 12,
         "plunger_center_shot_mm": 1.5,
-        "nocking_point_height_mm": 10.0
+        "nocking_point_height_mm": 10.0,
     }
-    
+
     create_response = client.post("/api/bows", json=bow_data)
     bow_id = create_response.json()["id"]
-    
+
     # Update draw weight
     update_data = {"draw_weight_otf": 30}
     response = client.put(f"/api/bows/{bow_id}", json=update_data)
     assert response.status_code == 200
-    
+
     data = response.json()
     assert data["draw_weight_otf"] == 30
     assert data["riser_make"] == "Hoyt"  # Other fields unchanged
@@ -165,16 +166,16 @@ def test_delete_bow(client: TestClient):
         "tiller_type": "neutral",
         "plunger_spring_tension": 12,
         "plunger_center_shot_mm": 1.5,
-        "nocking_point_height_mm": 10.0
+        "nocking_point_height_mm": 10.0,
     }
-    
+
     create_response = client.post("/api/bows", json=bow_data)
     bow_id = create_response.json()["id"]
-    
+
     # Delete the bow
     response = client.delete(f"/api/bows/{bow_id}")
     assert response.status_code == 204
-    
+
     # Verify it's gone
     get_response = client.get(f"/api/bows/{bow_id}")
     assert get_response.status_code == 404

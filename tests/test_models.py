@@ -1,6 +1,5 @@
-import pytest
-from src.models import BowSetup, ArrowSetup, LimbAlignment
-from pydantic import ValidationError
+from src.models import ArrowSetup, BowSetup, LimbAlignment
+
 
 def test_bow_setup_creation():
     bow = BowSetup(
@@ -22,12 +21,13 @@ def test_bow_setup_creation():
         plunger_center_shot_mm=0,
         nocking_point_height_mm=12,
         riser_weights="Internal 6 weights",
-        limb_alignment=LimbAlignment.STRAIGHT
+        limb_alignment=LimbAlignment.STRAIGHT,
     )
-    
+
     assert bow.draw_weight_otf == 38.5
     assert bow.tiller_type == "neutral"
     assert bow.plunger_spring_tension == 5.5
+
 
 def test_arrow_setup_creation():
     arrow = ArrowSetup(
@@ -41,10 +41,9 @@ def test_arrow_setup_creation():
         shaft_diameter_mm=9.3,
         fletching_type="Feathers",
         nock_type="Beiter",
-        arrow_count=12
+        arrow_count=12,
     )
-    
+
     assert arrow.total_arrow_weight_gr == 450
     assert arrow.shaft_diameter_mm == 9.3
     assert arrow.arrow_count == 12
-

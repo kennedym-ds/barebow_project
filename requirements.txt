@@ -12,3 +12,4 @@ httpx>=0.28,<1
 pywebview>=6.1,<7
 pyinstaller>=6.18,<7
 ruff>=0.9,<1
+pre-commit>=4.0,<5

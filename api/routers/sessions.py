@@ -1,20 +1,25 @@
 """Session and End management endpoints."""
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlmodel import Session as SQLModelSession, select
-from sqlalchemy.orm import selectinload
-from typing import List, Optional
-from pydantic import BaseModel, Field
+
 from datetime import datetime
-from src.models import Session as SessionModel, End, Shot, BowSetup, ArrowSetup
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
+from sqlalchemy.orm import selectinload
+from sqlmodel import Session as SQLModelSession
+from sqlmodel import select
+
 from api.deps import get_db
+from src.models import ArrowSetup, BowSetup, End, Shot
+from src.models import Session as SessionModel
 
 router = APIRouter()
 
 
 class SessionCreate(BaseModel):
     """Schema for creating a session."""
-    bow_id: Optional[str] = None
-    arrow_id: Optional[str] = None
+
+    bow_id: str | None = None
+    arrow_id: str | None = None
     round_type: str
     target_face_size_cm: int = Field(gt=0, description="Target face diameter in cm, must be positive")
     distance_m: float = Field(gt=0, description="Shooting distance in metres, must be positive")
@@ -23,21 +28,24 @@ class SessionCreate(BaseModel):
 
 class ShotData(BaseModel):
     """Schema for a shot within an end."""
+
     score: int = Field(ge=0, le=11, description="Shot score (0-10, or 11 for X-as-11 workflows)")
     is_x: bool = False
     x: float = Field(ge=-500, le=500, description="X coordinate in cm (sanity bounds)")
     y: float = Field(ge=-500, le=500, description="Y coordinate in cm (sanity bounds)")
-    arrow_number: Optional[int] = Field(default=None, gt=0, description="Arrow shaft number, must be positive if provided")
+    arrow_number: int | None = Field(default=None, gt=0, description="Arrow shaft number, must be positive if provided")
 
 
 class EndCreate(BaseModel):
     """Schema for creating/saving an end with shots."""
+
     end_number: int = Field(gt=0, description="End number, must be positive")
-    shots: List[ShotData]
+    shots: list[ShotData]
 
 
 class SessionSummary(BaseModel):
     """Summary view of a session for list endpoint."""
+
     id: str
     date: datetime
     round_type: str
@@ -46,11 +54,12 @@ class SessionSummary(BaseModel):
     total_score: int
     shot_count: int
     avg_score: float
-    bow_name: Optional[str] = None
-    arrow_name: Optional[str] = None
+    bow_name: str | None = None
+    arrow_name: str | None = None
 
 
 # --- Response schemas for session detail (relationships) ---
+
 
 class ShotResponse(BaseModel):
     id: str
@@ -59,15 +68,15 @@ class ShotResponse(BaseModel):
     is_x: bool
     x: float
     y: float
-    arrow_number: Optional[int] = None
-    shot_sequence: Optional[int] = None
+    arrow_number: int | None = None
+    shot_sequence: int | None = None
 
 
 class EndResponse(BaseModel):
     id: str
     session_id: str
     end_number: int
-    shots: List[ShotResponse] = []
+    shots: list[ShotResponse] = []
 
 
 class BowRef(BaseModel):
@@ -85,80 +94,86 @@ class ArrowRef(BaseModel):
 class SessionDetailResponse(BaseModel):
     id: str
     date: datetime
-    bow_id: Optional[str] = None
-    arrow_id: Optional[str] = None
+    bow_id: str | None = None
+    arrow_id: str | None = None
     round_type: str
     target_face_size_cm: int
     distance_m: float
     notes: str = ""
-    ends: List[EndResponse] = []
-    bow: Optional[BowRef] = None
-    arrow: Optional[ArrowRef] = None
+    ends: list[EndResponse] = []
+    bow: BowRef | None = None
+    arrow: ArrowRef | None = None
 
 
-@router.get("", response_model=List[SessionSummary])
-def list_sessions(
-    bow_id: Optional[str] = None,
-    arrow_id: Optional[str] = None,
-    db: SQLModelSession = Depends(get_db)
-):
+@router.get("", response_model=list[SessionSummary])
+def list_sessions(bow_id: str | None = None, arrow_id: str | None = None, db: SQLModelSession = Depends(get_db)):
     """List sessions with summary stats. Optionally filter by bow_id or arrow_id."""
-    statement = select(SessionModel).options(
-        selectinload(SessionModel.ends).selectinload(End.shots),
-        selectinload(SessionModel.bow),
-        selectinload(SessionModel.arrow)
-    ).order_by(SessionModel.date.desc())
-    
+    statement = (
+        select(SessionModel)
+        .options(
+            selectinload(SessionModel.ends).selectinload(End.shots),
+            selectinload(SessionModel.bow),
+            selectinload(SessionModel.arrow),
+        )
+        .order_by(SessionModel.date.desc())
+    )
+
     # Apply filters
     if bow_id:
         statement = statement.where(SessionModel.bow_id == bow_id)
     if arrow_id:
         statement = statement.where(SessionModel.arrow_id == arrow_id)
-    
+
     sessions = db.exec(statement).all()
-    
+
     # Calculate summaries
     summaries = []
     for session in sessions:
         total_score = 0
         shot_count = 0
-        
+
         for end in session.ends:
             for shot in end.shots:
                 total_score += shot.score
                 shot_count += 1
-        
+
         avg_score = total_score / shot_count if shot_count > 0 else 0.0
-        
-        summaries.append(SessionSummary(
-            id=session.id,
-            date=session.date,
-            round_type=session.round_type,
-            distance_m=session.distance_m,
-            target_face_size_cm=session.target_face_size_cm,
-            total_score=total_score,
-            shot_count=shot_count,
-            avg_score=round(avg_score, 2),
-            bow_name=session.bow.name if session.bow else None,
-            arrow_name=f"{session.arrow.make} {session.arrow.model}" if session.arrow else None
-        ))
-    
+
+        summaries.append(
+            SessionSummary(
+                id=session.id,
+                date=session.date,
+                round_type=session.round_type,
+                distance_m=session.distance_m,
+                target_face_size_cm=session.target_face_size_cm,
+                total_score=total_score,
+                shot_count=shot_count,
+                avg_score=round(avg_score, 2),
+                bow_name=session.bow.name if session.bow else None,
+                arrow_name=f"{session.arrow.make} {session.arrow.model}" if session.arrow else None,
+            )
+        )
+
     return summaries
 
 
 @router.get("/{session_id}", response_model=SessionDetailResponse)
 def get_session(session_id: str, db: SQLModelSession = Depends(get_db)):
     """Get full session with eager-loaded ends, shots, bow, and arrow."""
-    statement = select(SessionModel).where(SessionModel.id == session_id).options(
-        selectinload(SessionModel.ends).selectinload(End.shots),
-        selectinload(SessionModel.bow),
-        selectinload(SessionModel.arrow)
+    statement = (
+        select(SessionModel)
+        .where(SessionModel.id == session_id)
+        .options(
+            selectinload(SessionModel.ends).selectinload(End.shots),
+            selectinload(SessionModel.bow),
+            selectinload(SessionModel.arrow),
+        )
     )
-    
+
     session = db.exec(statement).first()
     if not session:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
-    
+
     return SessionDetailResponse(
         id=session.id,
         date=session.date,
@@ -182,20 +197,19 @@ def get_session(session_id: str, db: SQLModelSession = Depends(get_db)):
                         x=shot.x,
                         y=shot.y,
                         arrow_number=shot.arrow_number,
-                        shot_sequence=shot.shot_sequence
+                        shot_sequence=shot.shot_sequence,
                     )
                     for shot in end.shots
-                ]
+                ],
             )
             for end in session.ends
         ],
         bow=BowRef(id=session.bow.id, name=session.bow.name) if session.bow else None,
         arrow=ArrowRef(
-            id=session.arrow.id,
-            make=session.arrow.make,
-            model=session.arrow.model,
-            spine=session.arrow.spine
-        ) if session.arrow else None
+            id=session.arrow.id, make=session.arrow.make, model=session.arrow.model, spine=session.arrow.spine
+        )
+        if session.arrow
+        else None,
     )
 
 
@@ -207,14 +221,14 @@ def create_session(session_data: SessionCreate, db: SQLModelSession = Depends(ge
         bow = db.get(BowSetup, session_data.bow_id)
         if not bow:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bow setup not found")
-    
+
     if session_data.arrow_id:
         arrow = db.get(ArrowSetup, session_data.arrow_id)
         if not arrow:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Arrow setup not found")
-    
+
     session = SessionModel(**session_data.model_dump())
-    
+
     db.add(session)
     db.commit()
     db.refresh(session)
@@ -227,7 +241,7 @@ def delete_session(session_id: str, db: SQLModelSession = Depends(get_db)):
     session = db.get(SessionModel, session_id)
     if not session:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
-    
+
     db.delete(session)
     db.commit()
     return None
@@ -239,30 +253,21 @@ def save_end(session_id: str, end_data: EndCreate, db: SQLModelSession = Depends
     session = db.get(SessionModel, session_id)
     if not session:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
-    
+
     # Create end
-    end = End(
-        session_id=session_id,
-        end_number=end_data.end_number
-    )
+    end = End(session_id=session_id, end_number=end_data.end_number)
     db.add(end)
     db.flush()  # Get the end ID
-    
+
     # Create shots with shot_sequence for deterministic ordering
     for idx, shot_data in enumerate(end_data.shots):
-        shot = Shot(
-            end_id=end.id,
-            shot_sequence=idx,
-            **shot_data.model_dump()
-        )
+        shot = Shot(end_id=end.id, shot_sequence=idx, **shot_data.model_dump())
         db.add(shot)
-    
+
     db.commit()
 
     # Reload with shots eagerly loaded
-    statement = select(End).where(End.id == end.id).options(
-        selectinload(End.shots)
-    )
+    statement = select(End).where(End.id == end.id).options(selectinload(End.shots))
     end = db.exec(statement).one()
 
     return EndResponse(
@@ -278,8 +283,8 @@ def save_end(session_id: str, end_data: EndCreate, db: SQLModelSession = Depends
                 x=shot.x,
                 y=shot.y,
                 arrow_number=shot.arrow_number,
-                shot_sequence=shot.shot_sequence
+                shot_sequence=shot.shot_sequence,
             )
             for shot in end.shots
-        ]
+        ],
     )
