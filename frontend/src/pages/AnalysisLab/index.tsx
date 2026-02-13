@@ -49,6 +49,12 @@ export default function AnalysisLab() {
   const [goalDistance, setGoalDistance] = useState<number>(18);
   const [goalFace, setGoalFace] = useState<number>(40);
 
+  // Helper to prevent NaN propagation from empty input fields
+  const handleNumericChange = (setter: (val: number) => void, raw: string, fallback: number = 0) => {
+    const parsed = parseFloat(raw);
+    setter(isNaN(parsed) ? fallback : parsed);
+  };
+
   // Arrow Tracker state
   const [selectedArrows, setSelectedArrows] = useState<Set<number>>(new Set());
   const [showHeatmap, setShowHeatmap] = useState(false);
@@ -528,7 +534,7 @@ export default function AnalysisLab() {
                     <h3>Short Distance</h3>
                     <div className="form-group">
                       <label>Distance (m)</label>
-                      <input type="number" value={shortDistance} onChange={(e) => setShortDistance(parseFloat(e.target.value))} step="0.1" />
+                      <input type="number" value={shortDistance} onChange={(e) => handleNumericChange(setShortDistance, e.target.value, 18)} step="0.1" />
                     </div>
                     <div className="form-group">
                       <label>Target Face (cm)</label>
@@ -539,14 +545,14 @@ export default function AnalysisLab() {
                     </div>
                     <div className="form-group">
                       <label>Average Score (0-10)</label>
-                      <input type="number" value={shortScore} onChange={(e) => setShortScore(parseFloat(e.target.value))} step="0.1" min={0} max={10} />
+                      <input type="number" value={shortScore} onChange={(e) => handleNumericChange(setShortScore, e.target.value, 9.0)} step="0.1" min={0} max={10} />
                     </div>
                   </div>
                   <div className="manual-column">
                     <h3>Long Distance</h3>
                     <div className="form-group">
                       <label>Distance (m)</label>
-                      <input type="number" value={longDistance} onChange={(e) => setLongDistance(parseFloat(e.target.value))} step="0.1" />
+                      <input type="number" value={longDistance} onChange={(e) => handleNumericChange(setLongDistance, e.target.value, 50)} step="0.1" />
                     </div>
                     <div className="form-group">
                       <label>Target Face (cm)</label>
@@ -557,7 +563,7 @@ export default function AnalysisLab() {
                     </div>
                     <div className="form-group">
                       <label>Average Score (0-10)</label>
-                      <input type="number" value={longScore} onChange={(e) => setLongScore(parseFloat(e.target.value))} step="0.1" min={0} max={10} />
+                      <input type="number" value={longScore} onChange={(e) => handleNumericChange(setLongScore, e.target.value, 7.5)} step="0.1" min={0} max={10} />
                     </div>
                   </div>
                 </div>
@@ -651,15 +657,15 @@ export default function AnalysisLab() {
           <div className="goal-inputs">
             <div className="form-group">
               <label>Target Total Score</label>
-              <input type="number" value={goalScore} onChange={(e) => setGoalScore(parseInt(e.target.value) || 0)} min={0} max={300} />
+              <input type="number" value={goalScore} onChange={(e) => handleNumericChange(setGoalScore, e.target.value, 270)} min={0} max={300} />
             </div>
             <div className="form-group">
               <label>Arrows in Round</label>
-              <input type="number" value={goalArrows} onChange={(e) => setGoalArrows(parseInt(e.target.value) || 30)} min={1} />
+              <input type="number" value={goalArrows} onChange={(e) => handleNumericChange(setGoalArrows, e.target.value, 30)} min={1} />
             </div>
             <div className="form-group">
               <label>Distance (m)</label>
-              <input type="number" value={goalDistance} onChange={(e) => setGoalDistance(parseFloat(e.target.value) || 18)} />
+              <input type="number" value={goalDistance} onChange={(e) => handleNumericChange(setGoalDistance, e.target.value, 18)} />
             </div>
             <div className="form-group">
               <label>Face Size (cm)</label>

@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { useSessions, useSession, useDeleteSession } from '../../api/sessions';
-import TargetFace from '../../components/TargetFace';
 import './History.css';
+
+const TargetFace = lazy(() => import('../../components/TargetFace'));
 
 function exportSessionCSV(session: any) {
   const rows: string[] = ['Date,Round,Distance_m,Face_cm,End,Arrow,Score,X_cm,Y_cm,Is_X'];
@@ -36,9 +37,9 @@ function exportSessionCSV(session: any) {
 }
 
 export default function History() {
-  const { data: sessions, isLoading } = useSessions();
+  const { data: sessions, isLoading, isError: sessionsError, error: sessionsErrorObj } = useSessions();
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const { data: session } = useSession(selectedId);
+  const { data: session, isError: sessionError, error: sessionErrorObj } = useSession(selectedId);
   const deleteSession = useDeleteSession();
 
   // Replay state
@@ -68,6 +69,18 @@ export default function History() {
     return <div className="history-page">Loading sessions...</div>;
   }
 
+  if (sessionsError) {
+    return (
+      <div className="history-page">
+        <h1>📜 Session History</h1>
+        <div className="empty-state">
+          <p>Could not load sessions right now.</p>
+          <p style={{ color: '#b00020' }}>{String(sessionsErrorObj ?? 'Unknown error')}</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!sessions || sessions.length === 0) {
     return (
       <div className="history-page">
@@ -78,13 +91,21 @@ export default function History() {
         </div>
       </div>
     );
+
+      {sessionError && (
+        <div className="empty-state" style={{ marginTop: '1rem' }}>
+          <p>Could not load this session detail.</p>
+          <p style={{ color: '#b00020' }}>{String(sessionErrorObj ?? 'Unknown error')}</p>
+        </div>
+      )}
   }
 
-  const allShots = session?.ends.flatMap(end => end.shots) || [];
+  const sessionEnds = Array.isArray(session?.ends) ? session.ends : [];
+  const allShots = sessionEnds.flatMap(end => Array.isArray(end.shots) ? end.shots : []);
   const totalScore = allShots.reduce((sum, s) => sum + s.score, 0);
   const avgScore = allShots.length > 0 ? totalScore / allShots.length : 0;
 
-  const sortedEnds = session ? [...session.ends].sort((a, b) => a.end_number - b.end_number) : [];
+  const sortedEnds = [...sessionEnds].sort((a, b) => a.end_number - b.end_number);
   const totalEnds = sortedEnds.length;
 
   // Replay: filter shots up to current end
@@ -176,7 +197,7 @@ export default function History() {
             </div>
             <div className="stat-card">
               <div className="stat-label">Ends</div>
-              <div className="stat-value">{session.ends.length}</div>
+              <div className="stat-value">{sessionEnds.length}</div>
             </div>
           </div>
 
@@ -186,19 +207,21 @@ export default function History() {
             <div className="heatmap-section">
               <h2>🎯 Heatmap</h2>
               {allShots.length > 0 ? (
-                <TargetFace
-                  faceSizeCm={session.target_face_size_cm}
-                  faceType={session.round_type?.toLowerCase().includes('flint') ? 'Flint' : 'WA'}
-                  shots={visibleShots.map(s => ({
-                    x: s.x,
-                    y: s.y,
-                    score: s.score,
-                    arrow_number: s.arrow_number || undefined,
-                  }))}
-                  interactive={false}
-                  width={450}
-                  height={450}
-                />
+                <Suspense fallback={<p>Loading target view...</p>}>
+                  <TargetFace
+                    faceSizeCm={session.target_face_size_cm}
+                    faceType={session.round_type?.toLowerCase().includes('flint') ? 'Flint' : 'WA'}
+                    shots={visibleShots.map(s => ({
+                      x: s.x,
+                      y: s.y,
+                      score: s.score,
+                      arrow_number: s.arrow_number || undefined,
+                    }))}
+                    interactive={false}
+                    width={450}
+                    height={450}
+                  />
+                </Suspense>
               ) : (
                 <p>No shots to plot.</p>
               )}
@@ -269,13 +292,17 @@ export default function History() {
                 <tbody>
                   {session.ends
                     .sort((a, b) => a.end_number - b.end_number)
-                    .map((end, idx) => {
-                      const endScore = end.shots.reduce((sum, s) => sum + s.score, 0);
-                      const runningTotal = session.ends
+                    .map((end) => {
+                      const safeShots = Array.isArray(end.shots) ? end.shots : [];
+                      const endScore = safeShots.reduce((sum, s) => sum + s.score, 0);
+                      const runningTotal = sessionEnds
                         .filter(e => e.end_number <= end.end_number)
-                        .reduce((sum, e) => sum + e.shots.reduce((s, shot) => s + shot.score, 0), 0);
+                        .reduce((sum, e) => {
+                          const shots = Array.isArray(e.shots) ? e.shots : [];
+                          return sum + shots.reduce((s, shot) => s + shot.score, 0);
+                        }, 0);
                       
-                      const shotScores = end.shots
+                      const shotScores = safeShots
                         .map(s => s.score)
                         .sort((a, b) => b - a)
                         .join(', ');

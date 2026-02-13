@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useArrows, useArrow, useCreateArrow, useUpdateArrow, useDeleteArrow, useShafts, useDeleteShafts } from '../../api/arrows';
+import { useArrow, useCreateArrow, useUpdateArrow, useDeleteArrow, useShafts, useDeleteShafts } from '../../api/arrows';
 import EquipmentSelector from '../../components/EquipmentSelector';
 import Card from '../../components/ui/Card';
 import ShaftDataUploader from './ShaftDataUploader';

@@ -19,21 +19,30 @@ Your data is stored locally in `%LOCALAPPDATA%\BareTrack\baretrack.db` — nothi
 
 > For developers who want to run from source, see [Getting Started](#getting-started) below.
 
+### Latest Release: v1.0.1
+
+This release focuses on stability and polish:
+
+* Fixed a History page blank-screen issue caused by edge-case session payloads.
+* Improved session save and analytics ordering consistency (deterministic shot sequencing).
+* Hardened tab image uploads and frontend numeric input handling.
+* Includes a freshly rebuilt Windows installer (`BareTrackSetup.exe`).
+
 ## Key Features
 
-*   **James Park Model Analysis**: Separates archer skill (angular deviation) from equipment drag loss using two-distance comparison.
-*   **Setup Efficiency**: GPP (Grains Per Pound) and FOC calculations with safety checks.
-*   **Equipment Tracking**: Bow/arrow/tab profiles with detailed specifications (tiller, plunger, brace height, etc.).
-*   **Session Logger**: Click-on-target scoring with WA and Flint target faces.
-*   **Crawl Manager**: Polynomial regression predicts crawl marks from known distances. Includes point-on distance calculation.
-*   **Analytics**: CEP50, sigma tracking, arrow precision tiers, personal bests, bias analysis, within-end patterns.
-*   **Per-Arrow Analysis**: Heatmaps with density overlays, centre-of-mass markers, precision grouping (Primary/Secondary/Reserve).
+* **James Park Model Analysis**: Separates archer skill (angular deviation) from equipment drag loss using two-distance comparison.
+* **Setup Efficiency**: GPP (Grains Per Pound) and FOC calculations with safety checks.
+* **Equipment Tracking**: Bow/arrow/tab profiles with detailed specifications (tiller, plunger, brace height, etc.).
+* **Session Logger**: Click-on-target scoring with WA and Flint target faces.
+* **Crawl Manager**: Polynomial regression predicts crawl marks from known distances. Includes point-on distance calculation.
+* **Analytics**: CEP50, sigma tracking, arrow precision tiers, personal bests, bias analysis, within-end patterns.
+* **Per-Arrow Analysis**: Heatmaps with density overlays, centre-of-mass markers, precision grouping (Primary/Secondary/Reserve).
 
 ## Architecture
 
 Monorepo with a **FastAPI** backend and **React + TypeScript** frontend:
 
-```
+```text
 barebow_project/
 ├── src/              # Python domain logic (models, physics, analysis)
 ├── api/              # FastAPI REST API (49 endpoints across 9 routers)
@@ -57,8 +66,8 @@ barebow_project/
 
 ### Prerequisites
 
-- Python 3.11+
-- Node.js 18+
+* Python 3.11+
+* Node.js 18+
 
 ### 1. Set Up Python Virtual Environment
 
@@ -116,7 +125,7 @@ Tests use in-memory SQLite with `StaticPool` for isolation — no database file 
 ## Key Modules
 
 | Module | Purpose |
-|---|---|
+| --- | --- |
 | `src/models.py` | SQLModel tables (BowSetup, ArrowSetup, Session, End, Shot, etc.) |
 | `src/park_model.py` | James Park Model — score prediction & sigma calculation |
 | `src/physics.py` | GPP, FOC, and setup efficiency scoring |
@@ -128,20 +137,20 @@ Tests use in-memory SQLite with `StaticPool` for isolation — no database file 
 
 ## Recent Features
 
-*   **21 Round Presets**: Portsmouth, Bray I/II, WA indoor/outdoor, Lancaster, National, IFAA Flint, and more.
-*   **CSV Data Export**: Download full session histories with shot coordinates, scores, and equipment settings.
-*   **Point-On Distance Calculator**: Find the zero-crawl distance using polynomial root-finding.
-*   **Per-Arrow Heatmaps**: Individual arrow performance with alpha-blended shot clusters, centre-of-mass markers, and optional density heatmap overlay.
-*   **Arrow Precision Tiers**: Automatic classification of arrows as Primary (best), Secondary (good), or Reserve (training) based on composite precision metrics.
-*   **Session Notes & Replay**: Annotate shooting sessions and replay arrow-by-arrow progress.
-*   **Dashboard Home**: Personal bests, recent performance, and equipment status.
-*   **Score Goal Simulator**: Predict scores for untested distances using the James Park Model.
-*   **Desktop App**: Standalone Windows application via pywebview + PyInstaller.
+* **21 Round Presets**: Portsmouth, Bray I/II, WA indoor/outdoor, Lancaster, National, IFAA Flint, and more.
+* **CSV Data Export**: Download full session histories with shot coordinates, scores, and equipment settings.
+* **Point-On Distance Calculator**: Find the zero-crawl distance using polynomial root-finding.
+* **Per-Arrow Heatmaps**: Individual arrow performance with alpha-blended shot clusters, centre-of-mass markers, and optional density heatmap overlay.
+* **Arrow Precision Tiers**: Automatic classification of arrows as Primary (best), Secondary (good), or Reserve (training) based on composite precision metrics.
+* **Session Notes & Replay**: Annotate shooting sessions and replay arrow-by-arrow progress.
+* **Dashboard Home**: Personal bests, recent performance, and equipment status.
+* **Score Goal Simulator**: Predict scores for untested distances using the James Park Model.
+* **Desktop App**: Standalone Windows application via pywebview + PyInstaller.
 
 ## Routes
 
 | Route | Page | Purpose |
-|-------|------|----------|
+| --- | --- | --- |
 | `/` | Dashboard Home | Personal bests, recent sessions, equipment status |
 | `/equipment` | Equipment Profile | Manage bows, arrows, tabs, and setups |
 | `/analysis` | Analysis Lab | Park Model, score predictions, arrow performance |
@@ -154,7 +163,7 @@ Tests use in-memory SQLite with `StaticPool` for isolation — no database file 
 ## Documentation
 
 | Document | Description |
-|----------|-------------|
+| --- | --- |
 | [Getting Started](docs/getting-started.md) | 5-minute setup and first session |
 | [User Guide](docs/user-guide.md) | Full walkthrough of every feature |
 | [FEATURES.md](FEATURES.md) | Complete feature checklist |

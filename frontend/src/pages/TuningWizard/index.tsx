@@ -28,9 +28,6 @@ export default function TuningWizard() {
     );
   }
 
-  const selectedBow = bows.find(b => b.id === selectedBowId);
-  const selectedArrow = arrows.find(a => a.id === selectedArrowId);
-
   // Determine the tuning diagnosis
   let verticalStatus: 'good' | 'error' = 'good';
   let verticalMessage = '';
@@ -154,7 +151,7 @@ export default function TuningWizard() {
                 name="handedness"
                 value="right"
                 checked={handedness === 'right'}
-                onChange={(e) => setHandedness('right')}
+                  onChange={() => setHandedness('right')}
               />
               Right Handed
             </label>
@@ -164,7 +161,7 @@ export default function TuningWizard() {
                 name="handedness"
                 value="left"
                 checked={handedness === 'left'}
-                onChange={(e) => setHandedness('left')}
+                  onChange={() => setHandedness('left')}
               />
               Left Handed
             </label>

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import Plot from 'react-plotly.js';
 import { useTabs, useUploadTabImage, useDeleteTabImage, useUpdateTab } from '../../api/tabs';

@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session as SQLModelSession, select
 from sqlalchemy.orm import selectinload
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 from src.models import Session as SessionModel, End, Shot, BowSetup, ArrowSetup
 from api.deps import get_db
@@ -16,23 +16,23 @@ class SessionCreate(BaseModel):
     bow_id: Optional[str] = None
     arrow_id: Optional[str] = None
     round_type: str
-    target_face_size_cm: int
-    distance_m: float
+    target_face_size_cm: int = Field(gt=0, description="Target face diameter in cm, must be positive")
+    distance_m: float = Field(gt=0, description="Shooting distance in metres, must be positive")
     notes: str = ""
 
 
 class ShotData(BaseModel):
     """Schema for a shot within an end."""
-    score: int
+    score: int = Field(ge=0, le=11, description="Shot score (0-10, or 11 for X-as-11 workflows)")
     is_x: bool = False
-    x: float
-    y: float
-    arrow_number: Optional[int] = None
+    x: float = Field(ge=-500, le=500, description="X coordinate in cm (sanity bounds)")
+    y: float = Field(ge=-500, le=500, description="Y coordinate in cm (sanity bounds)")
+    arrow_number: Optional[int] = Field(default=None, gt=0, description="Arrow shaft number, must be positive if provided")
 
 
 class EndCreate(BaseModel):
     """Schema for creating/saving an end with shots."""
-    end_number: int
+    end_number: int = Field(gt=0, description="End number, must be positive")
     shots: List[ShotData]
 
 
@@ -60,6 +60,7 @@ class ShotResponse(BaseModel):
     x: float
     y: float
     arrow_number: Optional[int] = None
+    shot_sequence: Optional[int] = None
 
 
 class EndResponse(BaseModel):
@@ -180,7 +181,8 @@ def get_session(session_id: str, db: SQLModelSession = Depends(get_db)):
                         is_x=shot.is_x,
                         x=shot.x,
                         y=shot.y,
-                        arrow_number=shot.arrow_number
+                        arrow_number=shot.arrow_number,
+                        shot_sequence=shot.shot_sequence
                     )
                     for shot in end.shots
                 ]
@@ -246,10 +248,11 @@ def save_end(session_id: str, end_data: EndCreate, db: SQLModelSession = Depends
     db.add(end)
     db.flush()  # Get the end ID
     
-    # Create shots
-    for shot_data in end_data.shots:
+    # Create shots with shot_sequence for deterministic ordering
+    for idx, shot_data in enumerate(end_data.shots):
         shot = Shot(
             end_id=end.id,
+            shot_sequence=idx,
             **shot_data.model_dump()
         )
         db.add(shot)
@@ -274,7 +277,8 @@ def save_end(session_id: str, end_data: EndCreate, db: SQLModelSession = Depends
                 is_x=shot.is_x,
                 x=shot.x,
                 y=shot.y,
-                arrow_number=shot.arrow_number
+                arrow_number=shot.arrow_number,
+                shot_sequence=shot.shot_sequence
             )
             for shot in end.shots
         ]

@@ -52,7 +52,9 @@ export function useSaveEnd() {
         body: JSON.stringify(data) 
       }),
     onSuccess: (_, vars) => {
+      // Invalidate both detail and list queries so summaries refresh
       qc.invalidateQueries({ queryKey: ['sessions', vars.sessionId] });
+      qc.invalidateQueries({ queryKey: ['sessions'] });
     },
   });
 }

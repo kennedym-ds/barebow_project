@@ -1,6 +1,5 @@
 import { useState, ChangeEvent } from 'react';
 import { useImportShafts } from '../../api/arrows';
-import type { ArrowShaft } from '../../types/models';
 
 interface ShaftDataUploaderProps {
   arrowId: string;

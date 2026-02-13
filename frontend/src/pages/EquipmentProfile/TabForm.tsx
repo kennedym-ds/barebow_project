@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useTabs, useTab, useCreateTab, useUpdateTab, useDeleteTab } from '../../api/tabs';
+import { useTab, useCreateTab, useUpdateTab, useDeleteTab } from '../../api/tabs';
 import EquipmentSelector from '../../components/EquipmentSelector';
 import Card from '../../components/ui/Card';
 import type { TabSetupCreate } from '../../types/models';

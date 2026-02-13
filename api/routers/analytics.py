@@ -766,7 +766,13 @@ def get_bias_analysis(
             if end_num not in end_data:
                 end_data[end_num] = []
             
-            for idx, shot in enumerate(sorted(end.shots, key=lambda s: (s.arrow_number or 0, s.id))):
+            # Sort by shot_sequence if available, else fallback to (arrow_number, id) for backward compatibility
+            def shot_sort_key(s):
+                if s.shot_sequence is not None:
+                    return (s.shot_sequence, s.id)
+                return (s.arrow_number or 999999, s.id)
+            
+            for idx, shot in enumerate(sorted(end.shots, key=shot_sort_key)):
                 all_x.append(shot.x)
                 all_y.append(shot.y)
                 all_scores.append(shot.score)
@@ -1181,7 +1187,13 @@ def get_within_end_analysis(
             total_ends += 1
             arrows_per_end_counts.append(len(end.shots))
             
-            for idx, shot in enumerate(sorted(end.shots, key=lambda s: (s.arrow_number or 0, s.id))):
+            # Sort by shot_sequence if available, else fallback to (arrow_number, id) for backward compatibility
+            def shot_sort_key(s):
+                if s.shot_sequence is not None:
+                    return (s.shot_sequence, s.id)
+                return (s.arrow_number or 999999, s.id)
+            
+            for idx, shot in enumerate(sorted(end.shots, key=shot_sort_key)):
                 if idx not in shots_by_position:
                     shots_by_position[idx] = []
                 shots_by_position[idx].append(float(shot.score))
@@ -1584,9 +1596,9 @@ def score_goal_simulation(
         goal_total_score=goal_total_score,
         goal_avg_arrow=round(goal_avg_arrow, 3),
         required_sigma_cm=round(required_sigma, 3),
-        current_sigma_cm=round(current_sigma, 3) if current_sigma else None,
-        current_avg_arrow=round(current_avg, 3) if current_avg else None,
-        sigma_improvement_pct=round(sigma_improvement, 1) if sigma_improvement else None,
+        current_sigma_cm=round(current_sigma, 3) if current_sigma is not None else None,
+        current_avg_arrow=round(current_avg, 3) if current_avg is not None else None,
+        sigma_improvement_pct=round(sigma_improvement, 1) if sigma_improvement is not None else None,
         distance_m=distance_m,
         face_cm=face_cm,
         feasible=feasible,

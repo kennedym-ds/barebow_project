@@ -152,6 +152,7 @@ class Shot(SQLModel, table=True):
     y: float
     
     arrow_number: Optional[int] = Field(default=None, description="The number marked on the arrow shaft")
+    shot_sequence: Optional[int] = Field(default=None, description="Deterministic shot order within end (0-indexed)")
 
     # Relationships
     end: End = Relationship(back_populates="shots")

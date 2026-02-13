@@ -16,6 +16,26 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2026-02-13] — v1.0.1 Stability & UX Release
+
+### Fixed
+- **History Page White Screen**: Added defensive handling for missing/partial shot arrays and lazy-loaded target rendering to prevent runtime crashes when opening History.
+- **Within-End Analytics Ordering**: Uses persisted shot sequence to ensure first/last arrow metrics are deterministic and match shooting order.
+- **Session Save Robustness**: Added payload validation and deterministic shot sequencing when saving ends.
+- **Score Goal Null Handling**: Prevented `None` comparison edge case in analytics score-goal recommendations.
+- **Tab Upload Reliability**: Added chunked writes and upload size safeguards to reduce memory spikes and return clean `413` errors for oversized files.
+
+### Changed
+- **Frontend Cache Consistency**: End-save mutations now invalidate both session detail and list queries to prevent stale UI state.
+- **Numeric Input Guards**: Analysis and equipment forms now guard empty numeric fields to prevent `NaN` propagation.
+- **TypeScript Strictness Cleanup**: Resolved strict build blockers across analytics, crawl manager, tuning wizard, and equipment forms.
+
+### Build
+- Desktop packaging pipeline validated on Windows.
+- Fresh installer produced: `dist/BareTrackSetup.exe`.
+
+---
+
 ## [2026-02-11] — Deep Review & Robustness Fixes
 
 ### Fixed
@@ -189,6 +209,7 @@ Currently pre-1.0. Versions will follow [Semantic Versioning](https://semver.org
 ---
 
 [Unreleased]: https://github.com/kennedym-ds/barebow_project/compare/main...HEAD
+[2026-02-13]: https://github.com/kennedym-ds/barebow_project/compare/v2026-02-11...v1.0.1
 [2026-02-11]: https://github.com/kennedym-ds/barebow_project/compare/v2026-02-10...v2026-02-11
 [2026-02-10]: https://github.com/kennedym-ds/barebow_project/compare/v2026-02-09...v2026-02-10
 [2026-02-09]: https://github.com/kennedym-ds/barebow_project/compare/v2026-02-08...v2026-02-09

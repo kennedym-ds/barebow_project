@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useBows, useBow, useCreateBow, useUpdateBow, useDeleteBow } from '../../api/bows';
+import { useBow, useCreateBow, useUpdateBow, useDeleteBow } from '../../api/bows';
 import EquipmentSelector from '../../components/EquipmentSelector';
 import Card from '../../components/ui/Card';
 import type { BowSetupCreate } from '../../types/models';

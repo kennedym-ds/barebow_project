@@ -127,6 +127,10 @@ def upload_tab_image(
         if old_path.exists():
             old_path.unlink()
     
+    # Enforce max upload size (10 MB)
+    MAX_SIZE_MB = 10
+    MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024
+    
     # Save with unique filename — only allow safe extensions
     ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp"}
     ext = file.filename.rsplit(".", 1)[-1].lower() if file.filename and "." in file.filename else "jpg"
@@ -135,8 +139,25 @@ def upload_tab_image(
     filename = f"{tab_id}_{uuid_mod.uuid4().hex[:8]}.{ext}"
     dest = UPLOAD_DIR / filename
     
-    contents = file.file.read()
-    dest.write_bytes(contents)
+    # Stream in chunks to avoid memory issues with large files
+    total_size = 0
+    chunk_size = 1024 * 1024  # 1 MB chunks
+    try:
+        with dest.open("wb") as f:
+            while chunk := file.file.read(chunk_size):
+                total_size += len(chunk)
+                if total_size > MAX_SIZE_BYTES:
+                    dest.unlink(missing_ok=True)
+                    raise HTTPException(
+                        status_code=413,
+                        detail=f"File too large. Maximum size: {MAX_SIZE_MB} MB"
+                    )
+                f.write(chunk)
+    except HTTPException:
+        raise
+    except Exception as e:
+        dest.unlink(missing_ok=True)
+        raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
     
     tab.tab_image_path = filename
     db.add(tab)
