@@ -49,6 +49,22 @@ Use this checklist for versioned desktop releases (example: `v1.0.1`).
 - `git` alone can push commits/tags, but **cannot** create GitHub Release objects or upload release assets.
 - Release asset upload requires GitHub API/UI/CLI (or MCP integration that supports release APIs).
 
+### Agent Fallback: Non-Interactive Release Publish
+
+If `gh` auth is unavailable but Git push/pull works, agents may use the Git credential helper token with GitHub REST APIs:
+
+1. Refresh terminal PATH from Machine/User so `gh` (if installed) is discoverable.
+2. Read GitHub token via credential helper (`git credential fill` for `host=github.com`).
+3. Create or fetch release by tag via REST API (`/repos/{owner}/{repo}/releases` or `/releases/tags/{tag}`).
+4. Upload installer with uploads endpoint:
+	- `https://uploads.github.com/repos/{owner}/{repo}/releases/{id}/assets?name=BareTrackSetup.exe`
+5. Verify release URL and asset count before completion.
+
+Security notes:
+- Never print token values in logs/output.
+- Do not persist extracted tokens to files.
+- Prefer existing GitHub auth (MCP/CLI/UI) when available.
+
 ### VS Code / Plugin Path
 
 Yes — VS Code plugins can be used for this workflow:
