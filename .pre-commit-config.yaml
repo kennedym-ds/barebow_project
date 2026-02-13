@@ -17,7 +17,7 @@ repos:
     hooks:
       - id: pytest
         name: python tests
-        entry: python -m pytest --tb=short -q
+        entry: .venv/Scripts/python.exe -m pytest --tb=short -q
         language: system
         pass_filenames: false
         always_run: true
