@@ -41,6 +41,8 @@ A complete walkthrough of every feature in BareTrack — the barebow archery ana
   - [Tab Image Overlay](#tab-image-overlay)
   - [Print Crawl Card](#print-crawl-card)
 - [Tuning Wizard](#tuning-wizard)
+- [Help Page](#help-page)
+- [Dark Mode](#dark-mode)
 - [Desktop App](#desktop-app)
 - [Tips and Workflows](#tips-and-workflows)
 
@@ -50,7 +52,7 @@ A complete walkthrough of every feature in BareTrack — the barebow archery ana
 
 BareTrack is built for barebow archers who want to track their shooting, analyze precision, and manage crawl marks. It runs as a local web app — your data stays on your machine in an SQLite database file (`baretrack.db`).
 
-The app has 8 pages, accessible from the sidebar:
+The app has 9 pages, accessible from the sidebar:
 
 | Page | What It Does |
 |------|-------------|
@@ -62,6 +64,9 @@ The app has 8 pages, accessible from the sidebar:
 | **Crawl Manager** | String-walking crawl marks and predictions |
 | **Analytics** | Charts and trends across all sessions |
 | **Tuning** | Step-by-step barebow tuning guides |
+| **Help** | App guide, key concepts, and contact info |
+
+Hover over any sidebar item to see a tooltip describing what that page does.
 
 ---
 
@@ -397,6 +402,39 @@ Step-by-step guides for barebow tuning procedures. Covers common tuning workflow
 
 ---
 
+## Help Page
+
+The Help page (`/help`) provides an in-app reference:
+
+- **Page Guide** — Cards for each page in the app, describing what it does and when to use it.
+- **Key Concepts** — Explanations of archery-specific terms used in BareTrack:
+  - **James Park Model** — How BareTrack separates archer skill from equipment drag loss.
+  - **Crawl Marks** — String-walking mark positions and how polynomial regression predicts them.
+  - **Sigma** — Radial standard deviation as a distance-independent precision metric.
+  - **GPP & FOC** — Arrow efficiency metrics and safety thresholds.
+  - **CEP50** — Circular Error Probable — the radius containing 50% of your shots.
+- **Contact & Links** — Email address and GitHub repository link for support and feedback.
+
+You can reach the Help page from the sidebar (look for the **?** icon at the bottom).
+
+---
+
+## Dark Mode
+
+BareTrack supports three theme modes:
+
+| Mode | Behavior |
+|------|----------|
+| **Light** | Light background, dark text (default) |
+| **Dark** | Dark background, light text — easier on the eyes in low light |
+| **System** | Follows your OS preference (Windows dark mode, macOS appearance, etc.) |
+
+Click the theme toggle button in the sidebar footer to cycle through modes. Your preference is saved in the browser and persists across sessions.
+
+All charts, tables, cards, and form elements adapt to the selected theme.
+
+---
+
 ## Desktop App
 
 BareTrack can run as a standalone Windows desktop application using pywebview.
@@ -477,4 +515,4 @@ User data (database, uploads) is stored in `%LOCALAPPDATA%/BareTrack/` when runn
 
 ---
 
-*Last updated: 2026-02-11*
+*Last updated: 2026-02-13*

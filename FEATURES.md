@@ -1,6 +1,6 @@
 # Features
 
-Implemented features as of 2026-02-11.
+Implemented features as of 2026-02-13 (v1.0.2).
 
 ---
 
@@ -109,16 +109,29 @@ Implemented features as of 2026-02-11.
 - ✅ **Quick Actions**: Direct links to Session Logger, Equipment Profile, Analysis Lab, Crawl Manager
 
 ### Navigation
-- ✅ **Sidebar Navigation**: Persistent nav with icons + labels
-- ✅ **8 Routes**: Home, Equipment, Analysis Lab, Session Logger, History, Crawl Manager, Analytics, Tuning
+- ✅ **Sidebar Navigation**: Persistent nav with icons + labels, responsive hamburger menu for mobile
+- ✅ **Sidebar Tooltips**: Hover tooltips on each nav item explaining the page's purpose
+- ✅ **9 Routes**: Home, Equipment, Analysis Lab, Session Logger, History, Crawl Manager, Analytics, Tuning, Help
+
+---
+
+## UX & Theming
+
+- ✅ **Dark Mode**: Full dark theme via CSS custom properties with Light/Dark/System toggle in sidebar
+- ✅ **Error Boundary**: React error boundary with retry/home buttons prevents white-screen crashes
+- ✅ **Toast Notifications**: Context-based toast system (success/error/warning/info) for user feedback
+- ✅ **Help Page**: In-app guide with page descriptions, key archery concepts (Park Model, Crawl Marks, GPP/FOC), and contact info
+- ✅ **Responsive Layout**: Hamburger menu and overlay sidebar for mobile/tablet viewports
+- ✅ **Custom Favicon**: SVG target + arrow favicon with meta description and theme-color
 
 ---
 
 ## Testing & Quality
 
-- ✅ **93 Tests**: pytest suite covering models, API endpoints, Park Model, physics calculations, crawls, precision metrics
+- ✅ **120 Tests**: pytest suite covering models, API endpoints (bows, arrows, tabs, sessions, scoring, analysis, crawls, analytics), Park Model, physics, crawls, precision metrics
 - ✅ **In-Memory Testing**: StaticPool SQLite for isolated, fast tests
 - ✅ **TypeScript Strict Mode**: Zero linting errors, full type safety in frontend
+- ✅ **ESLint Flat Config**: TypeScript and React rules for consistent code style
 - ✅ **Pydantic Validation**: Strong typing on all API request/response models
 
 ---
@@ -126,18 +139,22 @@ Implemented features as of 2026-02-11.
 ## Technical Features
 
 ### Backend (FastAPI + SQLModel)
-- ✅ **49 REST Endpoints**: 9 router modules
+- ✅ **49 REST Endpoints**: 9 router modules (analytics split into 4 sub-modules)
 - ✅ **SQLite Database**: Single-file database (`baretrack.db`) with automatic schema creation
+- ✅ **Structured Logging**: Request timing middleware, global exception handler, startup/shutdown lifecycle logs
 - ✅ **CORS Configuration**: Secure cross-origin requests from frontend
 - ✅ **String UUID Primary Keys**: Cascading deletes on parent-child relationships
 - ✅ **Hot Reload**: `--reload-dir src --reload-dir api` watches only relevant directories
+- ✅ **CI/CD Pipeline**: GitHub Actions for Python 3.11/3.12 matrix + frontend build/lint/type-check
 
 ### Frontend (React + TypeScript + Vite)
 - ✅ **TanStack Query**: Optimistic updates, automatic cache invalidation, retry logic
 - ✅ **Code Splitting**: Plotly.js lazy-loaded to reduce initial bundle size
 - ✅ **Vite Proxy**: `/api` requests proxied to backend on port 8000
-- ✅ **React Router v7**: Client-side routing with 8 pages
+- ✅ **React Router v7**: Client-side routing with 9 pages
 - ✅ **Plotly.js**: Interactive charts (scatter plots, line charts, heatmaps, confidence ellipses)
+- ✅ **Dark Mode Toggle**: Light/Dark/System theme with localStorage persistence
+- ✅ **Error Boundary & Toasts**: Graceful error recovery and contextual notifications
 
 ---
 
@@ -148,6 +165,8 @@ Implemented features as of 2026-02-11.
 - ✅ **CHANGELOG**: Full feature timeline with dates
 - ✅ **Copilot Instructions**: Comprehensive developer guidance for architecture, conventions, patterns
 - ✅ **Research Artifacts**: Competitive landscape, barebow archer needs, advanced analytics proposals (clearly marked as research, not implementation)
+- ✅ **Getting Started Guide**: 5-minute setup walkthrough
+- ✅ **User Guide**: Full feature walkthrough with glossary
 
 ---
 
@@ -165,5 +184,5 @@ See `artifacts/research/barebow-archer-needs.md` for prioritized roadmap.
 
 ---
 
-**Last Updated**: 2026-02-11  
-**Test Coverage**: 93 tests passing
+**Last Updated**: 2026-02-13  
+**Test Coverage**: 120 tests passing

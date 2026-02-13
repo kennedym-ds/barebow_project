@@ -9,7 +9,7 @@ React + TypeScript frontend for the BareTrack archery tracking application.
 - **Routing**: React Router v7
 - **Data Fetching**: TanStack Query v5
 - **Visualization**: Plotly.js
-- **Styling**: CSS Modules
+- **Styling**: CSS custom properties with dark mode support
 
 ## Getting Started
 
@@ -62,10 +62,15 @@ src/
 ├── api/              # API client utilities
 │   └── client.ts     # Generic fetch wrapper
 ├── components/       # Reusable components
+│   ├── ErrorBoundary.tsx # Error boundary with retry
+│   ├── Toast.tsx     # Toast notification system
 │   ├── Layout.tsx    # Main layout with sidebar
-│   └── NavSidebar.tsx # Navigation menu
+│   └── NavSidebar.tsx # Navigation menu with tooltips & theme toggle
+├── hooks/            # Custom React hooks
+│   └── useTheme.ts   # Light/Dark/System theme management
 ├── pages/            # Route pages
 │   ├── Home.tsx
+│   ├── Help/
 │   ├── EquipmentProfile/
 │   ├── SessionLogger/
 │   ├── Analytics/
@@ -74,7 +79,7 @@ src/
 │   └── models.ts     # Domain models
 ├── App.tsx           # Root component with routing
 ├── main.tsx          # React entry point
-└── index.css         # Global styles
+└── index.css         # Global styles + dark mode CSS variables
 ```
 
 ## API Proxy
@@ -93,10 +98,11 @@ Ensure the FastAPI backend is running before starting the frontend dev server.
 - `/crawls` - Crawl Manager (barebow sight marks)
 - `/analytics` - Analytics dashboard
 - `/tuning` - Tuning Wizard
+- `/help` - Help (app guide, concepts, contact)
 
 ## Development
 
-**Recent additions**: Per-arrow heatmaps with centroids, density heatmap toggle, arrow precision tiers (Primary/Secondary/Reserve), CSV export
+**Recent additions**: Dark mode (Light/Dark/System toggle), Help page, error boundary & toasts, responsive sidebar with hamburger menu, sidebar tooltips, per-arrow heatmaps with centroids, density heatmap toggle, arrow precision tiers (Primary/Secondary/Reserve), CSV export
 
 ### Adding a New Page
 

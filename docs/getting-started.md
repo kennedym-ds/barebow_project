@@ -96,6 +96,9 @@ Your session is now saved and visible in **History** and **Analytics**.
 - **History** — See the full scorecard, replay the session end-by-end, or export to CSV.
 - **Analytics** — Score trends, precision metrics, personal bests, and more (builds up over multiple sessions).
 - **Analysis Lab** — Park Model analysis, score predictions, and per-arrow heatmaps.
+- **Help** — In-app guide explaining every page, key archery concepts, and contact info.
+
+> **Tip:** Click the theme toggle in the sidebar footer to switch between Light, Dark, and System themes.
 
 ## 6. Optional: Load Sample Data
 
@@ -120,7 +123,7 @@ If you shoot barebow with string-walking:
 
 - Read the [User Guide](user-guide.md) for a full walkthrough of every feature.
 - Check the API docs at **http://localhost:8000/docs** (Swagger UI).
-- Run the test suite with `python -m pytest` to verify everything works.
+- Run the test suite with `python -m pytest` (120 tests) to verify everything works.
 
 ## Troubleshooting
 

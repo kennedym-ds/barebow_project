@@ -7,6 +7,7 @@ Monorepo with three layers. Domain logic lives in `src/` (pure Python), the REST
 ```
 src/          → Domain: models, physics, analysis, scoring, crawls (pure Python, no web deps)
 api/          → FastAPI app: 49 endpoints across 9 routers, imports from src/
+              → analytics/ is a sub-package with 4 modules (summary, precision, trends, goals)
 frontend/     → React SPA: TanStack Query hooks, Plotly.js charts, react-router-dom v7
 desktop.py    → pywebview entry point for standalone Windows app
 ```
@@ -17,7 +18,7 @@ desktop.py    → pywebview entry point for standalone Windows app
 - **Database**: SQLite file `baretrack.db` via SQLModel. Schema auto-created on API startup via `lifespan` handler in `api/main.py`.
 - **API**: `uvicorn api.main:app --reload --reload-dir src --reload-dir api --port 8000` — Swagger at `/docs`
 - **Frontend**: `cd frontend && npm run dev` — port 5173, proxies `/api` → `localhost:8000`
-- **Tests**: `python -m pytest` — uses in-memory SQLite with `StaticPool` (no file I/O). 93 tests.
+- **Tests**: `python -m pytest` — uses in-memory SQLite with `StaticPool` (no file I/O). 120 tests.
 - **Build**: `cd frontend && npm run build` — output in `frontend/dist/`
 - **Desktop**: `python desktop.py` — launches pywebview window with embedded API server
 - **VS Code tasks**: `Dev: Start All` starts both servers. `Run Tests` is the default test task.
@@ -96,7 +97,7 @@ Each router file in `api/routers/` follows this structure:
 2. Use `db: SQLModelSession = Depends(get_db)` from `api/deps.py`
 3. All routes prefixed with `/api/{resource}` (mounted in `api/main.py`)
 4. For relationships, define explicit Pydantic response schemas (see `ShotResponse`, `EndResponse`, `SessionDetailResponse` in `sessions.py`) — don't return raw SQLModel objects with nested relationships
-5. Date parameters use `_parse_date()` helper (in `analytics.py`) to return HTTP 422 on invalid format
+5. Date parameters use `_parse_date()` helper (in `analytics/_shared.py`) to return HTTP 422 on invalid format
 6. Input validation helpers (e.g., `_validate_crawl_lists()` in `crawls.py`) raise `HTTPException` — keep validation at the router level, not in `src/`
 
 ## Frontend Patterns
