@@ -8,6 +8,10 @@
   left: 0;
   top: 0;
   overflow-y: auto;
+  z-index: 100;
+  transition: transform 0.25s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .nav-header {
@@ -26,10 +30,57 @@
   list-style: none;
   padding: 0;
   margin: 0;
+  flex: 1;
 }
 
 .nav-links li {
   margin: 0;
+}
+
+/* Nav item with tooltip */
+.nav-item-wrapper {
+  position: relative;
+}
+
+.nav-tooltip {
+  display: none;
+  position: absolute;
+  left: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: #1a1a2e;
+  color: #e0e0e8;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  white-space: nowrap;
+  max-width: 260px;
+  white-space: normal;
+  z-index: 300;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+}
+
+.nav-tooltip::before {
+  content: '';
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 5px solid transparent;
+  border-right-color: #1a1a2e;
+}
+
+.nav-item-wrapper:hover .nav-tooltip {
+  display: block;
+}
+
+/* Divider before Help */
+.nav-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0.5rem 1.5rem;
 }
 
 .nav-links a {
@@ -51,4 +102,119 @@
   color: var(--color-sidebar-active);
   border-left-color: var(--color-sidebar-active);
   font-weight: 500;
+}
+
+/* Theme toggle footer */
+.nav-footer {
+  padding: 0.75rem 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 0.5rem;
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-sidebar-text);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.theme-icon {
+  font-size: 1rem;
+}
+
+.theme-label {
+  font-weight: 500;
+}
+
+/* Hamburger button — hidden on desktop */
+.nav-hamburger {
+  display: none;
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 200;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  background: var(--color-sidebar);
+  cursor: pointer;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.hamburger-icon,
+.hamburger-icon::before,
+.hamburger-icon::after {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--color-sidebar-text);
+  border-radius: 2px;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.hamburger-icon::before,
+.hamburger-icon::after {
+  content: '';
+  position: absolute;
+  left: 0;
+}
+
+.hamburger-icon::before { top: -7px; }
+.hamburger-icon::after  { top: 7px; }
+
+.hamburger-icon.open {
+  background: transparent;
+}
+
+.hamburger-icon.open::before {
+  top: 0;
+  transform: rotate(45deg);
+}
+
+.hamburger-icon.open::after {
+  top: 0;
+  transform: rotate(-45deg);
+}
+
+.nav-overlay {
+  display: none;
+}
+
+/* Mobile: < 768px */
+@media (max-width: 768px) {
+  .nav-hamburger {
+    display: flex;
+  }
+
+  .nav-sidebar {
+    transform: translateX(-100%);
+  }
+
+  .nav-sidebar.nav-open {
+    transform: translateX(0);
+  }
+
+  .nav-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 90;
+  }
 }

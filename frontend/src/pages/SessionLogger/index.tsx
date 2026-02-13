@@ -1,5 +1,6 @@
 import { useSessionLogger } from './useSessionLogger';
 import { useCreateSession, useSaveEnd } from '../../api/sessions';
+import { useToast } from '../../components/Toast';
 import SessionConfig from './SessionConfig';
 import TargetPlot from './TargetPlot';
 import QuiverPanel from './QuiverPanel';
@@ -11,6 +12,7 @@ export default function SessionLogger() {
   const { state, actions } = useSessionLogger();
   const createSession = useCreateSession();
   const saveEnd = useSaveEnd();
+  const { toast } = useToast();
 
   const handleStartSession = async (config: {
     bowId?: string;
@@ -42,7 +44,7 @@ export default function SessionLogger() {
       });
     } catch (error) {
       console.error('Failed to create session:', error);
-      alert('Failed to create session. Please try again.');
+      toast('Failed to create session. Please try again.', 'error');
     }
   };
 
@@ -67,7 +69,7 @@ export default function SessionLogger() {
       actions.endSaved(end);
     } catch (error) {
       console.error('Failed to save end:', error);
-      alert('Failed to save end. Please try again.');
+      toast('Failed to save end. Please try again.', 'error');
     }
   };
 

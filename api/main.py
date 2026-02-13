@@ -1,24 +1,36 @@
 """FastAPI main application for BareTrack."""
+import logging
+import time
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from src.db import create_db_and_tables
 from api.routers import bows, arrows, tabs, sessions, scoring, analysis, crawls, analytics, rounds
+
+logger = logging.getLogger("baretrack")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s  %(levelname)-8s  %(name)s  %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifespan event handler - runs on startup and shutdown."""
-    # Startup
+    logger.info("BareTrack API starting up")
     create_db_and_tables()
+    logger.info("Database initialised")
     yield
-    # Shutdown (nothing to do for SQLite)
+    logger.info("BareTrack API shutting down")
 
 
 app = FastAPI(
     title="BareTrack API",
     description="REST API for BareTrack archery management system",
-    version="1.0.0",
+    version="1.0.2",
     lifespan=lifespan
 )
 
@@ -33,6 +45,23 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    """Log every request with timing."""
+    start = time.perf_counter()
+    response = await call_next(request)
+    elapsed_ms = (time.perf_counter() - start) * 1000
+    logger.info("%s %s → %s (%.0fms)", request.method, request.url.path, response.status_code, elapsed_ms)
+    return response
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    """Catch-all for unhandled exceptions — log and return 500."""
+    logger.exception("Unhandled error on %s %s", request.method, request.url.path)
+    return JSONResponse(status_code=500, content={"detail": "Internal server error"})
 
 # Mount routers
 app.include_router(bows.router, prefix="/api/bows", tags=["Bow Setups"])

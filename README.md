@@ -49,7 +49,7 @@ barebow_project/
 │       ├── pages/    # Route pages
 │       ├── types/    # TypeScript interfaces
 │       └── utils/    # Client-side scoring
-├── tests/            # pytest suite (93 tests)
+├── tests/            # pytest suite (120 tests)
 ├── docs/             # User guide, getting started, developer notes
 ├── desktop.py        # pywebview entry point for desktop app
 └── seed_data.py      # Generate sample sessions for testing
@@ -130,6 +130,10 @@ Tests use in-memory SQLite with `StaticPool` for isolation — no database file 
 
 ## Recent Features
 
+* **Dark Mode**: Full dark theme with Light/Dark/System toggle — respects OS preference or manual override.
+* **Help Page**: In-app guide with page descriptions, key archery concepts, and contact info.
+* **Error Boundary & Toasts**: Graceful error recovery and contextual toast notifications.
+* **CI/CD Pipeline**: GitHub Actions for Python 3.11/3.12 + frontend build/lint/type-check.
 * **21 Round Presets**: Portsmouth, Bray I/II, WA indoor/outdoor, Lancaster, National, IFAA Flint, and more.
 * **CSV Data Export**: Download full session histories with shot coordinates, scores, and equipment settings.
 * **Point-On Distance Calculator**: Find the zero-crawl distance using polynomial root-finding.
@@ -152,6 +156,7 @@ Tests use in-memory SQLite with `StaticPool` for isolation — no database file 
 | `/crawls` | Crawl Manager | Crawl mark prediction with sight tape, Point-On calculator |
 | `/analytics` | Analytics Dashboard | CEP50, sigma tracking, arrow precision tiers, trends |
 | `/tuning` | Tuning Wizard | Step-by-step barebow tuning guides |
+| `/help` | Help | App guide, key concepts, and contact info |
 
 ## Documentation
 

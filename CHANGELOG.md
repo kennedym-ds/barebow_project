@@ -16,6 +16,32 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2026-02-13] — v1.0.2 Polish & Architecture Release
+
+### Added
+- **Error Boundary**: React error boundary with retry/home buttons prevents white-screen crashes
+- **Toast Notifications**: Context-based toast system (success/error/warning/info) for user feedback
+- **Dark Mode**: Full dark theme via CSS custom properties with Light/Dark/System toggle in sidebar
+- **Help Page**: In-app guide with page descriptions, key concepts (Park Model, Crawl Marks, GPP/FOC), and contact info
+- **Sidebar Tooltips**: Hover tooltips on all navigation items explaining each page's purpose
+- **CI/CD Pipeline**: GitHub Actions workflow for Python 3.11/3.12 + frontend build/lint/type-check
+- **ESLint Config**: Flat config for TypeScript and React with recommended rules
+- **Pyproject.toml**: Ruff lint/format config + pytest settings
+
+### Changed
+- **Analytics Router Split**: Monolithic `analytics.py` (1,747 lines) refactored into `analytics/` package with 4 sub-modules (summary, precision, trends, goals) and shared schemas
+- **Responsive Sidebar**: Hamburger menu for mobile viewports with overlay navigation
+- **Accessibility Pass**: All 9 page CSS files updated from hardcoded hex to CSS variables for theme support
+- **Pinned Dependencies**: `requirements.txt` updated with compatible version ranges for all 14 packages
+- **API Structured Logging**: Request timing middleware, global exception handler, startup/shutdown lifecycle logs
+- **Favicon & Meta**: Custom SVG favicon (target + arrow), meta description, theme-color
+
+### Tests
+- **27 New Router Tests**: Coverage for arrows (7), tabs (6), scoring (4), analysis (5), crawls (5) endpoints
+- **120 Total Tests**: All passing (93 original + 27 new)
+
+---
+
 ## [2026-02-13] — v1.0.1 Stability & UX Release
 
 ### Fixed
@@ -209,6 +235,7 @@ Currently pre-1.0. Versions will follow [Semantic Versioning](https://semver.org
 ---
 
 [Unreleased]: https://github.com/kennedym-ds/barebow_project/compare/main...HEAD
+[2026-02-13 v1.0.2]: https://github.com/kennedym-ds/barebow_project/compare/v1.0.1...v1.0.2
 [2026-02-13]: https://github.com/kennedym-ds/barebow_project/compare/v2026-02-11...v1.0.1
 [2026-02-11]: https://github.com/kennedym-ds/barebow_project/compare/v2026-02-10...v2026-02-11
 [2026-02-10]: https://github.com/kennedym-ds/barebow_project/compare/v2026-02-09...v2026-02-10

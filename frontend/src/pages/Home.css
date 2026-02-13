@@ -7,7 +7,7 @@
 .dashboard h1 {
   font-size: 2rem;
   margin-bottom: 1.5rem;
-  color: #333;
+  color: var(--color-text);
 }
 
 /* ─── Empty state ─── */
@@ -17,12 +17,12 @@
 }
 
 .empty-dashboard h2 {
-  color: #444;
+  color: var(--color-text-secondary);
   margin-bottom: 0.5rem;
 }
 
 .empty-dashboard p {
-  color: #666;
+  color: var(--color-text-muted);
   margin-bottom: 2rem;
 }
 
@@ -35,8 +35,8 @@
 }
 
 .stat-card {
-  background: white;
-  border: 1px solid #e0e0e0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 1.25rem;
   text-align: center;
@@ -48,21 +48,21 @@
 }
 
 .stat-card.accent {
-  border-color: #007bff;
+  border-color: var(--color-primary);
   border-width: 2px;
 }
 
 .stat-value {
   font-size: 2rem;
   font-weight: 700;
-  color: #222;
+  color: var(--color-text);
   line-height: 1.1;
 }
 
 .stat-label {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #666;
+  color: var(--color-text-muted);
   margin-top: 0.35rem;
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -70,14 +70,14 @@
 
 .stat-sub {
   font-size: 0.75rem;
-  color: #999;
+  color: var(--color-text-muted);
   margin-top: 0.25rem;
 }
 
 /* ─── Sparkline ─── */
 .sparkline-card {
-  background: white;
-  border: 1px solid #e0e0e0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 1.25rem;
   margin-bottom: 2rem;
@@ -86,7 +86,7 @@
 .sparkline-card h3 {
   margin: 0 0 0.75rem 0;
   font-size: 1rem;
-  color: #555;
+  color: var(--color-text-muted);
 }
 
 .sparkline-svg {
@@ -109,22 +109,22 @@
   text-decoration: none;
   font-weight: 600;
   font-size: 0.95rem;
-  background: #f0f0f0;
-  color: #333;
+  background: var(--color-border);
+  color: var(--color-text);
   transition: background 0.15s;
 }
 
 .quick-link:hover {
-  background: #e0e0e0;
+  opacity: 0.85;
 }
 
 .quick-link.primary {
-  background: #007bff;
+  background: var(--color-primary);
   color: white;
 }
 
 .quick-link.primary:hover {
-  background: #0056b3;
+  opacity: 0.85;
 }
 
 @media (max-width: 600px) {

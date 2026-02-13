@@ -8,7 +8,7 @@
 ;      Or open in Inno Setup GUI and click Build → Compile.
 
 #define MyAppName "BareTrack"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "1.0.2"
 #define MyAppPublisher "BareTrack"
 #define MyAppURL "https://github.com/kennedym-ds/barebow_project"
 #define MyAppExeName "BareTrack.exe"

@@ -6,7 +6,7 @@ export default function Layout() {
   return (
     <div className="layout">
       <NavSidebar />
-      <main className="main-content">
+      <main className="main-content" role="main">
         <Outlet />
       </main>
     </div>

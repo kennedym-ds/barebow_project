@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { useSessions, useSession, useDeleteSession } from '../../api/sessions';
+import { useToast } from '../../components/Toast';
 import './History.css';
 
 const TargetFace = lazy(() => import('../../components/TargetFace'));
@@ -41,6 +42,7 @@ export default function History() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const { data: session, isError: sessionError, error: sessionErrorObj } = useSession(selectedId);
   const deleteSession = useDeleteSession();
+  const { toast } = useToast();
 
   // Replay state
   const [replayEnd, setReplayEnd] = useState<number | null>(null); // null = show all
@@ -60,7 +62,7 @@ export default function History() {
         setSelectedId(null);
       } catch (error) {
         console.error('Failed to delete session:', error);
-        alert('Failed to delete session. Please try again.');
+        toast('Failed to delete session. Please try again.', 'error');
       }
     }
   };

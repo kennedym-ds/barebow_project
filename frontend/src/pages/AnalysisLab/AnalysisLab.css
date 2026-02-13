@@ -7,21 +7,21 @@
 .analysis-lab h1 {
   font-size: 2rem;
   margin-bottom: 1.5rem;
-  color: #333;
+  color: var(--color-text);
 }
 
 .analysis-lab h2 {
   font-size: 1.5rem;
   margin-top: 2rem;
   margin-bottom: 1rem;
-  color: #444;
+  color: var(--color-text-secondary);
 }
 
 .analysis-lab h3 {
   font-size: 1.2rem;
   margin-top: 1.5rem;
   margin-bottom: 0.75rem;
-  color: #555;
+  color: var(--color-text-muted);
 }
 
 .equipment-section {
@@ -76,28 +76,28 @@
 
 .form-group label {
   font-weight: 500;
-  color: #555;
+  color: var(--color-text-muted);
 }
 
 .form-group select,
 .form-group input {
   padding: 0.5rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   font-size: 1rem;
 }
 
 .session-metric {
   padding: 0.75rem;
-  background: #f0f0f0;
+  background: var(--color-bg);
   border-radius: 4px;
   font-size: 0.9rem;
-  color: #666;
+  color: var(--color-text-muted);
 }
 
 .analyze-button {
   padding: 0.75rem 2rem;
-  background: #007bff;
+  background: var(--color-primary);
   color: white;
   border: none;
   border-radius: 4px;
@@ -112,7 +112,7 @@
 }
 
 .analyze-button:disabled {
-  background: #ccc;
+  background: var(--color-border);
   cursor: not-allowed;
 }
 
@@ -133,21 +133,21 @@
 .metric-card {
   flex: 1;
   padding: 1rem;
-  background: #f8f9fa;
+  background: var(--color-bg);
   border-radius: 4px;
-  border-left: 4px solid #007bff;
+  border-left: 4px solid var(--color-primary);
 }
 
 .metric-card h4 {
   margin: 0 0 0.5rem 0;
   font-size: 0.9rem;
-  color: #666;
+  color: var(--color-text-muted);
 }
 
 .metric-card .value {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #333;
+  color: var(--color-text);
 }
 
 .alert-list {
@@ -213,7 +213,7 @@
   display: flex;
   gap: 0;
   margin-bottom: 1rem;
-  border-bottom: 2px solid #dee2e6;
+  border-bottom: 2px solid var(--color-border);
 }
 
 .mode-tab {
@@ -223,22 +223,22 @@
   border-bottom: 3px solid transparent;
   font-size: 1rem;
   font-weight: 500;
-  color: #666;
+  color: var(--color-text-muted);
   cursor: pointer;
   transition: color 0.2s, border-color 0.2s;
 }
 
 .mode-tab:hover {
-  color: #333;
+  color: var(--color-text);
 }
 
 .mode-tab.active {
-  color: #007bff;
-  border-bottom-color: #007bff;
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
 }
 
 .mode-description {
-  color: #666;
+  color: var(--color-text-muted);
   margin-bottom: 1.5rem;
   line-height: 1.5;
 }
@@ -251,14 +251,14 @@
 }
 
 .loading-text {
-  color: #888;
+  color: var(--color-text-muted);
   font-style: italic;
 }
 
 /* ─── Result cards ─── */
 .result-card {
-  background: #fff;
-  border: 1px solid #e0e0e0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
@@ -267,12 +267,12 @@
 .result-card h3 {
   margin-top: 0;
   margin-bottom: 0.5rem;
-  color: #333;
+  color: var(--color-text);
   font-size: 1.15rem;
 }
 
 .shot-count-label {
-  color: #888;
+  color: var(--color-text-muted);
   font-size: 0.85rem;
   margin-bottom: 1rem;
 }
@@ -280,17 +280,17 @@
 .sub-section {
   margin-top: 1.25rem;
   padding-top: 1rem;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--color-border);
 }
 
 .sub-section h4 {
   margin: 0 0 0.5rem 0;
   font-size: 0.95rem;
-  color: #555;
+  color: var(--color-text-muted);
 }
 
 .interpretation {
-  color: #666;
+  color: var(--color-text-muted);
   font-size: 0.9rem;
   line-height: 1.5;
   margin-top: 0.5rem;
@@ -302,7 +302,7 @@
   height: 28px;
   border-radius: 4px;
   overflow: hidden;
-  background: #eee;
+  background: var(--color-border);
 }
 
 .bar-fill {
@@ -320,7 +320,7 @@
 }
 
 .bar-fill.precision {
-  background: #007bff;
+  background: var(--color-primary);
 }
 
 /* ─── Metric card variants ─── */
@@ -328,13 +328,13 @@
   display: block;
   font-size: 0.78rem;
   font-weight: 400;
-  color: #888;
+  color: var(--color-text-muted);
   margin-top: 2px;
 }
 
 .metric-card .sub-value {
   font-size: 0.8rem;
-  color: #888;
+  color: var(--color-text-muted);
   margin-top: 4px;
 }
 
@@ -362,11 +362,11 @@
 .end-score-table td {
   padding: 0.35rem 0.6rem;
   text-align: center;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--color-border);
 }
 
 .end-score-table th {
-  background: #f5f5f5;
+  background: var(--color-bg);
   font-weight: 600;
 }
 
@@ -393,21 +393,21 @@
 
 .ring-bar-container {
   height: 18px;
-  background: #eee;
+  background: var(--color-border);
   border-radius: 3px;
   overflow: hidden;
 }
 
 .ring-bar {
   height: 100%;
-  background: #007bff;
+  background: var(--color-primary);
   border-radius: 3px;
   transition: width 0.3s;
 }
 
 .ring-pct {
   font-size: 0.8rem;
-  color: #666;
+  color: var(--color-text-muted);
   text-align: right;
 }
 
@@ -427,11 +427,11 @@
 .trend-table td {
   padding: 0.4rem 0.75rem;
   text-align: center;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--color-border);
 }
 
 .trend-table th {
-  background: #f5f5f5;
+  background: var(--color-bg);
   font-weight: 600;
 }
 
@@ -467,13 +467,13 @@
   display: block;
   font-weight: 500;
   margin-bottom: 0.35rem;
-  color: #555;
+  color: var(--color-text-muted);
   font-size: 0.9rem;
 }
 
 .sigma-bar {
   height: 20px;
-  background: #e0e0e0;
+  background: var(--color-border);
   border-radius: 10px;
   overflow: hidden;
 }
@@ -492,7 +492,7 @@
   display: block;
   margin-top: 0.25rem;
   font-size: 0.8rem;
-  color: #666;
+  color: var(--color-text-muted);
 }
 
 /* ─── Arrow Tracker ─── */
@@ -531,20 +531,20 @@
 
 .arrow-selector .toggle-all {
   font-weight: 600;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--color-border);
   padding-bottom: 0.5rem;
   margin-bottom: 0.25rem;
 }
 
 .selector-divider {
   border: none;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--color-border);
   margin: 0.5rem 0;
 }
 
 .heatmap-toggle {
   font-weight: 500;
-  color: #444;
+  color: var(--color-text-secondary);
 }
 
 .arrow-single-stats {
@@ -555,7 +555,7 @@
 }
 
 .arrow-single-stats .mini-card {
-  background: #f8f9fa;
+  background: var(--color-bg);
   border-radius: 6px;
   padding: 0.75rem;
   text-align: center;
@@ -564,7 +564,7 @@
 .arrow-single-stats .mini-card h5 {
   margin: 0 0 0.25rem;
   font-size: 0.75rem;
-  color: #666;
+  color: var(--color-text-muted);
   text-transform: uppercase;
 }
 
@@ -593,13 +593,13 @@
 .arrow-table td {
   padding: 0.5rem 0.75rem;
   text-align: center;
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-border);
 }
 
 .arrow-table th {
-  background: #f5f5f5;
+  background: var(--color-bg);
   font-weight: 600;
-  color: #555;
+  color: var(--color-text-muted);
 }
 
 .arrow-table .best-arrow {
@@ -613,7 +613,7 @@
 .arrow-meta {
   margin-top: 0.5rem;
   font-size: 0.8rem;
-  color: #999;
+  color: var(--color-text-muted);
 }
 
 /* ─── Precision Groups ─── */
@@ -633,7 +633,7 @@
 .precision-groups-subtitle {
   font-size: 0.8rem;
   font-weight: 400;
-  color: #888;
+  color: var(--color-text-muted);
 }
 
 .primary-set-callout {
@@ -669,7 +669,7 @@
 
 .primary-set-show-btn {
   background: #ffc107;
-  color: #333;
+  color: var(--color-text);
   border: none;
   border-radius: 4px;
   padding: 0.4rem 0.75rem;
@@ -693,7 +693,7 @@
 .tier-card {
   border-radius: 8px;
   padding: 1rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-border);
 }
 
 .tier-card.tier-primary {
@@ -734,7 +734,7 @@
 
 .tier-badge-secondary {
   background: #ffc107;
-  color: #333;
+  color: var(--color-text);
 }
 
 .tier-badge-reserve {
@@ -752,7 +752,7 @@
 
 .tier-count {
   font-size: 0.8rem;
-  color: #666;
+  color: var(--color-text-muted);
 }
 
 .tier-arrows {
@@ -799,7 +799,7 @@
 .tier-stat-label {
   display: block;
   font-size: 0.65rem;
-  color: #888;
+  color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }
@@ -814,15 +814,15 @@
   width: 100%;
   padding: 0.35rem;
   background: transparent;
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   font-size: 0.8rem;
   cursor: pointer;
-  color: #555;
+  color: var(--color-text-muted);
 }
 
 .tier-show-btn:hover {
-  background: #f5f5f5;
+  background: var(--color-bg);
 }
 
 /* Table row tinting by tier */

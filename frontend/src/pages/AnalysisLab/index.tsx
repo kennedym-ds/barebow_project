@@ -19,6 +19,7 @@ import {
   type TrendAnalysis,
 } from '../../api/analytics';
 import type { SessionSummary } from '../../types/models';
+import { useToast } from '../../components/Toast';
 import './AnalysisLab.css';
 
 const TargetFace = React.lazy(() => import('../../components/TargetFace'));
@@ -28,6 +29,7 @@ type InputMode = 'database' | 'manual';
 
 export default function AnalysisLab() {
   const [analysisMode, setAnalysisMode] = useState<AnalysisMode>('single');
+  const { toast } = useToast();
   const [inputMode, setInputMode] = useState<InputMode>('database');
   const [selectedBowId, setSelectedBowId] = useState<string>('');
   const [selectedArrowId, setSelectedArrowId] = useState<string>('');
@@ -122,13 +124,13 @@ export default function AnalysisLab() {
 
   const handleCrossAnalyze = () => {
     if (!selectedBowId || !selectedArrowId) {
-      alert('Please select both bow and arrow');
+      toast('Please select both bow and arrow', 'warning');
       return;
     }
     let request: VirtualCoachRequest;
     if (inputMode === 'database') {
       if (!selectedShortSession || !selectedLongSession) {
-        alert('Please select both short and long distance sessions');
+        toast('Please select both short and long distance sessions', 'warning');
         return;
       }
       request = {
