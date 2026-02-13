@@ -1,8 +1,7 @@
-// @ts-nocheck
 import { useState, useMemo } from 'react';
 import Plot from 'react-plotly.js';
 import { useAnalyticsSummary, useAnalyticsShots, usePersonalBests, useParkModel, useBiasAnalysis, useScoreContext, useRoundPresets, useAdvancedPrecision, useTrends, useWithinEnd, useHitProbability, useEquipmentComparison, useBows, useArrows } from '../../api/analytics';
-import type { SessionSummaryStats, ShotDetailRecord, ParkModelAnalysis, BiasAnalysis, SessionScoreContext, RoundPreset, AdvancedPrecision, TrendAnalysis, WithinEndAnalysis, HitProbabilityAnalysis, EquipmentComparison, ConsistencyByRound } from '../../api/analytics';
+import type { SessionSummaryStats, ShotDetailRecord, SessionScoreContext, RoundPreset, PersonalBest } from '../../api/analytics';
 import './Analytics.css';
 
 export default function Analytics() {
@@ -31,7 +30,7 @@ export default function Analytics() {
   const { data: personalBests } = usePersonalBests();
 
   const { data: roundPresets } = useRoundPresets();
-  const { data: biasData } = useBiasAnalysis(
+  useBiasAnalysis(
     selectedRounds.length > 0 ? selectedRounds : undefined,
     fromDate || undefined,
     toDate || undefined
@@ -282,7 +281,7 @@ export default function Analytics() {
 
 function PerformanceTab({ summaryData, personalBests, scoreContext, roundPresets }: {
   summaryData: SessionSummaryStats[];
-  personalBests?: any[];
+  personalBests?: PersonalBest[];
   scoreContext?: SessionScoreContext[];
   roundPresets?: RoundPreset[];
 }) {
@@ -341,9 +340,9 @@ function PerformanceTab({ summaryData, personalBests, scoreContext, roundPresets
           name: round,
         }))}
         layout={{
-          title: 'Average Arrow Score over Time',
-          xaxis: { title: 'Date' },
-          yaxis: { title: 'Average Score' },
+          title: { text: 'Average Arrow Score over Time' },
+          xaxis: { title: { text: 'Date' } },
+          yaxis: { title: { text: 'Average Score' } },
           margin: { l: 50, r: 20, t: 50, b: 50 },
           height: 400,
         }}
@@ -369,8 +368,8 @@ function PerformanceTab({ summaryData, personalBests, scoreContext, roundPresets
               };
             })}
             layout={{
-              xaxis: { title: 'Date' },
-              yaxis: { title: 'Score %', range: [0, 105] },
+              xaxis: { title: { text: 'Date' } },
+              yaxis: { title: { text: 'Score %' }, range: [0, 105] },
               margin: { l: 50, r: 20, t: 30, b: 50 },
               height: 400,
             }}
@@ -397,8 +396,8 @@ function PerformanceTab({ summaryData, personalBests, scoreContext, roundPresets
               };
             })}
             layout={{
-              xaxis: { title: 'Date' },
-              yaxis: { title: 'Sigma (cm)', autorange: 'reversed' },
+              xaxis: { title: { text: 'Date' } },
+              yaxis: { title: { text: 'Sigma (cm)' }, autorange: 'reversed' },
               margin: { l: 50, r: 20, t: 30, b: 50 },
               height: 400,
             }}
@@ -447,8 +446,8 @@ function VolumeTab({ summaryData }: { summaryData: SessionSummaryStats[] }) {
           name: round,
         }))}
         layout={{
-          xaxis: { title: 'Date' },
-          yaxis: { title: 'CEP 50 (cm)', autorange: 'reversed' },
+          xaxis: { title: { text: 'Date' } },
+          yaxis: { title: { text: 'CEP 50 (cm)' }, autorange: 'reversed' },
           margin: { l: 50, r: 20, t: 30, b: 50 },
           height: 400,
         }}
@@ -478,8 +477,8 @@ function VolumeTab({ summaryData }: { summaryData: SessionSummaryStats[] }) {
           },
         ]}
         layout={{
-          xaxis: { title: 'Date' },
-          yaxis: { title: 'Spread (StdDev cm)' },
+          xaxis: { title: { text: 'Date' } },
+          yaxis: { title: { text: 'Spread (StdDev cm)' } },
           margin: { l: 50, r: 20, t: 30, b: 50 },
           height: 400,
         }}
@@ -506,9 +505,9 @@ function VolumeTab({ summaryData }: { summaryData: SessionSummaryStats[] }) {
           marker: { color: '#2196F3' },
         }]}
         layout={{
-          title: 'Arrows Shot per Week',
-          xaxis: { title: 'Week' },
-          yaxis: { title: 'Shot Count' },
+          title: { text: 'Arrows Shot per Week' },
+          xaxis: { title: { text: 'Week' } },
+          yaxis: { title: { text: 'Shot Count' } },
           margin: { l: 50, r: 20, t: 50, b: 50 },
           height: 400,
         }}
@@ -584,8 +583,8 @@ function ArrowAnalysisTab({ shotsData, isLoading }: {
           name: `#${num}`,
         }))}
         layout={{
-          xaxis: { title: 'Arrow Number' },
-          yaxis: { title: 'Score' },
+          xaxis: { title: { text: 'Arrow Number' } },
+          yaxis: { title: { text: 'Score' } },
           margin: { l: 50, r: 20, t: 30, b: 50 },
           height: 400,
         }}
@@ -673,8 +672,8 @@ function HeatmapTab({
     );
     const threshold = 2 * sigma_r;
 
-    displayShots = normalizedShots.filter((s, i) => distances[i] <= threshold);
-    fliers = normalizedShots.filter((s, i) => distances[i] > threshold);
+    displayShots = normalizedShots.filter((_s, i) => distances[i] <= threshold);
+    fliers = normalizedShots.filter((_s, i) => distances[i] > threshold);
   }
 
   // Calculate center from display shots
@@ -682,7 +681,7 @@ function HeatmapTab({
   const mean_y = displayShots.reduce((sum, s) => sum + s.y_norm, 0) / displayShots.length;
 
   // Build plot traces
-  const traces: any[] = [];
+  const traces: Partial<Plotly.PlotData>[] = [];
 
   // Density heatmap
   if (showDensity) {
@@ -804,7 +803,7 @@ function HeatmapTab({
 
         <label>
           Color Shots By:
-          <select value={colorBy} onChange={(e) => setColorBy(e.target.value as any)}>
+          <select value={colorBy} onChange={(e) => setColorBy(e.target.value as 'uniform' | 'arrow' | 'end')}>
             <option value="uniform">Uniform (Black)</option>
             <option value="arrow">Arrow Number</option>
             <option value="end">End Number</option>
@@ -947,8 +946,8 @@ function ScorePredictionTab({
               },
             ]}
             layout={{
-              title: 'Actual vs Predicted Average Arrow Score',
-              yaxis: { title: 'Avg Arrow Score', range: [0, 10.5] },
+              title: { text: 'Actual vs Predicted Average Arrow Score' },
+              yaxis: { title: { text: 'Avg Arrow Score' }, range: [0, 10.5] },
               barmode: 'group',
               margin: { l: 50, r: 20, t: 50, b: 50 },
               height: 400,
@@ -1071,13 +1070,11 @@ function BiasAnalysisTab({
             x: Array.from({ length: 37 }, (_, i) => {
               const angle = (i / 36) * 2 * Math.PI;
               const sx = biasData.sigma_x_cm > 0 ? biasData.sigma_x_cm : 1;
-              const sy = biasData.sigma_y_cm > 0 ? biasData.sigma_y_cm : 1;
               // We need to normalize — use rough face estimate
               return biasData.mpi_x_normalized + (sx / (biasData.bias_magnitude_cm / biasData.bias_magnitude_normalized || 50)) * Math.cos(angle);
             }),
             y: Array.from({ length: 37 }, (_, i) => {
               const angle = (i / 36) * 2 * Math.PI;
-              const sx = biasData.sigma_x_cm > 0 ? biasData.sigma_x_cm : 1;
               const sy = biasData.sigma_y_cm > 0 ? biasData.sigma_y_cm : 1;
               return biasData.mpi_y_normalized + (sy / (biasData.bias_magnitude_cm / biasData.bias_magnitude_normalized || 50)) * Math.sin(angle);
             }),
@@ -1158,8 +1155,8 @@ function BiasAnalysisTab({
             },
           ]}
           layout={{
-            xaxis: { title: 'End Number', dtick: 1 },
-            yaxis: { title: 'Avg Score per Arrow' },
+            xaxis: { title: { text: 'End Number' }, dtick: 1 },
+            yaxis: { title: { text: 'Avg Score per Arrow' } },
             margin: { l: 50, r: 20, t: 30, b: 50 },
             height: 350,
           }}
@@ -1190,7 +1187,7 @@ function BiasAnalysisTab({
           textposition: 'outside',
         }]}
         layout={{
-          yaxis: { title: 'Avg Score', range: [0, Math.max(biasData.first_arrow_avg, biasData.other_arrows_avg) * 1.15] },
+          yaxis: { title: { text: 'Avg Score' }, range: [0, Math.max(biasData.first_arrow_avg, biasData.other_arrows_avg) * 1.15] },
           margin: { l: 50, r: 20, t: 30, b: 50 },
           height: 300,
         }}
@@ -1297,7 +1294,7 @@ function PrecisionTab({ roundTypes, fromDate, toDate }: {
           type: 'pie',
           hole: 0.5,
           marker: { colors: ['#ff9800', '#2196F3'] },
-          textinfo: 'percent+label',
+          textinfo: 'label+percent',
         }]}
         layout={{
           height: 300,
@@ -1395,7 +1392,7 @@ function PrecisionTab({ roundTypes, fromDate, toDate }: {
             }]}
             layout={{
               yaxis: {
-                title: 'Avg Score',
+                title: { text: 'Avg Score' },
                 range: [
                   Math.min(...withinEnd.positions.map(p => p.avg_score)) * 0.9,
                   Math.max(...withinEnd.positions.map(p => p.avg_score)) * 1.05,
@@ -1446,8 +1443,8 @@ function PrecisionTab({ roundTypes, fromDate, toDate }: {
               textposition: 'outside' as const,
             }]}
             layout={{
-              xaxis: { title: 'Ring' },
-              yaxis: { title: 'Probability %' },
+              xaxis: { title: { text: 'Ring' } },
+              yaxis: { title: { text: 'Probability %' } },
               margin: { l: 50, r: 20, t: 20, b: 50 },
               height: 350,
             }}
@@ -1524,8 +1521,8 @@ function TrendsTab({ roundTypes, fromDate, toDate }: {
           },
         ]}
         layout={{
-          xaxis: { title: 'Date' },
-          yaxis: { title: 'Avg Arrow Score' },
+          xaxis: { title: { text: 'Date' } },
+          yaxis: { title: { text: 'Avg Arrow Score' } },
           margin: { l: 50, r: 20, t: 30, b: 50 },
           height: 400,
           showlegend: true,
@@ -1573,8 +1570,8 @@ function TrendsTab({ roundTypes, fromDate, toDate }: {
           },
         ]}
         layout={{
-          xaxis: { title: 'Date' },
-          yaxis: { title: 'Group Size (σ cm)', autorange: 'reversed' as const },
+          xaxis: { title: { text: 'Date' } },
+          yaxis: { title: { text: 'Group Size (σ cm)' }, autorange: 'reversed' as const },
           margin: { l: 50, r: 20, t: 30, b: 50 },
           height: 400,
           showlegend: true,

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import Plot from 'react-plotly.js';
 import { useTabs, useUploadTabImage, useDeleteTabImage, useUpdateTab } from '../../api/tabs';
@@ -337,7 +336,7 @@ export default function CrawlManager() {
                   shapes: plotlyData.shapes as Plotly.Shape[],
                   annotations: plotlyData.annotations as Plotly.Annotations[],
                   margin: { l: 0, r: 0, t: 20, b: 0 },
-                  title: 'Tab View',
+                  title: { text: 'Tab View' },
                 }}
                 config={{ displayModeBar: false }}
               />

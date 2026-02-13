@@ -1,17 +1,18 @@
-import { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { useState, useEffect, useRef, useMemo, lazy, Suspense } from 'react';
 import { useSessions, useSession, useDeleteSession } from '../../api/sessions';
+import type { Session, End, Shot } from '../../types/models';
 import { useToast } from '../../components/Toast';
 import './History.css';
 
 const TargetFace = lazy(() => import('../../components/TargetFace'));
 
-function exportSessionCSV(session: any) {
+function exportSessionCSV(session: Session) {
   const rows: string[] = ['Date,Round,Distance_m,Face_cm,End,Arrow,Score,X_cm,Y_cm,Is_X'];
   const dateStr = new Date(session.date).toISOString().slice(0, 19);
-  const sortedEnds = [...session.ends].sort((a: any, b: any) => a.end_number - b.end_number);
+  const sortedEnds = [...session.ends].sort((a: End, b: End) => a.end_number - b.end_number);
   
   for (const end of sortedEnds) {
-    const sortedShots = [...end.shots].sort((a: any, b: any) => (a.arrow_number ?? Infinity) - (b.arrow_number ?? Infinity));
+    const sortedShots = [...end.shots].sort((a: Shot, b: Shot) => (a.arrow_number ?? Infinity) - (b.arrow_number ?? Infinity));
     for (const shot of sortedShots) {
       rows.push([
         dateStr,
@@ -48,6 +49,45 @@ export default function History() {
   const [replayEnd, setReplayEnd] = useState<number | null>(null); // null = show all
   const [playing, setPlaying] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Computed values (must be before any early returns for hook ordering)
+  const sessionEnds = useMemo(() => Array.isArray(session?.ends) ? session!.ends : [], [session]);
+  const allShots = useMemo(() => sessionEnds.flatMap(end => Array.isArray(end.shots) ? end.shots : []), [sessionEnds]);
+  const totalScore = allShots.reduce((sum, s) => sum + s.score, 0);
+  const avgScore = allShots.length > 0 ? totalScore / allShots.length : 0;
+  const sortedEnds = useMemo(() => [...sessionEnds].sort((a, b) => a.end_number - b.end_number), [sessionEnds]);
+  const totalEnds = sortedEnds.length;
+
+  // Replay: filter shots up to current end
+  const visibleShots = useMemo(() =>
+    replayEnd === null
+      ? allShots
+      : sortedEnds.filter(e => e.end_number <= replayEnd).flatMap(e => e.shots),
+    [replayEnd, allShots, sortedEnds]
+  );
+
+  // Auto-advance playback
+  useEffect(() => {
+    if (playing && replayEnd !== null && totalEnds > 0) {
+      timerRef.current = setInterval(() => {
+        setReplayEnd(prev => {
+          if (prev === null || prev >= sortedEnds[totalEnds - 1].end_number) {
+            setPlaying(false);
+            return prev;
+          }
+          const curIdx = sortedEnds.findIndex(e => e.end_number === prev);
+          return sortedEnds[Math.min(curIdx + 1, totalEnds - 1)].end_number;
+        });
+      }, 1200);
+    }
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [playing, replayEnd, totalEnds, sortedEnds]);
+
+  // Reset replay when session changes
+  useEffect(() => {
+    setReplayEnd(null);
+    setPlaying(false);
+  }, [selectedId]);
 
   const handleDelete = async () => {
     if (!selectedId) return;
@@ -93,6 +133,11 @@ export default function History() {
         </div>
       </div>
     );
+  }
+
+  return (
+    <div className="history-page">
+      <h1>📜 Session History</h1>
 
       {sessionError && (
         <div className="empty-state" style={{ marginTop: '1rem' }}>
@@ -100,47 +145,6 @@ export default function History() {
           <p style={{ color: '#b00020' }}>{String(sessionErrorObj ?? 'Unknown error')}</p>
         </div>
       )}
-  }
-
-  const sessionEnds = Array.isArray(session?.ends) ? session.ends : [];
-  const allShots = sessionEnds.flatMap(end => Array.isArray(end.shots) ? end.shots : []);
-  const totalScore = allShots.reduce((sum, s) => sum + s.score, 0);
-  const avgScore = allShots.length > 0 ? totalScore / allShots.length : 0;
-
-  const sortedEnds = [...sessionEnds].sort((a, b) => a.end_number - b.end_number);
-  const totalEnds = sortedEnds.length;
-
-  // Replay: filter shots up to current end
-  const visibleShots = replayEnd === null
-    ? allShots
-    : sortedEnds.filter(e => e.end_number <= replayEnd).flatMap(e => e.shots);
-
-  // Auto-advance playback
-  useEffect(() => {
-    if (playing && replayEnd !== null && totalEnds > 0) {
-      timerRef.current = setInterval(() => {
-        setReplayEnd(prev => {
-          if (prev === null || prev >= sortedEnds[totalEnds - 1].end_number) {
-            setPlaying(false);
-            return prev;
-          }
-          const curIdx = sortedEnds.findIndex(e => e.end_number === prev);
-          return sortedEnds[Math.min(curIdx + 1, totalEnds - 1)].end_number;
-        });
-      }, 1200);
-    }
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [playing, replayEnd, totalEnds, sortedEnds]);
-
-  // Reset replay when session changes
-  useEffect(() => {
-    setReplayEnd(null);
-    setPlaying(false);
-  }, [selectedId]);
-
-  return (
-    <div className="history-page">
-      <h1>📜 Session History</h1>
 
       {/* Session Selector */}
       <div className="session-selector">
