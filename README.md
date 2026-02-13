@@ -13,6 +13,8 @@ For a full walkthrough of every feature, see the [User Guide](docs/user-guide.md
 2. Run the installer and follow the prompts
 3. Launch BareTrack from the Start Menu or Desktop shortcut
 
+Prefer browsing versions first? See **[All Releases](https://github.com/kennedym-ds/barebow_project/releases)**.
+
 **Requirements:** Windows 10 or later (64-bit). WebView2 runtime is required (pre-installed on Windows 10 1803+ and Windows 11).
 
 Your data is stored locally in `%LOCALAPPDATA%\BareTrack\baretrack.db` — nothing is sent to the cloud.

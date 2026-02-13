@@ -23,6 +23,48 @@ desktop.py    → pywebview entry point for standalone Windows app
 - **VS Code tasks**: `Dev: Start All` starts both servers. `Run Tests` is the default test task.
 - **Seed data**: `python seed_data.py` — creates 6 sample WA 18m sessions for development.
 
+## Release & Publish Workflow (Windows)
+
+Use this checklist for versioned desktop releases (example: `v1.0.1`).
+
+### Prerequisites
+
+- Commit and push all code/doc changes to `main`.
+- Build artifacts are present (installer expected at `dist/BareTrackSetup.exe`).
+- GitHub auth is available via one of:
+	- GitHub CLI (`gh`) authenticated, or
+	- MCP/VS Code GitHub integration authenticated with repo write permissions.
+
+### Standard Release Steps
+
+1. Verify branch is clean and current (`main`).
+2. Update `CHANGELOG.md` with release notes.
+3. Add/update a short release note in `README.md` when user-visible behavior changed.
+4. Commit with conventional style (example: `fix: ship v1.0.1 stability and release notes`).
+5. Create and push annotated tag (`vX.Y.Z`).
+6. Create GitHub Release from the tag and attach `dist/BareTrackSetup.exe`.
+
+### Important Clarification
+
+- `git` alone can push commits/tags, but **cannot** create GitHub Release objects or upload release assets.
+- Release asset upload requires GitHub API/UI/CLI (or MCP integration that supports release APIs).
+
+### VS Code / Plugin Path
+
+Yes — VS Code plugins can be used for this workflow:
+
+- Use built-in Source Control for commit/push/tag tasks.
+- Use GitHub integration (or MCP-backed GitHub tools) to create the Release and upload installer asset.
+- Use GitHub Actions extension to monitor workflow runs if the repo has release workflows.
+
+If release creation fails in-agent due to missing auth/tooling, fall back to GitHub web UI:
+
+1. Open repo → **Releases** → **Draft a new release**
+2. Select existing tag (e.g., `v1.0.1`)
+3. Paste release notes from `CHANGELOG.md`
+4. Upload `dist/BareTrackSetup.exe`
+5. Publish release
+
 ## Data Model Conventions
 
 All SQLModel tables use **string UUIDs** as primary keys (`Field(default_factory=lambda: str(uuid.uuid4()))`). Foreign keys are `Optional[str]`. Relationships use SQLModel's `Relationship()` with `cascade: "all, delete"` on parent→child (Session→End→Shot, ArrowSetup→ArrowShaft).
