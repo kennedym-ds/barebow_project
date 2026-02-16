@@ -32,6 +32,7 @@ const navItems: NavItem[] = [
   { to: '/crawls', icon: '📐', label: 'Crawl Manager', tooltip: 'String-walking crawl mark calculator and regression' },
   { to: '/analytics', icon: '📈', label: 'Analytics', tooltip: 'Trends, precision metrics, bias analysis, and comparisons' },
   { to: '/tuning', icon: '🔧', label: 'Tuning Wizard', tooltip: 'Step-by-step bow tuning guide with recommendations' },
+  { to: '/trajectory', icon: '🚀', label: 'Trajectory', tooltip: 'Arrow flight simulation and crosswind drift estimation' },
 ];
 
 export default function NavSidebar() {

@@ -49,7 +49,7 @@ barebow_project/
 │       ├── pages/    # Route pages
 │       ├── types/    # TypeScript interfaces
 │       └── utils/    # Client-side scoring
-├── tests/            # pytest suite (120 tests)
+├── tests/            # pytest suite (224 tests)
 ├── docs/             # User guide, getting started, developer notes
 ├── desktop.py        # pywebview entry point for desktop app
 └── seed_data.py      # Generate sample sessions for testing
@@ -121,10 +121,12 @@ Tests use in-memory SQLite with `StaticPool` for isolation — no database file 
 | --- | --- |
 | `src/models.py` | SQLModel tables (BowSetup, ArrowSetup, Session, End, Shot, etc.) |
 | `src/park_model.py` | James Park Model — score prediction & sigma calculation |
-| `src/physics.py` | GPP, FOC, and setup efficiency scoring |
+| `src/physics.py` | GPP, FOC, dynamic spine, natural frequency, spine-frequency match |
 | `src/analysis.py` | "Virtual Coach" — synthesises physics + statistics |
 | `src/crawls.py` | Crawl mark regression & prediction |
 | `src/scoring.py` | Ring score calculation for WA & Flint target faces |
+| `src/trajectory.py` | Arrow trajectory prediction, wind drift analysis |
+| `src/arrow_analytics.py` | Shaft grading, group stats, outlier detection, set optimizer |
 | `api/` | 49 REST endpoints wrapping the domain logic |
 | `frontend/` | React SPA with Plotly.js interactive charts |
 
@@ -143,6 +145,11 @@ Tests use in-memory SQLite with `StaticPool` for isolation — no database file 
 * **Dashboard Home**: Personal bests, recent performance, and equipment status.
 * **Score Goal Simulator**: Predict scores for untested distances using the James Park Model.
 * **Desktop App**: Standalone Windows application via pywebview + PyInstaller.
+* **Trajectory Prediction**: Bisection solver for optimal launch angle with drop table, impact analysis, and uphill/downhill support.
+* **Wind Drift Analysis**: Crosswind deflection estimates with ring impact and aim-off advice.
+* **Shaft Analytics**: Automatic grading, group stats, outlier detection, set optimizer, and find-similar-arrows.
+* **Energy-Corrected Dynamic Spine**: Multiplicative model with natural frequency and power-stroke timing analysis.
+* **Optional Arrow Fields**: Create arrow profiles without total weight and shaft diameter — add them later.
 
 ## Routes
 

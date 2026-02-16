@@ -16,6 +16,34 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2026-02-16] — v1.1.0 Arrow Science & Trajectory Release
+
+### Added
+- **Trajectory Prediction**: Bisection solver computes optimal launch angle for any target distance and elevation (uphill/downhill). Displays trajectory arc, max height, time of flight, impact velocity, impact angle, and drop table.
+- **Wind Drift Analysis**: Estimates crosswind deflection in cm and target rings, with aim-off advice.
+- **Arrow Shaft Grading**: Automatic A/B/C/D grading based on weight tolerance and straightness thresholds.
+- **Group Statistics**: Per-arrow-set stats (mean, std, range, CV%) for weight, spine, and straightness.
+- **Shaft Outlier Detection**: Z-score-based outlier detection across weight, spine, and straightness metrics.
+- **Set Optimizer**: Find the best N-arrow subset from your quiver ranked by weight + spine + straightness consistency.
+- **Find Similar Arrows**: Given reference arrows, find the closest matches from remaining shafts by weighted Euclidean distance.
+- **Energy-Corrected Dynamic Spine Model**: Replaced Stu Miller additive corrections with a multiplicative model grounded in Euler-Bernoulli beam theory and energy-balance physics.
+- **Arrow Natural Frequency**: Euler-Bernoulli free-free beam vibration analysis (Hz) from spine, shaft diameter, and total weight.
+- **Spine-Frequency Match**: Kooi-Bergman power-stroke timing check — verifies arrow completes ~1 oscillation during the power stroke for optimal paradox clearance.
+- **Effective Draw Weight**: Bow-side corrections (brace height, draw length, string strand count) computed and displayed in spine check results.
+- **Optional Arrow Fields**: `total_arrow_weight_gr` and `shaft_diameter_mm` are now optional — create arrow profiles without them and add later.
+- **Arrow Charts**: Lazy-loaded Plotly charts for shaft weight distribution, spine distribution, and weight-vs-spine scatter.
+
+### Changed
+- **Spine Check Endpoint**: Now returns `effective_draw_weight` and optional `frequency_match` analysis alongside existing status/recommendation.
+- **Spine Recommendation Range**: Tightened from ±50 to ±40 spine thanks to improved model accuracy.
+- **Spine Chart**: Added 2 data points (22 lbs/850, 27 lbs/750) for better interpolation in common barebow range.
+- **Frontend Spine UI**: Displays effective draw weight, frequency match quality, oscillation count, and arrow frequency in the equipment profile.
+
+### Tests
+- **224 Total Tests**: All passing (104 new tests covering trajectory, shaft analytics, spine model, frequency analysis, API endpoints).
+
+---
+
 ## [2026-02-13] — v1.0.2 Polish & Architecture Release
 
 ### Added

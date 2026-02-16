@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from './client';
-import type { ArrowSetup, ArrowSetupCreate, ArrowSetupUpdate, ArrowShaft } from '../types/models';
+import type { ArrowSetup, ArrowSetupCreate, ArrowSetupUpdate, ArrowShaft, ShaftAnalyticsResponse, SpineCheckResponse, OptimizeRequest, OptimizedSetResponse, FindSimilarRequest, SimilarArrowResult } from '../types/models';
 
 export function useArrows() {
   return useQuery({ 
@@ -81,5 +81,51 @@ export function useDeleteShafts() {
     onSuccess: (_data, arrowId) => {
       qc.invalidateQueries({ queryKey: ['arrows', arrowId, 'shafts'] });
     },
+  });
+}
+
+// Arrow analytics hook
+export function useArrowAnalytics(arrowId: string | null, outlierThreshold = 2.0) {
+  return useQuery({
+    queryKey: ['arrows', arrowId, 'analytics', outlierThreshold],
+    queryFn: () =>
+      apiFetch<ShaftAnalyticsResponse>(
+        `/api/arrows/${arrowId}/analytics?outlier_threshold=${outlierThreshold}`
+      ),
+    enabled: !!arrowId,
+  });
+}
+
+// Spine check hook
+export function useSpineCheck(arrowId: string | null, bowId: string | null) {
+  return useQuery({
+    queryKey: ['arrows', arrowId, 'spine-check', bowId],
+    queryFn: () =>
+      apiFetch<SpineCheckResponse>(
+        `/api/arrows/${arrowId}/spine-check?bow_id=${bowId}`
+      ),
+    enabled: !!arrowId && !!bowId,
+  });
+}
+
+// Optimize mutation hook
+export function useOptimizeArrows() {
+  return useMutation({
+    mutationFn: ({ arrowId, request }: { arrowId: string; request: OptimizeRequest }) =>
+      apiFetch<OptimizedSetResponse[]>(`/api/arrows/${arrowId}/optimize`, {
+        method: 'POST',
+        body: JSON.stringify(request),
+      }),
+  });
+}
+
+// Find similar mutation hook
+export function useFindSimilar() {
+  return useMutation({
+    mutationFn: ({ arrowId, request }: { arrowId: string; request: FindSimilarRequest }) =>
+      apiFetch<SimilarArrowResult[]>(`/api/arrows/${arrowId}/find-similar`, {
+        method: 'POST',
+        body: JSON.stringify(request),
+      }),
   });
 }

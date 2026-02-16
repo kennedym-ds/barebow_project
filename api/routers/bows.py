@@ -22,6 +22,7 @@ class BowSetupCreate(BaseModel):
     limbs_length: str
     limbs_marked_poundage: float
     draw_weight_otf: float
+    draw_length_in: float | None = None
     brace_height_in: float
     tiller_top_mm: float
     tiller_bottom_mm: float
@@ -47,6 +48,7 @@ class BowSetupUpdate(BaseModel):
     limbs_length: str | None = None
     limbs_marked_poundage: float | None = None
     draw_weight_otf: float | None = None
+    draw_length_in: float | None = None
     brace_height_in: float | None = None
     tiller_top_mm: float | None = None
     tiller_bottom_mm: float | None = None

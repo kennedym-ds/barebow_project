@@ -15,6 +15,7 @@ from sqlmodel import Session, delete, select
 from src.db import create_db_and_tables, engine
 from src.models import (
     ArrowSetup,
+    ArrowShaft,
     BowSetup,
     End,
     Shot,
@@ -59,8 +60,9 @@ def main():
         db.exec(delete(Shot))
         db.exec(delete(End))
         db.exec(delete(SessionModel))
+        db.exec(delete(ArrowShaft))
         db.commit()
-        print("Cleared existing session data.")
+        print("Cleared existing session and shaft data.")
 
         # ── Ensure we have a bow and arrow profile ──
         bow = db.exec(select(BowSetup)).first()
@@ -77,6 +79,7 @@ def main():
                 limbs_length="Medium",
                 limbs_marked_poundage=34,
                 draw_weight_otf=32.5,
+                draw_length_in=28.0,
                 brace_height_in=8.25,
                 tiller_top_mm=3.0,
                 tiller_bottom_mm=0.0,
@@ -92,6 +95,12 @@ def main():
             db.commit()
             db.refresh(bow)
             print(f"Created bow: {bow.name}")
+        elif bow.draw_length_in is None:
+            bow.draw_length_in = 28.0
+            db.add(bow)
+            db.commit()
+            db.refresh(bow)
+            print(f"Updated bow draw_length_in: {bow.name}")
 
         if not arrow:
             arrow = ArrowSetup(
@@ -110,6 +119,27 @@ def main():
             db.commit()
             db.refresh(arrow)
             print(f"Created arrow: {arrow.make} {arrow.model}")
+
+        # ── Generate shaft measurement data for the 12 arrows ──
+        existing_shafts = db.exec(select(ArrowShaft).where(ArrowShaft.arrow_setup_id == arrow.id)).first()
+        if not existing_shafts:
+            base_weight = 285.0
+            base_spine = 620.0
+            for i in range(1, 13):
+                # Realistic variation: ±1.5 gr weight, ±5 spine, ±0.003 straightness
+                weight = round(base_weight + random.gauss(0, 0.8), 1)
+                spine = round(base_spine + random.gauss(0, 3.0), 0)
+                straightness = round(max(0.0005, abs(random.gauss(0, 0.002))), 4)
+                shaft = ArrowShaft(
+                    arrow_setup_id=arrow.id,
+                    arrow_number=i,
+                    measured_weight_gr=weight,
+                    measured_spine_astm=spine,
+                    straightness=straightness,
+                )
+                db.add(shaft)
+            db.commit()
+            print(f"Created 12 shaft measurements for {arrow.make} {arrow.model}")
 
         # ── Generate 6 sessions spread over ~3 weeks ──
         # Vary sigma slightly session-to-session to simulate real improvement

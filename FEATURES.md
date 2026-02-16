@@ -1,6 +1,6 @@
 # Features
 
-Implemented features as of 2026-02-13 (v1.0.2).
+Implemented features as of 2026-02-16 (v1.1.0).
 
 ---
 
@@ -55,6 +55,17 @@ Implemented features as of 2026-02-13 (v1.0.2).
 - ✅ **GPP/FOC Calculation**: Grains Per Pound and Front of Center — arrow efficiency metrics with safety warnings
 - ✅ **Setup Efficiency Scoring**: Rates arrow build appropriateness for indoor vs outdoor shooting
 - ✅ **Safety Check**: Warns if GPP < 7 (unsafe for bow) or other dangerous configurations
+- ✅ **Energy-Corrected Dynamic Spine**: Multiplicative model (Euler-Bernoulli beam theory + energy balance) replacing Stu Miller additive corrections
+- ✅ **Arrow Natural Frequency**: Free-free beam vibration analysis from spine, shaft diameter, and total weight
+- ✅ **Spine-Frequency Match**: Kooi-Bergman timing analysis — verifies ~1 oscillation during power stroke
+- ✅ **Effective Draw Weight**: Brace height, draw length, and strand count corrections displayed in spine check
+
+### Trajectory & Ballistics
+- ✅ **Trajectory Prediction**: Bisection solver for optimal launch angle at any distance/elevation
+- ✅ **Trajectory Visualization**: Interactive arc plot with max height, time of flight, impact velocity, impact angle
+- ✅ **Drop Table**: Arrow drop at 10m, 20m, 30m, 40m, 50m, 60m, 70m
+- ✅ **Wind Drift Analysis**: Crosswind deflection in cm and ring impact, with aim-off direction advice
+- ✅ **Uphill/Downhill Shooting**: Target elevation angle as input for angled shots
 
 ---
 
@@ -80,6 +91,14 @@ Implemented features as of 2026-02-13 (v1.0.2).
 - ✅ **Alpha Shot Markers**: Shot dots rendered at 20% opacity to fade into background
 - ✅ **Centre-of-Mass Markers**: × symbols show centroid per arrow in arrow's color
 - ✅ **Density Heatmap Toggle**: Optional histogram2dcontour overlays per arrow (requires ≥3 shots)
+
+### Shaft Analytics
+- ✅ **Shaft Grading**: Automatic A/B/C/D grading based on weight tolerance and straightness
+- ✅ **Group Statistics**: Mean, std, range, CV% for weight, spine, and straightness across shaft set
+- ✅ **Outlier Detection**: Z-score-based identification of shafts outside the group norm
+- ✅ **Set Optimizer**: Find optimal N-arrow subsets ranked by combined weight + spine + straightness consistency
+- ✅ **Find Similar Arrows**: Locate closest-matching shafts to reference arrows by weighted Euclidean distance
+- ✅ **Arrow Charts**: Weight distribution, spine distribution, weight-vs-spine scatter plots
 
 ### Precision Grouping
 - ✅ **Composite Precision Score**: 60% avg_radius + 40% std_score normalized metric
@@ -129,6 +148,7 @@ Implemented features as of 2026-02-13 (v1.0.2).
 ## Testing & Quality
 
 - ✅ **120 Tests**: pytest suite covering models, API endpoints (bows, arrows, tabs, sessions, scoring, analysis, crawls, analytics), Park Model, physics, crawls, precision metrics
+- **224 Total Tests**: Includes trajectory, shaft analytics, spine model, and frequency analysis tests
 - ✅ **In-Memory Testing**: StaticPool SQLite for isolated, fast tests
 - ✅ **TypeScript Strict Mode**: Zero linting errors, full type safety in frontend
 - ✅ **ESLint Flat Config**: TypeScript and React rules for consistent code style
@@ -140,6 +160,7 @@ Implemented features as of 2026-02-13 (v1.0.2).
 
 ### Backend (FastAPI + SQLModel)
 - ✅ **49 REST Endpoints**: 9 router modules (analytics split into 4 sub-modules)
+- ✅ **Trajectory & Drift Endpoints**: Launch angle solver, drop table, crosswind drift analysis
 - ✅ **SQLite Database**: Single-file database (`baretrack.db`) with automatic schema creation
 - ✅ **Structured Logging**: Request timing middleware, global exception handler, startup/shutdown lifecycle logs
 - ✅ **CORS Configuration**: Secure cross-origin requests from frontend
@@ -184,5 +205,5 @@ See `artifacts/research/barebow-archer-needs.md` for prioritized roadmap.
 
 ---
 
-**Last Updated**: 2026-02-13  
-**Test Coverage**: 120 tests passing
+**Last Updated**: 2026-02-16  
+**Test Coverage**: 224 tests passing

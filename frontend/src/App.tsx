@@ -16,6 +16,7 @@ const History = lazy(() => import('./pages/History'));
 const CrawlManager = lazy(() => import('./pages/CrawlManager'));
 const Analytics = lazy(() => import('./pages/Analytics'));
 const TuningWizard = lazy(() => import('./pages/TuningWizard'));
+const Trajectory = lazy(() => import('./pages/Trajectory'));
 
 function PageLoader() {
   return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading…</div>;
@@ -47,6 +48,7 @@ export default function App() {
                   <Route path="/crawls" element={<CrawlManager />} />
                   <Route path="/analytics" element={<Analytics />} />
                   <Route path="/tuning" element={<TuningWizard />} />
+                  <Route path="/trajectory" element={<Trajectory />} />
                   <Route path="/help" element={<Help />} />
                 </Route>
               </Routes>

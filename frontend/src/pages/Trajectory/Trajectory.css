@@ -1,0 +1,153 @@
+.trajectory-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.trajectory-page h2 {
+  margin-bottom: 4px;
+}
+
+.trajectory-page > p {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 24px;
+}
+
+.trajectory-panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.trajectory-inputs,
+.drift-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.trajectory-inputs h3,
+.drift-inputs h3 {
+  margin: 0 0 4px;
+}
+
+.trajectory-inputs .form-group,
+.drift-inputs .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.trajectory-inputs label,
+.drift-inputs label {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.trajectory-inputs input,
+.drift-inputs input {
+  padding: 6px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.9rem;
+}
+
+.trajectory-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.trajectory-results {
+  margin-top: 24px;
+}
+
+.trajectory-stats {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+
+.traj-stat {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 10px 16px;
+  text-align: center;
+}
+
+.traj-stat-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.traj-stat-value {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.drop-table {
+  width: auto;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+.drop-table th,
+.drop-table td {
+  padding: 6px 14px;
+  border-bottom: 1px solid var(--color-border);
+  text-align: right;
+  font-size: 0.85rem;
+}
+
+.drop-table th {
+  font-weight: 600;
+  text-align: left;
+}
+
+.drift-result {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--color-surface);
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+}
+
+.drift-result h4 {
+  margin: 0 0 8px;
+}
+
+.drift-advice {
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-top: 8px;
+}
+
+.field-hint {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.traj-stat.highlight {
+  border-color: var(--color-primary);
+  background: var(--color-primary-bg, rgba(59, 130, 246, 0.08));
+}
+
+.traj-stat.highlight .traj-stat-value {
+  color: var(--color-primary);
+}
+
+@media (max-width: 768px) {
+  .trajectory-panels {
+    grid-template-columns: 1fr;
+  }
+}

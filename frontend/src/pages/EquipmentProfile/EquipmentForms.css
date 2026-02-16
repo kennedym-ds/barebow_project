@@ -286,11 +286,261 @@
   background: var(--color-bg);
 }
 
+/* Outlier row highlighting */
+.shaft-table tbody tr.outlier-row {
+  background: rgba(255, 165, 0, 0.1);
+}
+
+/* Grade badges */
+.grade-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.grade-premium { background: #22c55e20; color: #16a34a; }
+.grade-competition { background: #3b82f620; color: #2563eb; }
+.grade-amateur { background: #f59e0b20; color: #d97706; }
+.grade-recreational { background: #ef444420; color: #dc2626; }
+.grade-unknown { background: #6b728020; color: #6b7280; }
+
+/* Analytics panel */
+.analytics-panel {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--color-bg);
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+}
+
+.analytics-panel h5 {
+  margin: 0 0 12px 0;
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
+
+.stats-grid {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.stat-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.stat-detail {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+/* Outlier warnings */
+.outlier-warnings {
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(255, 165, 0, 0.08);
+  border-radius: 6px;
+  border-left: 3px solid #f59e0b;
+}
+
+.outlier-warnings h5 {
+  color: #d97706;
+  margin: 0 0 8px 0;
+}
+
+.outlier-warnings ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.outlier-warnings li {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-bottom: 4px;
+}
+
 .preview-note {
   text-align: center;
   color: var(--color-text-muted);
   font-size: 0.85rem;
   margin-top: 8px;
+}
+
+/* Spine Check */
+.spine-check-section {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+.spine-check-controls select {
+  padding: 6px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.85rem;
+  min-width: 220px;
+  margin-top: 6px;
+}
+
+.spine-check-result {
+  margin-top: 10px;
+}
+
+.spine-status {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.spine-matched { background: #22c55e20; color: #16a34a; }
+.spine-slightly_stiff,
+.spine-slightly_weak { background: #f59e0b20; color: #d97706; }
+.spine-too_stiff,
+.spine-too_weak { background: #ef444420; color: #dc2626; }
+
+.spine-message {
+  font-size: 0.85rem;
+  color: var(--color-text);
+  margin: 6px 0 2px;
+}
+
+.spine-detail {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* Set Optimizer */
+.optimizer-panel {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--color-bg);
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+}
+
+.optimizer-controls {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  margin-top: 12px;
+}
+
+.optimizer-controls label {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.optimizer-controls select,
+.optimizer-controls button {
+  padding: 6px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.optimizer-controls button {
+  background: var(--color-primary);
+  color: white;
+  cursor: pointer;
+  border: none;
+}
+
+.optimizer-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.optimizer-description {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin: 4px 0 0;
+}
+
+.optimizer-note {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-top: 8px;
+}
+
+.optimizer-results {
+  margin-top: 12px;
+}
+
+.best-set-row {
+  background: rgba(34, 197, 94, 0.08);
+}
+
+/* Arrow Charts */
+.arrow-charts {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chart-description {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin: 4px 0 12px;
+}
+
+.similar-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.similar-controls input {
+  padding: 6px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.85rem;
+  min-width: 160px;
+}
+
+.similar-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.similar-table th,
+.similar-table td {
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--color-border);
+  text-align: right;
+}
+
+.similar-table th {
+  font-weight: 600;
+  text-align: left;
 }
 
 /* Responsive */

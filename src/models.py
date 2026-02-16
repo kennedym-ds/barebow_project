@@ -36,6 +36,7 @@ class BowSetup(SQLModel, table=True):
 
     # Tuning Specs
     draw_weight_otf: float
+    draw_length_in: float | None = None
     brace_height_in: float
 
     # Flattened Tiller
@@ -77,8 +78,8 @@ class ArrowSetup(SQLModel, table=True):
     spine: float
     length_in: float
     point_weight_gr: float
-    total_arrow_weight_gr: float
-    shaft_diameter_mm: float
+    total_arrow_weight_gr: float | None = None
+    shaft_diameter_mm: float | None = None
     fletching_type: str
     nock_type: str
     arrow_count: int = Field(default=12, description="Number of arrows in the set")

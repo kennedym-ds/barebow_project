@@ -8,8 +8,9 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from api.routers import analysis, analytics, arrows, bows, crawls, rounds, scoring, sessions, tabs
-from src.db import create_db_and_tables
+from api.routers import analysis, analytics, arrows, bows, crawls, rounds, scoring, sessions, tabs, trajectory
+from src.db import create_db_and_tables, engine
+from src.migrations import run_migrations
 
 logger = logging.getLogger("baretrack")
 logging.basicConfig(
@@ -24,6 +25,7 @@ async def lifespan(app: FastAPI):
     """Lifespan event handler - runs on startup and shutdown."""
     logger.info("BareTrack API starting up")
     create_db_and_tables()
+    run_migrations(engine)
     logger.info("Database initialised")
     yield
     logger.info("BareTrack API shutting down")
@@ -32,7 +34,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="BareTrack API",
     description="REST API for BareTrack archery management system",
-    version="1.0.2",
+    version="1.1.0",
     lifespan=lifespan,
 )
 
@@ -76,6 +78,7 @@ app.include_router(analysis.router, prefix="/api/analysis", tags=["Analysis"])
 app.include_router(crawls.router, prefix="/api/crawls", tags=["Crawl Regression"])
 app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])
 app.include_router(rounds.router, prefix="/api/rounds", tags=["Rounds"])
+app.include_router(trajectory.router, prefix="/api/trajectory", tags=["Trajectory"])
 
 
 @app.get("/api/health")

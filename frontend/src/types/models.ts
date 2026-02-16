@@ -11,6 +11,7 @@ export interface BowSetup {
   limbs_length: string;
   limbs_marked_poundage: number;
   draw_weight_otf: number;
+  draw_length_in: number | null;
   brace_height_in: number;
   tiller_top_mm: number;
   tiller_bottom_mm: number;
@@ -35,8 +36,8 @@ export interface ArrowSetup {
   spine: number;
   length_in: number;
   point_weight_gr: number;
-  total_arrow_weight_gr: number;
-  shaft_diameter_mm: number;
+  total_arrow_weight_gr: number | null;
+  shaft_diameter_mm: number | null;
   fletching_type: string;
   nock_type: string;
   arrow_count: number;
@@ -242,4 +243,153 @@ export interface PersonalBest {
   round_type: string;
   score: number;
   date: string;
+}
+
+// ---------------------------------------------------------------------------
+// Arrow Analytics
+// ---------------------------------------------------------------------------
+
+export interface ShaftGradeEntry {
+  arrow_number: number;
+  grade: string;
+  measured_weight_gr: number | null;
+  measured_spine_astm: number | null;
+  straightness: number | null;
+}
+
+export interface MetricStats {
+  mean: number;
+  std: number;
+  range: number;
+  cv_pct: number;
+}
+
+export interface GroupStatsResponse {
+  shaft_count: number;
+  weight: MetricStats | null;
+  spine: MetricStats | null;
+  straightness: MetricStats | null;
+}
+
+export interface ShaftOutlierEntry {
+  arrow_number: number;
+  feature: string;
+  value: number;
+  z_score: number;
+}
+
+export interface ShaftAnalyticsResponse {
+  grades: ShaftGradeEntry[];
+  group_stats: GroupStatsResponse;
+  outliers: ShaftOutlierEntry[];
+}
+
+// ---------------------------------------------------------------------------
+// Spine Check
+// ---------------------------------------------------------------------------
+
+export interface FrequencyMatchResponse {
+  match_quality: string;
+  oscillations_during_power_stroke: number;
+  arrow_frequency_hz: number;
+  power_stroke_duration_ms: number;
+  message: string;
+}
+
+export interface SpineCheckResponse {
+  status: string;
+  recommended_spine: number;
+  actual_dynamic_spine: number;
+  deviation_pct: number;
+  effective_draw_weight: number;
+  message: string;
+  frequency_match: FrequencyMatchResponse | null;
+}
+
+// ---------------------------------------------------------------------------
+// Set Optimizer
+// ---------------------------------------------------------------------------
+
+export interface OptimizeRequest {
+  set_size: number;
+  top_n: number;
+  weight_priority: number;
+  spine_priority: number;
+  straightness_priority: number;
+}
+
+export interface OptimizedSetResponse {
+  rank: number;
+  arrow_numbers: number[];
+  consistency_score: number;
+  weight_std_gr: number;
+  spine_std: number;
+  straightness_std: number;
+}
+
+// ---------------------------------------------------------------------------
+// Find Similar
+// ---------------------------------------------------------------------------
+
+export interface FindSimilarRequest {
+  reference_arrow_numbers: number[];
+  top_n: number;
+}
+
+export interface SimilarArrowResult {
+  arrow_number: number;
+  similarity_score: number;
+  weight_diff_gr: number;
+  spine_diff: number;
+  straightness_diff: number;
+}
+
+// ---------------------------------------------------------------------------
+// Trajectory
+// ---------------------------------------------------------------------------
+
+export interface TrajectoryPoint {
+  t: number;
+  x_m: number;
+  y_m: number;
+  v_mps: number;
+}
+
+export interface TrajectoryRequest {
+  launch_velocity_fps: number;
+  target_distance_m: number;
+  arrow_mass_gr: number;
+  shaft_diameter_mm: number;
+  arrow_length_in: number;
+  target_elevation_deg?: number;
+  drag_coefficient?: number;
+}
+
+export interface TrajectoryResponse {
+  launch_angle_deg: number;
+  target_elevation_deg: number;
+  trajectory: TrajectoryPoint[];
+  max_height_m: number;
+  range_m: number;
+  time_of_flight_s: number;
+  impact_velocity_mps: number;
+  impact_angle_deg: number;
+  drop_at_distances: Record<string, number>;
+}
+
+export interface DriftRequest {
+  launch_velocity_fps: number;
+  arrow_mass_gr: number;
+  shaft_diameter_mm: number;
+  arrow_length_in: number;
+  target_distance_m: number;
+  crosswind_speed_mps: number;
+  drag_coefficient?: number;
+}
+
+export interface DriftResponse {
+  drift_cm: number;
+  drift_rings: number;
+  time_of_flight_s: number;
+  advice: string;
 }
