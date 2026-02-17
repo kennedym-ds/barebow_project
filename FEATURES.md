@@ -1,6 +1,6 @@
 # Features
 
-Implemented features as of 2026-02-16 (v1.1.0).
+Implemented features as of 2026-06-29 (v2.0.0).
 
 ---
 
@@ -147,31 +147,28 @@ Implemented features as of 2026-02-16 (v1.1.0).
 
 ## Testing & Quality
 
-- ✅ **120 Tests**: pytest suite covering models, API endpoints (bows, arrows, tabs, sessions, scoring, analysis, crawls, analytics), Park Model, physics, crawls, precision metrics
-- **224 Total Tests**: Includes trajectory, shaft analytics, spine model, and frequency analysis tests
-- ✅ **In-Memory Testing**: StaticPool SQLite for isolated, fast tests
 - ✅ **TypeScript Strict Mode**: Zero linting errors, full type safety in frontend
 - ✅ **ESLint Flat Config**: TypeScript and React rules for consistent code style
-- ✅ **Pydantic Validation**: Strong typing on all API request/response models
+- ✅ **CI/CD Pipeline**: GitHub Actions for frontend lint/typecheck/build + Tauri desktop build on Windows
 
 ---
 
 ## Technical Features
 
-### Backend (FastAPI + SQLModel)
-- ✅ **49 REST Endpoints**: 9 router modules (analytics split into 4 sub-modules)
-- ✅ **Trajectory & Drift Endpoints**: Launch angle solver, drop table, crosswind drift analysis
-- ✅ **SQLite Database**: Single-file database (`baretrack.db`) with automatic schema creation
-- ✅ **Structured Logging**: Request timing middleware, global exception handler, startup/shutdown lifecycle logs
-- ✅ **CORS Configuration**: Secure cross-origin requests from frontend
+### Platform (Tauri 2)
+- ✅ **Windows Desktop**: Native window via Tauri 2 with NSIS installer
+- ✅ **Android**: Native APK via Tauri 2 mobile target (Android 7.0+)
+- ✅ **sql.js (WASM SQLite)**: Embedded database running entirely client-side
+- ✅ **Tauri FS Persistence**: Database file saved/loaded via `@tauri-apps/plugin-fs` to AppData
+- ✅ **Legacy Migration**: Automatic import of old pywebview database on first launch
+- ✅ **`runParams()` Pattern**: Explicit prepare/bind/step/free for sql.js — required for Android WebView WASM compatibility
 - ✅ **String UUID Primary Keys**: Cascading deletes on parent-child relationships
-- ✅ **Hot Reload**: `--reload-dir src --reload-dir api` watches only relevant directories
-- ✅ **CI/CD Pipeline**: GitHub Actions for Python 3.11/3.12 matrix + frontend build/lint/type-check
+- ✅ **Android Safe Area**: Status bar and navigation bar padding via CSS env() variables
 
 ### Frontend (React + TypeScript + Vite)
 - ✅ **TanStack Query**: Optimistic updates, automatic cache invalidation, retry logic
+- ✅ **Service Layer**: Business logic in services wrapping sql.js repositories (no HTTP)
 - ✅ **Code Splitting**: Plotly.js lazy-loaded to reduce initial bundle size
-- ✅ **Vite Proxy**: `/api` requests proxied to backend on port 8000
 - ✅ **React Router v7**: Client-side routing with 9 pages
 - ✅ **Plotly.js**: Interactive charts (scatter plots, line charts, heatmaps, confidence ellipses)
 - ✅ **Dark Mode Toggle**: Light/Dark/System theme with localStorage persistence
@@ -194,16 +191,16 @@ Implemented features as of 2026-02-16 (v1.1.0).
 ## Known Limitations
 
 - ❌ **Multi-Distance Sessions**: Field archery rounds with variable distances per target not yet supported
-- ❌ **Mobile/Offline**: Web SPA requires running backend; no PWA or offline capability yet
 - ❌ **Weather Logging**: No conditions tracking (wind, temperature, light)
 - ❌ **Social Features**: No club integration, coach-student sharing, or leaderboards
 - ❌ **Camera Auto-Scoring**: No computer vision for automatic target face scoring
 - ❌ **Smartwatch Support**: No companion app for Apple Watch / Wear OS
 - ❌ **Data Sync**: No cloud backup or cross-device sync
+- ❌ **iOS Support**: Tauri 2 supports iOS but not yet configured
 
 See `artifacts/research/barebow-archer-needs.md` for prioritized roadmap.
 
 ---
 
-**Last Updated**: 2026-02-16  
-**Test Coverage**: 224 tests passing
+**Last Updated**: 2026-06-29
+**Platform**: Windows Desktop + Android (Tauri 2)

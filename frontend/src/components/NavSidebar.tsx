@@ -41,14 +41,17 @@ export default function NavSidebar() {
 
   return (
     <>
-      <button
-        className="nav-hamburger"
-        onClick={() => setOpen(o => !o)}
-        aria-label={open ? 'Close navigation' : 'Open navigation'}
-        aria-expanded={open}
-      >
-        <span className={`hamburger-icon ${open ? 'open' : ''}`} />
-      </button>
+      <header className="mobile-app-bar">
+        <button
+          className="nav-hamburger"
+          onClick={() => setOpen(o => !o)}
+          aria-label={open ? 'Close navigation' : 'Open navigation'}
+          aria-expanded={open}
+        >
+          <span className={`hamburger-icon ${open ? 'open' : ''}`} />
+        </button>
+        <span className="mobile-app-title">BareTrack</span>
+      </header>
 
       {open && <div className="nav-overlay" onClick={() => setOpen(false)} />}
 

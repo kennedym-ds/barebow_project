@@ -50,22 +50,27 @@ export default function ArrowForm() {
     }
   }, [selectedId, arrow]);
 
-  const handleChange = (field: keyof ArrowSetupCreate, value: string | number) => {
+  const handleChange = <K extends keyof ArrowSetupCreate>(field: K, value: ArrowSetupCreate[K]) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleNumericChange = (field: keyof ArrowSetupCreate, raw: string) => {
+  const handleNumericChange = <K extends keyof ArrowSetupCreate>(field: K, raw: string) => {
+    if (raw === '') return;
     const parsed = parseFloat(raw);
-    handleChange(field, isNaN(parsed) ? '' : parsed);
+    if (!isNaN(parsed)) {
+      handleChange(field, parsed as ArrowSetupCreate[K]);
+    }
   };
 
-  const handleNullableNumericChange = (field: keyof ArrowSetupCreate, raw: string) => {
+  const handleNullableNumericChange = <K extends keyof ArrowSetupCreate>(field: K, raw: string) => {
     if (raw === '') {
-      handleChange(field, null);
+      handleChange(field, null as ArrowSetupCreate[K]);
       return;
     }
     const parsed = parseFloat(raw);
-    handleChange(field, isNaN(parsed) ? null : parsed);
+    if (!isNaN(parsed)) {
+      handleChange(field, parsed as ArrowSetupCreate[K]);
+    }
   };
 
   const handleSave = async () => {

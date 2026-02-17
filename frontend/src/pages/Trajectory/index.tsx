@@ -189,9 +189,9 @@ export default function Trajectory() {
                 },
               ]}
               layout={{
-                title: `Arrow Trajectory (launch ${trajectory.launch_angle_deg.toFixed(1)}°)`,
-                xaxis: { title: 'Downrange (m)', zeroline: true },
-                yaxis: { title: 'Height (m)', zeroline: true, scaleanchor: 'x' },
+                title: { text: `Arrow Trajectory (launch ${trajectory.launch_angle_deg.toFixed(1)}°)` },
+                xaxis: { title: { text: 'Downrange (m)' }, zeroline: true },
+                yaxis: { title: { text: 'Height (m)' }, zeroline: true, scaleanchor: 'x' },
                 height: 400,
                 margin: { t: 40, r: 20, b: 50, l: 60 },
                 paper_bgcolor: 'transparent',

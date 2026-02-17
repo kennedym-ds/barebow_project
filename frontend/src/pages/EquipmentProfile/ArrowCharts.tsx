@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Plot from 'react-plotly.js';
 import Card from '../../components/ui/Card';
 import { useArrowAnalytics, useFindSimilar } from '../../api/arrows';
-import type { ShaftAnalyticsResponse, SimilarArrowResult } from '../../types/models';
+import type { SimilarArrowResult } from '../../types/models';
 
 interface ArrowChartsProps {
   arrowId: string;
@@ -41,7 +41,7 @@ export default function ArrowCharts({ arrowId }: ArrowChartsProps) {
     z: shafts.map((s) => s.straightness ?? 0),
     text: shafts.map((s) => `Arrow #${s.arrow_number}`),
     type: 'scatter3d' as const,
-    mode: 'markers+text' as const,
+    mode: 'markers+text' as any,
     name: grade,
     marker: { size: 6, color: GRADE_COLORS[grade] ?? '#94a3b8' },
     textposition: 'top center' as const,
@@ -95,9 +95,9 @@ export default function ArrowCharts({ arrowId }: ArrowChartsProps) {
           layout={{
             height: 500,
             scene: {
-              xaxis: { title: 'Weight (gr)' },
-              yaxis: { title: 'Spine (ASTM)' },
-              zaxis: { title: 'Straightness' },
+              xaxis: { title: { text: 'Weight (gr)' } },
+              yaxis: { title: { text: 'Spine (ASTM)' } },
+              zaxis: { title: { text: 'Straightness' } },
             },
             margin: { t: 20, r: 20, b: 20, l: 20 },
             paper_bgcolor: 'transparent',

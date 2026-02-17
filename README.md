@@ -1,25 +1,29 @@
 # BareTrack
 
-Barebow archery analysis tool. Tracks sessions, analyzes precision, calculates crawl marks for string-walking.
+Barebow archery analysis tool. Tracks sessions, analyzes precision, calculates crawl marks for string-walking. Runs on Windows desktop and Android.
 
-New to BareTrack? See the [Getting Started](docs/getting-started.md) guide.  
+New to BareTrack? See the [Getting Started](docs/getting-started.md) guide.
 For a full walkthrough of every feature, see the [User Guide](docs/user-guide.md).
 
 ## Download
 
-**No coding required** — install BareTrack like any other Windows app:
+### Windows Desktop
 
-1. Download **[BareTrackSetup.exe](https://github.com/kennedym-ds/barebow_project/releases/latest/download/BareTrackSetup.exe)**
+1. Download the latest installer from **[Releases](https://github.com/kennedym-ds/barebow_project/releases/latest)**
 2. Run the installer and follow the prompts
-3. Launch BareTrack from the Start Menu or Desktop shortcut
+3. Launch BareTrack from the Start Menu
 
-Prefer browsing versions first? See **[All Releases](https://github.com/kennedym-ds/barebow_project/releases)**.
+**Requirements:** Windows 10 or later (64-bit). WebView2 runtime is required (pre-installed on Windows 10 1803+ and all Windows 11).
 
-**Requirements:** Windows 10 or later (64-bit). WebView2 runtime is required (pre-installed on Windows 10 1803+ and Windows 11).
+### Android
 
-Your data is stored locally in `%LOCALAPPDATA%\BareTrack\baretrack.db` — nothing is sent to the cloud.
+1. Download the APK from **[Releases](https://github.com/kennedym-ds/barebow_project/releases/latest)**
+2. Enable "Install from unknown sources" in Settings
+3. Open the APK to install
 
-> For developers who want to run from source, see [Getting Started](#getting-started) below.
+**Requirements:** Android 7.0 (API 24) or later.
+
+Your data is stored locally on-device — nothing is sent to the cloud.
 
 ## Key Features
 
@@ -30,126 +34,89 @@ Your data is stored locally in `%LOCALAPPDATA%\BareTrack\baretrack.db` — nothi
 * **Crawl Manager**: Polynomial regression predicts crawl marks from known distances. Includes point-on distance calculation.
 * **Analytics**: CEP50, sigma tracking, arrow precision tiers, personal bests, bias analysis, within-end patterns.
 * **Per-Arrow Analysis**: Heatmaps with density overlays, centre-of-mass markers, precision grouping (Primary/Secondary/Reserve).
+* **Trajectory Prediction**: Bisection solver for optimal launch angle with wind drift analysis.
+* **Shaft Analytics**: Automatic grading, group stats, outlier detection, set optimizer, and find-similar-arrows.
 
 ## Architecture
 
-Monorepo with a **FastAPI** backend and **React + TypeScript** frontend:
+Self-contained **Tauri 2** app with an embedded SQLite database (sql.js WASM). No backend server required.
 
 ```text
 barebow_project/
-├── src/              # Python domain logic (models, physics, analysis)
-├── api/              # FastAPI REST API (49 endpoints across 9 routers)
-│   ├── main.py       # App entry point, CORS, router mounting
-│   ├── deps.py       # Database session dependency
-│   └── routers/      # Route modules (bows, arrows, tabs, sessions, etc.)
-├── frontend/         # Vite + React + TypeScript SPA
-│   └── src/
-│       ├── api/      # TanStack Query hooks
-│       ├── components/  # Shared UI (Layout, NavSidebar, TargetFace)
-│       ├── pages/    # Route pages
-│       ├── types/    # TypeScript interfaces
-│       └── utils/    # Client-side scoring
-├── tests/            # pytest suite (224 tests)
-├── docs/             # User guide, getting started, developer notes
-├── desktop.py        # pywebview entry point for desktop app
-└── seed_data.py      # Generate sample sessions for testing
+├── frontend/             # Vite + React + TypeScript SPA
+│   ├── src/
+│   │   ├── db/           # sql.js database layer (schema, repos, persistence)
+│   │   ├── services/     # Business logic (name generation, analytics)
+│   │   ├── domain/       # Pure TS domain logic (physics, scoring, crawls)
+│   │   ├── api/          # TanStack Query hooks wrapping services
+│   │   ├── components/   # Shared UI (Layout, NavSidebar, TargetFace)
+│   │   ├── pages/        # Route pages
+│   │   └── types/        # TypeScript interfaces
+│   ├── src-tauri/        # Tauri 2 Rust shell + Android/desktop config
+│   └── public/           # Static assets (sql-wasm.wasm)
+├── scripts/              # Build scripts (desktop, Android)
+├── docs/                 # User guide, getting started
+└── assets/               # App icon
 ```
 
-## Getting Started
+## Getting Started (Development)
 
 ### Prerequisites
 
-* Python 3.11+
 * Node.js 18+
+* Rust (for Tauri builds)
+* Android SDK + NDK 27 + JDK 21 (for Android builds)
 
-### 1. Set Up Python Virtual Environment
-
-```bash
-python -m venv .venv
-
-# Windows
-.venv\Scripts\activate
-
-# macOS / Linux
-source .venv/bin/activate
-```
-
-### 2. Install Python Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 3. Start the API Server
-
-```bash
-uvicorn api.main:app --reload --port 8000
-```
-
-The API docs are available at [http://localhost:8000/docs](http://localhost:8000/docs).
-
-### 4. Start the Frontend Dev Server
+### 1. Install Dependencies
 
 ```bash
 cd frontend
 npm install
-npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173). The frontend proxies `/api` requests to the FastAPI backend.
-
-### Production Build
+### 2. Start Development Server
 
 ```bash
 cd frontend
-npm run build
+npm run dev
 ```
 
-The output is in `frontend/dist/` — serve it with any static file server behind the API.
+Open [http://localhost:5173](http://localhost:5173). The app runs in browser mode with an in-memory database (no persistence).
 
-## Running Tests
+### 3. Desktop Development (Tauri)
 
 ```bash
-python -m pytest
+cd frontend
+npx tauri dev
 ```
 
-Tests use in-memory SQLite with `StaticPool` for isolation — no database file needed.
+### 4. Build for Production
+
+**Windows desktop:**
+```bash
+cd frontend
+npx tauri build
+```
+
+**Android APK:**
+```bash
+cd frontend
+npx tauri android build --debug --target aarch64
+```
 
 ## Key Modules
 
 | Module | Purpose |
 | --- | --- |
-| `src/models.py` | SQLModel tables (BowSetup, ArrowSetup, Session, End, Shot, etc.) |
-| `src/park_model.py` | James Park Model — score prediction & sigma calculation |
-| `src/physics.py` | GPP, FOC, dynamic spine, natural frequency, spine-frequency match |
-| `src/analysis.py` | "Virtual Coach" — synthesises physics + statistics |
-| `src/crawls.py` | Crawl mark regression & prediction |
-| `src/scoring.py` | Ring score calculation for WA & Flint target faces |
-| `src/trajectory.py` | Arrow trajectory prediction, wind drift analysis |
-| `src/arrow_analytics.py` | Shaft grading, group stats, outlier detection, set optimizer |
-| `api/` | 49 REST endpoints wrapping the domain logic |
-| `frontend/` | React SPA with Plotly.js interactive charts |
-
-## Recent Features
-
-* **Dark Mode**: Full dark theme with Light/Dark/System toggle — respects OS preference or manual override.
-* **Help Page**: In-app guide with page descriptions, key archery concepts, and contact info.
-* **Error Boundary & Toasts**: Graceful error recovery and contextual toast notifications.
-* **CI/CD Pipeline**: GitHub Actions for Python 3.11/3.12 + frontend build/lint/type-check.
-* **21 Round Presets**: Portsmouth, Bray I/II, WA indoor/outdoor, Lancaster, National, IFAA Flint, and more.
-* **CSV Data Export**: Download full session histories with shot coordinates, scores, and equipment settings.
-* **Point-On Distance Calculator**: Find the zero-crawl distance using polynomial root-finding.
-* **Per-Arrow Heatmaps**: Individual arrow performance with alpha-blended shot clusters, centre-of-mass markers, and optional density heatmap overlay.
-* **Arrow Precision Tiers**: Automatic classification of arrows as Primary (best), Secondary (good), or Reserve (training) based on composite precision metrics.
-* **Session Notes & Replay**: Annotate shooting sessions and replay arrow-by-arrow progress.
-* **Dashboard Home**: Personal bests, recent performance, and equipment status.
-* **Score Goal Simulator**: Predict scores for untested distances using the James Park Model.
-* **Desktop App**: Standalone Windows application via pywebview + PyInstaller.
-* **Trajectory Prediction**: Bisection solver for optimal launch angle with drop table, impact analysis, and uphill/downhill support.
-* **Wind Drift Analysis**: Crosswind deflection estimates with ring impact and aim-off advice.
-* **Shaft Analytics**: Automatic grading, group stats, outlier detection, set optimizer, and find-similar-arrows.
-* **Energy-Corrected Dynamic Spine**: Multiplicative model with natural frequency and power-stroke timing analysis.
-* **Optional Arrow Fields**: Create arrow profiles without total weight and shaft diameter — add them later.
+| `frontend/src/db/schema.sql` | SQLite schema (bowsetup, arrowsetup, session, etc.) |
+| `frontend/src/db/database.ts` | sql.js singleton, `runParams()`, UUID generation |
+| `frontend/src/db/repos/` | CRUD repositories for each table |
+| `frontend/src/services/` | Business logic wrapping repositories |
+| `frontend/src/domain/physics.ts` | GPP, FOC, dynamic spine, natural frequency |
+| `frontend/src/domain/scoring.ts` | Ring score calculation for WA & Flint faces |
+| `frontend/src/domain/crawls.ts` | Crawl mark regression & prediction |
+| `frontend/src/domain/analysis.ts` | Virtual Coach — physics + statistics synthesis |
+| `frontend/src/domain/arrowAnalytics.ts` | Shaft grading, outlier detection, set optimizer |
 
 ## Routes
 
@@ -173,4 +140,3 @@ Tests use in-memory SQLite with `StaticPool` for isolation — no database file 
 | [User Guide](docs/user-guide.md) | Full walkthrough of every feature |
 | [FEATURES.md](FEATURES.md) | Complete feature checklist |
 | [CHANGELOG.md](CHANGELOG.md) | Version history and release notes |
-| [Frontend README](frontend/README.md) | Frontend dev setup and conventions |

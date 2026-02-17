@@ -3,11 +3,14 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import ErrorBoundary from './components/ErrorBoundary';
+import MigrationDialog from './components/MigrationDialog';
 import { ToastProvider } from './components/Toast';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import EquipmentProfile from './pages/EquipmentProfile';
 import Help from './pages/Help';
+import { useAppLifecycle } from './hooks/useAppLifecycle';
+import { initDatabase, closeDatabase } from './db/database';
 
 // Lazy-load pages that use Plotly.js to keep initial bundle small
 const AnalysisLab = lazy(() => import('./pages/AnalysisLab'));
@@ -32,8 +35,21 @@ const queryClient = new QueryClient({
 });
 
 export default function App() {
+  useAppLifecycle();
+
+  const handleMigrate = async (data: Uint8Array) => {
+    // Re-init database with legacy data
+    closeDatabase();
+    await initDatabase({
+      existingData: data,
+      onSave: undefined, // Will be wired properly on next bootstrap
+    });
+    window.location.reload(); // Reload to re-bootstrap with persistence
+  };
+
   return (
     <ErrorBoundary>
+      <MigrationDialog onMigrate={handleMigrate} onSkip={() => {}} />
       <QueryClientProvider client={queryClient}>
         <ToastProvider>
           <BrowserRouter>

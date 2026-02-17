@@ -1,51 +1,28 @@
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-env/
-venv/
-.venv/
-pip-log.txt
-pip-delete-this-directory.txt
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.log
-.git
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pytest
-.pytest_cache/
-
-# Frontend
+# Node.js
 node_modules/
+
+# Frontend build output
 frontend/dist/
 
-# PyInstaller build output
-build/
-dist/
+# Tauri build output
+frontend/src-tauri/target/
+frontend/src-tauri/gen/android/app/build/
+frontend/src-tauri/gen/android/.gradle/
 
-# Database
+# Database files
 *.db
 *.sqlite3
-baretrack.db
 
-# Uploads (user-generated, not versioned)
-uploads/
+# Logs
+*.log
 
 # VS Code (Keep tasks.json and launch.json if present, ignore user settings)
 .vscode/*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# Agent artifacts
 artifacts/
 
 # OS Generated

@@ -15,6 +15,7 @@ const DEFAULT_BOW: BowSetupCreate = {
   limbs_length: 'Medium',
   limbs_marked_poundage: 30,
   draw_weight_otf: 30,
+  draw_length_in: null,
   brace_height_in: 8.5,
   tiller_top_mm: 0,
   tiller_bottom_mm: 0,

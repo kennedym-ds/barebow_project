@@ -1,18 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiFetch } from './client';
-import type { ArrowSetup, ArrowSetupCreate, ArrowSetupUpdate, ArrowShaft, ShaftAnalyticsResponse, SpineCheckResponse, OptimizeRequest, OptimizedSetResponse, FindSimilarRequest, SimilarArrowResult } from '../types/models';
+import type { ArrowShaft, OptimizeRequest, FindSimilarRequest, ArrowSetupCreate, ArrowSetupUpdate } from '../types/models';
+import { arrowService } from '../services/arrowService';
 
 export function useArrows() {
-  return useQuery({ 
-    queryKey: ['arrows'], 
-    queryFn: () => apiFetch<ArrowSetup[]>('/api/arrows') 
+  return useQuery({
+    queryKey: ['arrows'],
+    queryFn: () => arrowService.list(),
   });
 }
 
 export function useArrow(id: string | null) {
   return useQuery({
     queryKey: ['arrows', id],
-    queryFn: () => apiFetch<ArrowSetup>(`/api/arrows/${id}`),
+    queryFn: () => arrowService.getById(id!),
     enabled: !!id,
   });
 }
@@ -20,11 +20,7 @@ export function useArrow(id: string | null) {
 export function useCreateArrow() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: ArrowSetupCreate) =>
-      apiFetch<ArrowSetup>('/api/arrows', { 
-        method: 'POST', 
-        body: JSON.stringify(data) 
-      }),
+    mutationFn: (data: ArrowSetupCreate) => Promise.resolve(arrowService.create(data)),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['arrows'] }),
   });
 }
@@ -33,10 +29,7 @@ export function useUpdateArrow() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: ArrowSetupUpdate }) =>
-      apiFetch<ArrowSetup>(`/api/arrows/${id}`, { 
-        method: 'PUT', 
-        body: JSON.stringify(data) 
-      }),
+      Promise.resolve(arrowService.update(id, data)),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['arrows'] }),
   });
 }
@@ -44,8 +37,7 @@ export function useUpdateArrow() {
 export function useDeleteArrow() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) =>
-      apiFetch<void>(`/api/arrows/${id}`, { method: 'DELETE' }),
+    mutationFn: (id: string) => Promise.resolve(arrowService.delete(id)),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['arrows'] }),
   });
 }
@@ -54,7 +46,7 @@ export function useDeleteArrow() {
 export function useShafts(arrowId: string | null) {
   return useQuery({
     queryKey: ['arrows', arrowId, 'shafts'],
-    queryFn: () => apiFetch<ArrowShaft[]>(`/api/arrows/${arrowId}/shafts`),
+    queryFn: () => arrowService.listShafts(arrowId!),
     enabled: !!arrowId,
   });
 }
@@ -63,10 +55,7 @@ export function useImportShafts() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ arrowId, shafts }: { arrowId: string; shafts: Omit<ArrowShaft, 'id' | 'arrow_setup_id'>[] }) =>
-      apiFetch<ArrowShaft[]>(`/api/arrows/${arrowId}/shafts`, {
-        method: 'POST',
-        body: JSON.stringify(shafts),
-      }),
+      Promise.resolve(arrowService.importShafts(arrowId, shafts)),
     onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: ['arrows', variables.arrowId, 'shafts'] });
     },
@@ -76,8 +65,7 @@ export function useImportShafts() {
 export function useDeleteShafts() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (arrowId: string) =>
-      apiFetch<void>(`/api/arrows/${arrowId}/shafts`, { method: 'DELETE' }),
+    mutationFn: (arrowId: string) => Promise.resolve(arrowService.deleteShafts(arrowId)),
     onSuccess: (_data, arrowId) => {
       qc.invalidateQueries({ queryKey: ['arrows', arrowId, 'shafts'] });
     },
@@ -88,10 +76,7 @@ export function useDeleteShafts() {
 export function useArrowAnalytics(arrowId: string | null, outlierThreshold = 2.0) {
   return useQuery({
     queryKey: ['arrows', arrowId, 'analytics', outlierThreshold],
-    queryFn: () =>
-      apiFetch<ShaftAnalyticsResponse>(
-        `/api/arrows/${arrowId}/analytics?outlier_threshold=${outlierThreshold}`
-      ),
+    queryFn: () => arrowService.getAnalytics(arrowId!, outlierThreshold),
     enabled: !!arrowId,
   });
 }
@@ -100,10 +85,7 @@ export function useArrowAnalytics(arrowId: string | null, outlierThreshold = 2.0
 export function useSpineCheck(arrowId: string | null, bowId: string | null) {
   return useQuery({
     queryKey: ['arrows', arrowId, 'spine-check', bowId],
-    queryFn: () =>
-      apiFetch<SpineCheckResponse>(
-        `/api/arrows/${arrowId}/spine-check?bow_id=${bowId}`
-      ),
+    queryFn: () => arrowService.spineCheck(arrowId!, bowId!),
     enabled: !!arrowId && !!bowId,
   });
 }
@@ -112,10 +94,7 @@ export function useSpineCheck(arrowId: string | null, bowId: string | null) {
 export function useOptimizeArrows() {
   return useMutation({
     mutationFn: ({ arrowId, request }: { arrowId: string; request: OptimizeRequest }) =>
-      apiFetch<OptimizedSetResponse[]>(`/api/arrows/${arrowId}/optimize`, {
-        method: 'POST',
-        body: JSON.stringify(request),
-      }),
+      Promise.resolve(arrowService.optimize(arrowId, request)),
   });
 }
 
@@ -123,9 +102,6 @@ export function useOptimizeArrows() {
 export function useFindSimilar() {
   return useMutation({
     mutationFn: ({ arrowId, request }: { arrowId: string; request: FindSimilarRequest }) =>
-      apiFetch<SimilarArrowResult[]>(`/api/arrows/${arrowId}/find-similar`, {
-        method: 'POST',
-        body: JSON.stringify(request),
-      }),
+      Promise.resolve(arrowService.findSimilar(arrowId, request)),
   });
 }

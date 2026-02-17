@@ -1,5 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import { apiFetch } from './client';
+import { analyticsService } from '../services/analyticsService';
+import { bowService } from '../services/bowService';
+import { arrowService } from '../services/arrowService';
+import { roundService } from '../services/roundService';
 
 // Match the API response schemas from api/routers/analytics.py
 
@@ -42,33 +45,23 @@ export interface PersonalBest {
 }
 
 export function useAnalyticsSummary(roundTypes?: string[], fromDate?: string, toDate?: string) {
-  const params = new URLSearchParams();
-  if (roundTypes?.length) params.set('round_type', roundTypes.join(','));
-  if (fromDate) params.set('from_date', fromDate);
-  if (toDate) params.set('to_date', toDate);
-  const qs = params.toString();
   return useQuery({
     queryKey: ['analytics', 'summary', roundTypes, fromDate, toDate],
-    queryFn: () => apiFetch<SessionSummaryStats[]>(`/api/analytics/summary${qs ? '?' + qs : ''}`),
+    queryFn: () => analyticsService.summary({ roundTypes, fromDate, toDate }),
   });
 }
 
 export function useAnalyticsShots(roundTypes?: string[], fromDate?: string, toDate?: string) {
-  const params = new URLSearchParams();
-  if (roundTypes?.length) params.set('round_type', roundTypes.join(','));
-  if (fromDate) params.set('from_date', fromDate);
-  if (toDate) params.set('to_date', toDate);
-  const qs = params.toString();
   return useQuery({
     queryKey: ['analytics', 'shots', roundTypes, fromDate, toDate],
-    queryFn: () => apiFetch<ShotDetailRecord[]>(`/api/analytics/shots${qs ? '?' + qs : ''}`),
+    queryFn: () => analyticsService.shots({ roundTypes, fromDate, toDate }),
   });
 }
 
 export function usePersonalBests() {
   return useQuery({
     queryKey: ['analytics', 'personal-bests'],
-    queryFn: () => apiFetch<PersonalBest[]>('/api/analytics/personal-bests'),
+    queryFn: () => analyticsService.personalBests(),
   });
 }
 
@@ -148,46 +141,31 @@ export interface RoundPreset {
 }
 
 export function useParkModel(shortRound: string, longRound: string, fromDate?: string, toDate?: string) {
-  const params = new URLSearchParams();
-  params.set('short_round_type', shortRound);
-  params.set('long_round_type', longRound);
-  if (fromDate) params.set('from_date', fromDate);
-  if (toDate) params.set('to_date', toDate);
   return useQuery({
     queryKey: ['analytics', 'park-model', shortRound, longRound, fromDate, toDate],
-    queryFn: () => apiFetch<ParkModelAnalysis>(`/api/analytics/park-model?${params.toString()}`),
+    queryFn: () => analyticsService.parkModel(shortRound, longRound, { fromDate, toDate }),
     enabled: !!shortRound && !!longRound,
   });
 }
 
 export function useBiasAnalysis(roundTypes?: string[], fromDate?: string, toDate?: string) {
-  const params = new URLSearchParams();
-  if (roundTypes?.length) params.set('round_type', roundTypes.join(','));
-  if (fromDate) params.set('from_date', fromDate);
-  if (toDate) params.set('to_date', toDate);
-  const qs = params.toString();
   return useQuery({
     queryKey: ['analytics', 'bias', roundTypes, fromDate, toDate],
-    queryFn: () => apiFetch<BiasAnalysis>(`/api/analytics/bias-analysis${qs ? '?' + qs : ''}`),
+    queryFn: () => analyticsService.biasAnalysis({ roundTypes, fromDate, toDate }),
   });
 }
 
 export function useScoreContext(roundTypes?: string[], fromDate?: string, toDate?: string) {
-  const params = new URLSearchParams();
-  if (roundTypes?.length) params.set('round_type', roundTypes.join(','));
-  if (fromDate) params.set('from_date', fromDate);
-  if (toDate) params.set('to_date', toDate);
-  const qs = params.toString();
   return useQuery({
     queryKey: ['analytics', 'score-context', roundTypes, fromDate, toDate],
-    queryFn: () => apiFetch<SessionScoreContext[]>(`/api/analytics/score-context${qs ? '?' + qs : ''}`),
+    queryFn: () => analyticsService.scoreContext({ roundTypes, fromDate, toDate }),
   });
 }
 
 export function useRoundPresets() {
   return useQuery({
     queryKey: ['rounds', 'presets'],
-    queryFn: () => apiFetch<RoundPreset[]>('/api/rounds/presets'),
+    queryFn: () => roundService.listPresets(),
   });
 }
 
@@ -290,49 +268,30 @@ export interface EquipmentComparison {
 // ─── Advanced Analytics Hooks ────────────────────────────
 
 export function useAdvancedPrecision(roundTypes?: string[], fromDate?: string, toDate?: string) {
-  const params = new URLSearchParams();
-  if (roundTypes?.length) params.set('round_type', roundTypes.join(','));
-  if (fromDate) params.set('from_date', fromDate);
-  if (toDate) params.set('to_date', toDate);
-  const qs = params.toString();
   return useQuery({
     queryKey: ['analytics', 'advanced-precision', roundTypes, fromDate, toDate],
-    queryFn: () => apiFetch<AdvancedPrecision>(`/api/analytics/advanced-precision${qs ? '?' + qs : ''}`),
+    queryFn: () => analyticsService.advancedPrecision({ roundTypes, fromDate, toDate }),
   });
 }
 
 export function useTrends(roundTypes?: string[], fromDate?: string, toDate?: string) {
-  const params = new URLSearchParams();
-  if (roundTypes?.length) params.set('round_type', roundTypes.join(','));
-  if (fromDate) params.set('from_date', fromDate);
-  if (toDate) params.set('to_date', toDate);
-  const qs = params.toString();
   return useQuery({
     queryKey: ['analytics', 'trends', roundTypes, fromDate, toDate],
-    queryFn: () => apiFetch<TrendAnalysis>(`/api/analytics/trends${qs ? '?' + qs : ''}`),
+    queryFn: () => analyticsService.trends({ roundTypes, fromDate, toDate }),
   });
 }
 
 export function useWithinEnd(roundTypes?: string[], fromDate?: string, toDate?: string) {
-  const params = new URLSearchParams();
-  if (roundTypes?.length) params.set('round_type', roundTypes.join(','));
-  if (fromDate) params.set('from_date', fromDate);
-  if (toDate) params.set('to_date', toDate);
-  const qs = params.toString();
   return useQuery({
     queryKey: ['analytics', 'within-end', roundTypes, fromDate, toDate],
-    queryFn: () => apiFetch<WithinEndAnalysis>(`/api/analytics/within-end${qs ? '?' + qs : ''}`),
+    queryFn: () => analyticsService.withinEnd({ roundTypes, fromDate, toDate }),
   });
 }
 
 export function useHitProbability(roundType: string, fromDate?: string, toDate?: string) {
-  const params = new URLSearchParams();
-  params.set('round_type', roundType);
-  if (fromDate) params.set('from_date', fromDate);
-  if (toDate) params.set('to_date', toDate);
   return useQuery({
     queryKey: ['analytics', 'hit-probability', roundType, fromDate, toDate],
-    queryFn: () => apiFetch<HitProbabilityAnalysis>(`/api/analytics/hit-probability?${params.toString()}`),
+    queryFn: () => analyticsService.hitProbability(roundType, { fromDate, toDate }),
     enabled: !!roundType,
   });
 }
@@ -342,32 +301,27 @@ export function useEquipmentComparison(
   setupBBowId?: string, setupBArrowId?: string,
   roundType?: string, fromDate?: string, toDate?: string
 ) {
-  const params = new URLSearchParams();
-  if (setupABowId) params.set('setup_a_bow_id', setupABowId);
-  if (setupAArrowId) params.set('setup_a_arrow_id', setupAArrowId);
-  if (setupBBowId) params.set('setup_b_bow_id', setupBBowId);
-  if (setupBArrowId) params.set('setup_b_arrow_id', setupBArrowId);
-  if (roundType) params.set('round_type', roundType);
-  if (fromDate) params.set('from_date', fromDate);
-  if (toDate) params.set('to_date', toDate);
   return useQuery({
     queryKey: ['analytics', 'equipment', setupABowId, setupAArrowId, setupBBowId, setupBArrowId, roundType, fromDate, toDate],
-    queryFn: () => apiFetch<EquipmentComparison>(`/api/analytics/equipment-comparison?${params.toString()}`),
+    queryFn: () => analyticsService.equipmentComparison(
+      setupABowId, setupAArrowId, setupBBowId, setupBArrowId,
+      roundType, fromDate, toDate
+    ),
     enabled: !!(setupABowId || setupAArrowId) && !!(setupBBowId || setupBArrowId),
   });
 }
 
-export function useBows() {
+export function useBowsForAnalytics() {
   return useQuery({
     queryKey: ['bows'],
-    queryFn: () => apiFetch<Array<{id: string; name: string}>>('/api/bows'),
+    queryFn: () => bowService.list().map((b) => ({ id: b.id, name: b.name })),
   });
 }
 
-export function useArrows() {
+export function useArrowsForAnalytics() {
   return useQuery({
     queryKey: ['arrows'],
-    queryFn: () => apiFetch<Array<{id: string; make: string; model: string}>>('/api/arrows'),
+    queryFn: () => arrowService.list().map((a) => ({ id: a.id, make: a.make, model: a.model })),
   });
 }
 
@@ -390,7 +344,7 @@ export interface DashboardStats {
 export function useDashboard() {
   return useQuery({
     queryKey: ['analytics', 'dashboard'],
-    queryFn: () => apiFetch<DashboardStats>('/api/analytics/dashboard'),
+    queryFn: () => analyticsService.dashboard(),
   });
 }
 
@@ -409,15 +363,9 @@ export interface ScoreGoalSimulation {
 }
 
 export function useScoreGoal(goalScore: number, totalArrows: number, distanceM: number, faceCm: number, roundType?: string) {
-  const params = new URLSearchParams();
-  params.set('goal_total_score', goalScore.toString());
-  params.set('total_arrows', totalArrows.toString());
-  params.set('distance_m', distanceM.toString());
-  params.set('face_cm', faceCm.toString());
-  if (roundType) params.set('round_type', roundType);
   return useQuery({
     queryKey: ['analytics', 'score-goal', goalScore, totalArrows, distanceM, faceCm, roundType],
-    queryFn: () => apiFetch<ScoreGoalSimulation>(`/api/analytics/score-goal?${params.toString()}`),
+    queryFn: () => analyticsService.scoreGoal(goalScore, totalArrows, distanceM, faceCm, roundType),
     enabled: goalScore > 0 && totalArrows > 0,
   });
 }
@@ -461,12 +409,8 @@ export interface ArrowPerformanceSummary {
 }
 
 export function useArrowPerformance(roundType?: string, fromDate?: string, toDate?: string) {
-  const params = new URLSearchParams();
-  if (roundType) params.set('round_type', roundType);
-  if (fromDate) params.set('from_date', fromDate);
-  if (toDate) params.set('to_date', toDate);
   return useQuery({
     queryKey: ['analytics', 'arrow-performance', roundType, fromDate, toDate],
-    queryFn: () => apiFetch<ArrowPerformanceSummary>(`/api/analytics/arrow-performance?${params.toString()}`),
+    queryFn: () => analyticsService.arrowPerformance(roundType, fromDate, toDate),
   });
 }

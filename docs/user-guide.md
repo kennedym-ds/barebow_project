@@ -437,29 +437,21 @@ All charts, tables, cards, and form elements adapt to the selected theme.
 
 ## Desktop App
 
-BareTrack can run as a standalone Windows desktop application using pywebview.
+BareTrack runs as a native desktop application on Windows via Tauri 2.
 
-### Running in Dev Mode
+### Installation
 
-```bash
-python desktop.py
-```
+Download the installer from the [latest release](https://github.com/kennedym-ds/barebow_project/releases/latest) and run it. The app installs via NSIS and creates a Start Menu entry.
 
-This launches the FastAPI backend in a background thread and opens a native Windows window.
+**Requirements:** Windows 10+ (64-bit) with WebView2 runtime (pre-installed on Windows 10 1803+ and all Windows 11).
 
-### Building a Standalone Executable
+### Android
 
-```bash
-# Build frontend first
-cd frontend && npm run build && cd ..
+BareTrack also runs natively on Android 7.0+. Download the APK from the [latest release](https://github.com/kennedym-ds/barebow_project/releases/latest).
 
-# Package with PyInstaller
-powershell -ExecutionPolicy Bypass -File scripts/build-desktop.ps1
-```
+### Data Storage
 
-The executable is output to `dist/BareTrack/BareTrack.exe`. It bundles the API server, frontend assets, and Python runtime — no installation required on the target machine.
-
-User data (database, uploads) is stored in `%LOCALAPPDATA%/BareTrack/` when running the packaged app.
+Your data is stored locally in the Tauri AppData directory — nothing is sent to the cloud. If you're upgrading from the old Python/pywebview version, your database is imported automatically on first launch.
 
 ---
 
@@ -496,7 +488,7 @@ User data (database, uploads) is stored in `%LOCALAPPDATA%/BareTrack/` when runn
 ### Exporting Data
 
 - **CSV Export**: Download full shot data from any session in History. Works for offline analysis in spreadsheets or external tools.
-- **Database**: The raw data lives in `baretrack.db` (SQLite). You can query it directly with any SQLite tool if you want custom analysis.
+- **Database**: The raw data lives in the Tauri AppData directory as a SQLite file. You can copy it and query it with any SQLite tool for custom analysis.
 
 ---
 
@@ -515,4 +507,4 @@ User data (database, uploads) is stored in `%LOCALAPPDATA%/BareTrack/` when runn
 
 ---
 
-*Last updated: 2026-02-13*
+*Last updated: 2026-06-29*

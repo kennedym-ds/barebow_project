@@ -1,18 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiFetch } from './client';
-import type { TabSetup, TabSetupCreate, TabSetupUpdate } from '../types/models';
+import type { TabSetupCreate, TabSetupUpdate } from '../types/models';
+import { tabService } from '../services/tabService';
 
 export function useTabs() {
-  return useQuery({ 
-    queryKey: ['tabs'], 
-    queryFn: () => apiFetch<TabSetup[]>('/api/tabs') 
+  return useQuery({
+    queryKey: ['tabs'],
+    queryFn: () => tabService.list(),
   });
 }
 
 export function useTab(id: string | null) {
   return useQuery({
     queryKey: ['tabs', id],
-    queryFn: () => apiFetch<TabSetup>(`/api/tabs/${id}`),
+    queryFn: () => tabService.getById(id!),
     enabled: !!id,
   });
 }
@@ -20,11 +20,7 @@ export function useTab(id: string | null) {
 export function useCreateTab() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: TabSetupCreate) =>
-      apiFetch<TabSetup>('/api/tabs', { 
-        method: 'POST', 
-        body: JSON.stringify(data) 
-      }),
+    mutationFn: (data: TabSetupCreate) => Promise.resolve(tabService.create(data)),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['tabs'] }),
   });
 }
@@ -33,10 +29,7 @@ export function useUpdateTab() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: TabSetupUpdate }) =>
-      apiFetch<TabSetup>(`/api/tabs/${id}`, { 
-        method: 'PUT', 
-        body: JSON.stringify(data) 
-      }),
+      Promise.resolve(tabService.update(id, data)),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['tabs'] }),
   });
 }
@@ -44,8 +37,7 @@ export function useUpdateTab() {
 export function useDeleteTab() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) =>
-      apiFetch<void>(`/api/tabs/${id}`, { method: 'DELETE' }),
+    mutationFn: (id: string) => Promise.resolve(tabService.delete(id)),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['tabs'] }),
   });
 }
@@ -53,13 +45,8 @@ export function useDeleteTab() {
 export function useUploadTabImage() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, file }: { id: string; file: File }) => {
-      const form = new FormData();
-      form.append('file', file);
-      const res = await fetch(`/api/tabs/${id}/image`, { method: 'POST', body: form });
-      if (!res.ok) throw new Error('Upload failed');
-      return res.json() as Promise<TabSetup>;
-    },
+    mutationFn: async ({ id, file }: { id: string; file: File }) =>
+      tabService.uploadImage(id, file),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['tabs'] }),
   });
 }
@@ -67,8 +54,7 @@ export function useUploadTabImage() {
 export function useDeleteTabImage() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) =>
-      apiFetch<void>(`/api/tabs/${id}/image`, { method: 'DELETE' }),
+    mutationFn: (id: string) => tabService.deleteImage(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['tabs'] }),
   });
 }

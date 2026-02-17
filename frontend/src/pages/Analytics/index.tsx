@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import Plot from 'react-plotly.js';
-import { useAnalyticsSummary, useAnalyticsShots, usePersonalBests, useParkModel, useBiasAnalysis, useScoreContext, useRoundPresets, useAdvancedPrecision, useTrends, useWithinEnd, useHitProbability, useEquipmentComparison, useBows, useArrows } from '../../api/analytics';
+import { useAnalyticsSummary, useAnalyticsShots, usePersonalBests, useParkModel, useBiasAnalysis, useScoreContext, useRoundPresets, useAdvancedPrecision, useTrends, useWithinEnd, useHitProbability, useEquipmentComparison, useBowsForAnalytics, useArrowsForAnalytics } from '../../api/analytics';
 import type { SessionSummaryStats, ShotDetailRecord, SessionScoreContext, RoundPreset, PersonalBest } from '../../api/analytics';
 import './Analytics.css';
 
@@ -1642,8 +1642,8 @@ function EquipmentTab({ fromDate, toDate }: {
   const [setupBArrow, setSetupBArrow] = useState('');
 
   // Fetch available bows and arrows
-  const { data: bows } = useBows();
-  const { data: arrows } = useArrows();
+  const { data: bows } = useBowsForAnalytics();
+  const { data: arrows } = useArrowsForAnalytics();
 
   const { data: comparison, isLoading } = useEquipmentComparison(
     setupABow || undefined, setupAArrow || undefined,

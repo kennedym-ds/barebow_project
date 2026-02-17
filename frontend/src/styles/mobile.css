@@ -1,0 +1,124 @@
+/* Mobile-responsive overrides for Android and small screens */
+
+/* Touch-friendly minimum tap targets (48px as per Material Design) */
+@media (max-width: 768px) {
+  /* Hide sidebar on mobile, use hamburger menu pattern */
+  :root {
+    --sidebar-width: 0px;
+  }
+
+  /* Keep mobile nav below fixed app bar */
+  .nav-sidebar.nav-open {
+    top: calc(56px + var(--safe-area-top, 0px));
+    height: calc(100vh - 56px - var(--safe-area-top, 0px));
+  }
+
+  /* Ensure all interactive elements are at least 48px */
+  button,
+  input,
+  select,
+  textarea,
+  a {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  /* Stack form layouts vertically */
+  .form-row,
+  .filter-row,
+  .equipment-grid {
+    flex-direction: column !important;
+    gap: 0.75rem;
+  }
+
+  /* Full-width inputs on mobile */
+  input,
+  select,
+  textarea {
+    width: 100% !important;
+  }
+
+  /* Reduce padding for more content space */
+  .page-content {
+    padding: 0.75rem !important;
+  }
+
+  .main-content {
+    padding: calc(56px + var(--safe-area-top, 0px) + 0.75rem) 1rem 1rem !important;
+  }
+
+  /* Smaller headings */
+  h1 {
+    font-size: 1.5rem;
+  }
+  h2 {
+    font-size: 1.25rem;
+  }
+  h3 {
+    font-size: 1.1rem;
+  }
+
+  /* Plotly charts responsive sizing */
+  .js-plotly-plot,
+  .plot-container {
+    width: 100% !important;
+  }
+
+  /* Tab navigation on mobile — horizontal scroll */
+  .tab-nav,
+  .tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    scrollbar-width: none;
+  }
+  .tab-nav::-webkit-scrollbar,
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Tables: horizontal scroll wrapper */
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Cards and panels — full width */
+  .card,
+  .panel,
+  .stat-card {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+  :root {
+    --sidebar-width: 60px; /* Icon-only sidebar */
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+  }
+}
+
+/* Safe area for devices with notches / gesture nav */
+:root {
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@supports (padding: env(safe-area-inset-top)) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}

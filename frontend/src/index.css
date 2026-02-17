@@ -77,6 +77,8 @@ button {
 
 input, select, textarea {
   font-family: inherit;
+  color: var(--color-text);
+  background: var(--color-surface);
 }
 
 /* Error Boundary */

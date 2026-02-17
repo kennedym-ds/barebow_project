@@ -11,8 +11,37 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Under Development
 - Multi-distance session support (field archery)
 - Computer vision auto-scoring
-- PWA/offline capability
 - Weather conditions logging
+- Cloud sync / cross-device backup
+
+---
+
+## [2026-06-29] — v2.0.0 Tauri 2 Migration
+
+### Changed
+- **Architecture**: Migrated from pywebview + FastAPI (Python) to **Tauri 2** (Rust shell + React frontend). All domain logic now runs client-side in TypeScript.
+- **Database**: Replaced server-side SQLite with **sql.js** (WASM SQLite) running in the browser/WebView. Data persisted via Tauri FS plugin to AppData.
+- **Platform**: Now builds for **Windows desktop** and **Android** from a single codebase.
+- **Build System**: Replaced PyInstaller + Inno Setup with Tauri's native bundler (NSIS installer for Windows, APK for Android).
+- **CI/CD**: Simplified to frontend lint/typecheck/build + Tauri desktop build on Windows.
+
+### Added
+- **Android Support**: Native Android APK via Tauri 2's mobile target. Requires Android 7.0+.
+- **`runParams()` Helper**: Explicit prepare/bind/step/free pattern for sql.js parameter binding — required because `db.run(sql, params)` silently drops parameters on Android WebView's WASM runtime.
+- **Tauri Persistence**: Database file automatically saved/loaded via `@tauri-apps/plugin-fs`. Browser dev mode uses in-memory DB.
+- **Legacy Migration**: Automatic detection and import of old pywebview database on first launch.
+- **Android Safe Area**: Status bar and navigation bar padding handled via CSS env() variables.
+
+### Removed
+- **Python Backend**: Removed `src/`, `api/`, `tests/`, `desktop.py`, `seed_data.py`, `requirements.txt`, `pyproject.toml`, and all Python dependencies.
+- **PyInstaller Packaging**: Replaced by Tauri's built-in bundler.
+- **Inno Setup Installer**: Replaced by Tauri NSIS installer.
+- **FastAPI**: All 49 REST endpoints replaced by direct service calls from TanStack Query hooks.
+- **pytest Suite**: 224 Python tests removed (domain logic now in TypeScript).
+
+### Migration Notes
+- User data from the old pywebview app (`%LOCALAPPDATA%/BareTrack/baretrack.db`) is automatically imported on first launch of the Tauri app.
+- The new app stores data in the Tauri AppData directory.
 
 ---
 

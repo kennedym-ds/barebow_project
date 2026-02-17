@@ -2,65 +2,25 @@
 
 Get from zero to your first scored session in about 5 minutes.
 
-## What You Need
+## Install the App
 
-- **Python 3.11+** — [Download](https://www.python.org/downloads/)
-- **Node.js 18+** — [Download](https://nodejs.org/)
-- **Git** — [Download](https://git-scm.com/downloads)
+### Windows
 
-## 1. Clone and Set Up
+1. Download **BareTrack** from the [latest release](https://github.com/kennedym-ds/barebow_project/releases/latest).
+2. Run the installer and follow the prompts.
+3. Launch BareTrack from the Start Menu.
 
-```bash
-git clone https://github.com/kennedym-ds/barebow_project.git
-cd barebow_project
-```
+### Android
 
-Create a Python virtual environment and install dependencies:
+1. Download the APK from the [latest release](https://github.com/kennedym-ds/barebow_project/releases/latest).
+2. Enable "Install from unknown sources" in your device settings.
+3. Open the APK to install.
 
-```bash
-# Windows
-python -m venv .venv
-.venv\Scripts\activate
+Your data is stored locally on-device. Nothing is sent to the cloud.
 
-# macOS / Linux
-python3 -m venv .venv
-source .venv/bin/activate
-```
+> **Upgrading from the old Python/pywebview version?** Your database is imported automatically on first launch.
 
-```bash
-pip install -r requirements.txt
-```
-
-Install the frontend:
-
-```bash
-cd frontend
-npm install
-cd ..
-```
-
-## 2. Start the App
-
-Open two terminals in the project root:
-
-**Terminal 1 — API server:**
-
-```bash
-uvicorn api.main:app --reload --port 8000
-```
-
-**Terminal 2 — Frontend dev server:**
-
-```bash
-cd frontend
-npm run dev
-```
-
-Open **http://localhost:5173** in your browser.
-
-> **VS Code users**: Run the `Dev: Start All` task (`Ctrl+Shift+B`) to launch both servers at once.
-
-## 3. Set Up Your Equipment
+## 1. Set Up Your Equipment
 
 Before logging your first session, add your bow and arrows.
 
@@ -79,7 +39,7 @@ Before logging your first session, add your bow and arrows.
 
 That's it for setup. You can always come back and add more detail later.
 
-## 4. Log Your First Session
+## 2. Log Your First Session
 
 1. Click **Session Logger** in the sidebar.
 2. Pick a **round preset** from the dropdown (e.g. "WA 18m (Indoor)" for a standard 18m round on a 40 cm face).
@@ -91,7 +51,7 @@ That's it for setup. You can always come back and add more detail later.
 
 Your session is now saved and visible in **History** and **Analytics**.
 
-## 5. View Your Results
+## 3. View Your Results
 
 - **History** — See the full scorecard, replay the session end-by-end, or export to CSV.
 - **Analytics** — Score trends, precision metrics, personal bests, and more (builds up over multiple sessions).
@@ -100,17 +60,7 @@ Your session is now saved and visible in **History** and **Analytics**.
 
 > **Tip:** Click the theme toggle in the sidebar footer to switch between Light, Dark, and System themes.
 
-## 6. Optional: Load Sample Data
-
-If you want to explore the app with realistic data before shooting:
-
-```bash
-python seed_data.py
-```
-
-This creates 6 sample WA 18m sessions with a bow and arrow setup. Refresh the browser to see the data.
-
-## 7. Optional: Crawl Marks (String-Walking)
+## 4. Optional: Crawl Marks (String-Walking)
 
 If you shoot barebow with string-walking:
 
@@ -122,24 +72,63 @@ If you shoot barebow with string-walking:
 ## What Next?
 
 - Read the [User Guide](user-guide.md) for a full walkthrough of every feature.
-- Check the API docs at **http://localhost:8000/docs** (Swagger UI).
-- Run the test suite with `python -m pytest` (120 tests) to verify everything works.
+- Check the [FEATURES.md](../FEATURES.md) for the complete feature checklist.
 
-## Troubleshooting
+---
 
-### "Module not found" errors
+## Development Setup
 
-Make sure your virtual environment is activated:
+Want to run from source or contribute? See below.
+
+### Prerequisites
+
+- **Node.js 18+** — [Download](https://nodejs.org/)
+- **Rust** — [Install](https://rustup.rs/) (for Tauri builds)
+- **Git** — [Download](https://git-scm.com/downloads)
+
+For Android builds, you also need: Android SDK, NDK 27, JDK 21.
+
+### Clone and Install
 
 ```bash
-# Windows
-.venv\Scripts\activate
-
-# macOS / Linux
-source .venv/bin/activate
+git clone https://github.com/kennedym-ds/barebow_project.git
+cd barebow_project/frontend
+npm install
 ```
 
-### "'node' is not recognized"
+### Run in Browser (Dev Mode)
+
+```bash
+cd frontend
+npm run dev
+```
+
+Open **http://localhost:5173**. The app runs with an in-memory database (no persistence).
+
+### Run as Desktop App (Tauri)
+
+```bash
+cd frontend
+npx tauri dev
+```
+
+### Build for Production
+
+**Windows desktop:**
+```bash
+cd frontend
+npx tauri build
+```
+
+**Android APK:**
+```bash
+cd frontend
+npx tauri android build --debug --target aarch64
+```
+
+### Troubleshooting
+
+#### "'node' is not recognized"
 
 Add Node.js to your system PATH. On Windows PowerShell (run as administrator):
 
@@ -149,18 +138,6 @@ Add Node.js to your system PATH. On Windows PowerShell (run as administrator):
 
 Restart your terminal after changing PATH.
 
-### Port already in use
+#### Database reset
 
-Kill the process on port 8000:
-
-```bash
-# Windows
-Get-NetTCPConnection -LocalPort 8000 | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force }
-
-# macOS / Linux
-lsof -ti:8000 | xargs kill -9
-```
-
-### Database reset
-
-Delete `baretrack.db` and restart the API — a fresh database is created automatically.
+Delete the database file from your Tauri AppData directory and relaunch the app — a fresh database is created automatically.

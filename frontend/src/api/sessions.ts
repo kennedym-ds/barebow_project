@@ -1,23 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiFetch } from './client';
-import type { Session, SessionCreate, SessionSummary, End, EndCreate } from '../types/models';
+import type { SessionCreate, EndCreate } from '../types/models';
+import { sessionService } from '../services/sessionService';
 
 export function useSessions(bowId?: string, arrowId?: string) {
-  const params = new URLSearchParams();
-  if (bowId) params.set('bow_id', bowId);
-  if (arrowId) params.set('arrow_id', arrowId);
-  const qs = params.toString();
-  
   return useQuery({
     queryKey: ['sessions', bowId, arrowId],
-    queryFn: () => apiFetch<SessionSummary[]>(`/api/sessions${qs ? '?' + qs : ''}`),
+    queryFn: () => sessionService.list(bowId, arrowId),
   });
 }
 
 export function useSession(id: string | null) {
   return useQuery({
     queryKey: ['sessions', id],
-    queryFn: () => apiFetch<Session>(`/api/sessions/${id}`),
+    queryFn: () => sessionService.getById(id!),
     enabled: !!id,
   });
 }
@@ -25,11 +20,7 @@ export function useSession(id: string | null) {
 export function useCreateSession() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: SessionCreate) =>
-      apiFetch<Session>('/api/sessions', { 
-        method: 'POST', 
-        body: JSON.stringify(data) 
-      }),
+    mutationFn: (data: SessionCreate) => Promise.resolve(sessionService.create(data)),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['sessions'] }),
   });
 }
@@ -37,8 +28,7 @@ export function useCreateSession() {
 export function useDeleteSession() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) =>
-      apiFetch<void>(`/api/sessions/${id}`, { method: 'DELETE' }),
+    mutationFn: (id: string) => Promise.resolve(sessionService.delete(id)),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['sessions'] }),
   });
 }
@@ -47,12 +37,8 @@ export function useSaveEnd() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ sessionId, data }: { sessionId: string; data: EndCreate }) =>
-      apiFetch<End>(`/api/sessions/${sessionId}/ends`, { 
-        method: 'POST', 
-        body: JSON.stringify(data) 
-      }),
+      Promise.resolve(sessionService.saveEnd(sessionId, data)),
     onSuccess: (_, vars) => {
-      // Invalidate both detail and list queries so summaries refresh
       qc.invalidateQueries({ queryKey: ['sessions', vars.sessionId] });
       qc.invalidateQueries({ queryKey: ['sessions'] });
     },
