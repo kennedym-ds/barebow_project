@@ -63,6 +63,8 @@
 
 .trajectory-results {
   margin-top: 24px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .trajectory-stats {
@@ -99,6 +101,7 @@
   width: auto;
   border-collapse: collapse;
   margin-top: 12px;
+  min-width: 420px;
 }
 
 .drop-table th,
@@ -193,10 +196,20 @@
     text-align: center;
   }
 
+  .trajectory-inputs input,
+  .drift-inputs input,
+  .trajectory-actions button {
+    min-height: 48px;
+  }
+
   .drop-table th,
   .drop-table td {
     padding: 4px 8px;
     font-size: 0.8rem;
+  }
+
+  .drop-table {
+    min-width: 520px;
   }
 
   .drift-result {

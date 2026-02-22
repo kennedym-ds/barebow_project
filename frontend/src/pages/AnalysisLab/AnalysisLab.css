@@ -838,7 +838,7 @@
   background: #fff5f5;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 768px) {
   .arrow-heatmap-layout {
     grid-template-columns: 1fr;
   }

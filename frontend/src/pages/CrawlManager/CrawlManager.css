@@ -26,6 +26,7 @@
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 1rem;
+  min-width: 560px;
 }
 
 .marks-table th,
@@ -185,6 +186,13 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
+  min-width: 420px;
+}
+
+.known-marks-section,
+.crawl-table-half {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .crawl-table-half th,
@@ -535,6 +543,18 @@
   .marks-table input {
     padding: 0.3rem;
     font-size: 0.85rem;
+    min-height: 48px;
+  }
+
+  .marks-table button,
+  .add-row-button,
+  .tab-selector select,
+  .calib-btn,
+  .delete-image-btn,
+  .upload-button,
+  .print-btn,
+  .calib-ref-input input {
+    min-height: 48px;
   }
 
   .crawl-table {
@@ -546,6 +566,14 @@
   .crawl-table-half td {
     padding: 0.3rem;
     font-size: 0.8rem;
+  }
+
+  .marks-table {
+    min-width: 620px;
+  }
+
+  .crawl-table-half table {
+    min-width: 520px;
   }
 
   .calibration-bar {

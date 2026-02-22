@@ -537,6 +537,14 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 0.85rem;
+  min-width: 560px;
+}
+
+.similar-table,
+.shaft-table-container,
+.arrow-charts {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .similar-table th,
@@ -583,6 +591,20 @@
     text-align: center;
   }
 
+  .form-group input,
+  .form-group select,
+  .form-group textarea,
+  .btn-primary,
+  .btn-secondary,
+  .btn-danger,
+  .file-label,
+  .optimizer-controls select,
+  .optimizer-controls button,
+  .similar-controls input,
+  .spine-check-controls select {
+    min-height: 48px;
+  }
+
   .stats-grid {
     gap: 8px;
     grid-template-columns: repeat(2, 1fr);
@@ -613,5 +635,9 @@
   .similar-table td {
     padding: 0.35rem;
     font-size: 0.8rem;
+  }
+
+  .similar-table {
+    min-width: 620px;
   }
 }

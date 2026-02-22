@@ -2,6 +2,7 @@
   padding: 2rem;
   max-width: 1000px;
   margin: 0 auto;
+  overflow-x: hidden;
 }
 
 .tuning-wizard h1 {
@@ -269,6 +270,21 @@ hr {
   .radio-group {
     gap: 1rem;
     flex-wrap: wrap;
+  }
+
+  .form-group select,
+  .radio-group-vertical label,
+  .radio-group label {
+    min-height: 48px;
+  }
+
+  .observation-group,
+  .diagnosis-box,
+  .warning-box,
+  .perfect-tune-banner {
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
   }
 
   .observation-group {

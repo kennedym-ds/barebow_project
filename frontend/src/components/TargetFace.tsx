@@ -3,6 +3,7 @@ import Plot from 'react-plotly.js';
 import type { Data, Layout, Shape } from 'plotly.js';
 import { getRingScore, getFlintScore } from '../utils/scoring';
 import { mapPixelToData, computeResponsiveTargetSize } from './TargetFace.utils';
+import { useMobileLayout } from '../hooks/useMobileLayout';
 
 interface Centroid {
   x: number;
@@ -60,7 +61,7 @@ export default function TargetFace({
   const containerRef = useRef<HTMLDivElement>(null);
   const suppressClickRef = useRef(false);
   const [autoSize, setAutoSize] = useState<number>(width);
-  const [isMobileViewport, setIsMobileViewport] = useState<boolean>(() => window.innerWidth < 768);
+  const { isMobile: isMobileViewport, width: windowWidth, height: windowHeight } = useMobileLayout();
   const [zoomEnabled, setZoomEnabled] = useState<boolean>(true);
   const [touchActive, setTouchActive] = useState<boolean>(false);
 
@@ -71,10 +72,8 @@ export default function TargetFace({
     const measure = () => {
       const w = el.clientWidth;
       if (w > 0) {
-        const mobile = window.innerWidth < 768;
-        setIsMobileViewport(mobile);
         setAutoSize(
-          computeResponsiveTargetSize(w, window.innerWidth, window.innerHeight, mobile),
+          computeResponsiveTargetSize(w, windowWidth, windowHeight, isMobileViewport),
         );
       }
     };
@@ -84,7 +83,7 @@ export default function TargetFace({
     // Also re-measure when orientation changes (affects vh)
     window.addEventListener('resize', measure);
     return () => { ro.disconnect(); window.removeEventListener('resize', measure); };
-  }, [responsive]);
+  }, [responsive, windowWidth, windowHeight, isMobileViewport]);
 
   const resolvedSize = responsive ? autoSize : width;
   const resolvedHeight = responsive ? autoSize : height;

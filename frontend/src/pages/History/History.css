@@ -138,6 +138,8 @@
   border: 2px solid var(--color-border);
   border-radius: 8px;
   padding: 1.5rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .scorecard-section h2 {
@@ -168,6 +170,7 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 0.95rem;
+  min-width: 560px;
 }
 
 .scorecard-table thead {
@@ -262,6 +265,12 @@
     padding: 0.5rem;
   }
 
+  .selector-wrapper select,
+  .session-actions .export-btn,
+  .session-actions .delete-btn {
+    min-height: 48px;
+  }
+
   .session-actions {
     flex-direction: row;
     flex-wrap: wrap;
@@ -338,6 +347,10 @@
   .scorecard-table td {
     padding: 0.4rem 0.35rem;
     font-size: 0.8rem;
+  }
+
+  .scorecard-table {
+    min-width: 620px;
   }
 }
 
