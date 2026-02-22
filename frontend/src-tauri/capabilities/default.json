@@ -8,7 +8,7 @@
   "permissions": [
     "core:default",
     "fs:default",
-    "fs:scope-appdata",
+    "fs:scope-appdata-recursive",
     "fs:allow-read",
     "fs:allow-write",
     "fs:allow-exists",
