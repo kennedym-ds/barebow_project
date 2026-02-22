@@ -83,6 +83,26 @@ export async function initDatabase(config: DatabaseConfig = {}): Promise<SqlJsDa
 
     // Create tables if they don't exist (idempotent)
     db.run(schemaSql);
+
+    // Run migrations
+    const versionResult = db.exec("PRAGMA user_version;");
+    let currentVersion = 0;
+    if (versionResult.length > 0 && versionResult[0].values.length > 0) {
+      currentVersion = versionResult[0].values[0][0] as number;
+    }
+
+    if (currentVersion === 0) {
+      // Initial schema setup
+      db.run("PRAGMA user_version = 1;");
+      currentVersion = 1;
+    }
+
+    // Future migrations can be added here
+    // if (currentVersion < 2) {
+    //   db.run("ALTER TABLE ...");
+    //   db.run("PRAGMA user_version = 2;");
+    //   currentVersion = 2;
+    // }
   } catch (err) {
     // If schema setup fails, close the DB so the singleton guard
     // doesn't return a broken instance on the next call.
