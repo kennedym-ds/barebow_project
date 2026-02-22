@@ -242,3 +242,52 @@ hr {
   border-top: 2px solid var(--color-border);
   margin: 2rem 0;
 }
+
+@media (max-width: 768px) {
+  .tuning-wizard {
+    padding: 0.5rem;
+  }
+
+  .tuning-wizard h1 {
+    font-size: 1.4rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .subtitle {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .section h2 {
+    font-size: 1.15rem;
+  }
+
+  .section-subtitle {
+    font-size: 1rem;
+  }
+
+  .radio-group {
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .observation-group {
+    padding: 1rem;
+  }
+
+  .diagnosis-box {
+    padding: 1rem;
+  }
+
+  .warning-box {
+    padding: 1rem;
+  }
+
+  .perfect-tune-banner {
+    padding: 1.25rem;
+  }
+
+  .perfect-tune-banner h2 {
+    font-size: 1.3rem;
+  }
+}

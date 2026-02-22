@@ -226,6 +226,7 @@ export default function History() {
                     interactive={false}
                     width={450}
                     height={450}
+                    responsive={true}
                   />
                 </Suspense>
               ) : (

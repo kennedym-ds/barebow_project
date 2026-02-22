@@ -1,3 +1,7 @@
+:root {
+  --mobile-app-bar-height: 56px;
+}
+
 .nav-sidebar {
   width: var(--sidebar-width);
   height: 100vh;
@@ -152,15 +156,20 @@
   display: none;
   position: static;
   z-index: 200;
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  flex: 0 0 48px;
   border: none;
   border-radius: 8px;
   background: var(--color-sidebar);
   cursor: pointer;
   padding: 0;
+  margin: 0;
   align-items: center;
   justify-content: center;
+  align-self: center;
 }
 
 .hamburger-icon,
@@ -208,23 +217,26 @@
   .mobile-app-bar {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
+    box-sizing: border-box;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    height: calc(56px + var(--safe-area-top, 0px));
+    height: calc(var(--mobile-app-bar-height, 56px) + var(--safe-area-top, 0px));
     padding-top: var(--safe-area-top, 0px);
     padding-left: 0.5rem;
-    padding-right: 1rem;
+    padding-right: 0.75rem;
     background: var(--color-sidebar);
     color: var(--color-sidebar-text);
     z-index: 200;
-    gap: 0.75rem;
+    gap: 0.5rem;
   }
 
   .mobile-app-title {
     display: inline;
     font-size: 1.25rem;
+    line-height: 1.1;
     font-weight: 600;
     color: var(--color-sidebar-active);
   }
@@ -233,11 +245,13 @@
     display: flex;
     width: 48px;
     height: 48px;
+    min-width: 48px;
+    min-height: 48px;
   }
 
   .nav-sidebar {
-    top: calc(56px + var(--safe-area-top, 0px));
-    height: calc(100vh - 56px - var(--safe-area-top, 0px));
+    top: calc(var(--mobile-app-bar-height, 56px) + var(--safe-area-top, 0px));
+    height: calc(100vh - var(--mobile-app-bar-height, 56px) - var(--safe-area-top, 0px));
     transform: translateX(-100%);
   }
 

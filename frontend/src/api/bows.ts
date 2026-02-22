@@ -5,14 +5,14 @@ import { bowService } from '../services/bowService';
 export function useBows() {
   return useQuery({
     queryKey: ['bows'],
-    queryFn: () => bowService.list(),
+    queryFn: () => Promise.resolve(bowService.list()),
   });
 }
 
 export function useBow(id: string | null) {
   return useQuery({
     queryKey: ['bows', id],
-    queryFn: () => bowService.getById(id!),
+    queryFn: () => Promise.resolve(bowService.getById(id!)),
     enabled: !!id,
   });
 }

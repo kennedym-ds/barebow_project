@@ -214,13 +214,13 @@ export default function CrawlManager() {
               {!imageUrl ? (
                 <label className="upload-button">
                   Upload Tab Photo
-                  <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImageUpload} style={{ display: 'none' }} />
+                  <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImageUpload} className="visually-hidden" />
                 </label>
               ) : (
                 <div className="image-actions">
                   <label className="upload-button small">
                     Replace Photo
-                    <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImageUpload} style={{ display: 'none' }} />
+                    <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImageUpload} className="visually-hidden" />
                   </label>
                   <button className="delete-image-btn" onClick={() => deleteImage.mutate(selectedTabId)}>Remove Photo</button>
                 </div>

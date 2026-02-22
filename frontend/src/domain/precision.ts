@@ -159,9 +159,9 @@ function regularizedBetaI(a: number, b: number, x: number): number {
 function betaCf(a: number, b: number, x: number): number {
   const maxIter = 200;
   const eps = 1e-12;
-  let qab = a + b;
-  let qap = a + 1;
-  let qam = a - 1;
+  const qab = a + b;
+  const qap = a + 1;
+  const qam = a - 1;
   let c = 1.0;
   let d = 1.0 - qab * x / qap;
   if (Math.abs(d) < 1e-30) d = 1e-30;
@@ -730,7 +730,7 @@ export function computeMultiDistanceProfile(
 
     const slope = ssxx > 0 ? ssxy / ssxx : 0;
     // rValue not used currently but computed for potential future use
-    ssxx > 0 && ssyy > 0 ? ssxy / Math.sqrt(ssxx * ssyy) : 0;
+    // const rValue = ssxx > 0 && ssyy > 0 ? ssxy / Math.sqrt(ssxx * ssyy) : 0;
 
     // P-value from t-test on slope
     const sResid = Math.sqrt(Math.max(0, (ssyy - slope * ssxy)) / (n - 2));

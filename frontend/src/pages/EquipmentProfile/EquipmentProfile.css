@@ -67,3 +67,30 @@
 .card-content {
   /* Child content styles */
 }
+
+@media (max-width: 768px) {
+  .equipment-profile {
+    padding: 0.75rem;
+  }
+
+  .equipment-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+  }
+
+  .equipment-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab-button {
+    white-space: nowrap;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+  }
+
+  .card {
+    padding: 16px;
+  }
+}

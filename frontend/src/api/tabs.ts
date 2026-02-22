@@ -5,14 +5,14 @@ import { tabService } from '../services/tabService';
 export function useTabs() {
   return useQuery({
     queryKey: ['tabs'],
-    queryFn: () => tabService.list(),
+    queryFn: () => Promise.resolve(tabService.list()),
   });
 }
 
 export function useTab(id: string | null) {
   return useQuery({
     queryKey: ['tabs', id],
-    queryFn: () => tabService.getById(id!),
+    queryFn: () => Promise.resolve(tabService.getById(id!)),
     enabled: !!id,
   });
 }

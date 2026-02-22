@@ -24,7 +24,7 @@ export default function Home() {
         <div className="empty-dashboard">
           <h2>Welcome!</h2>
           <p>Get started by setting up your equipment and shooting your first session.</p>
-          <div className="quick-links">
+          <div className="quick-links quick-links-empty">
             <Link to="/equipment" className="quick-link">Set Up Equipment</Link>
             <Link to="/session" className="quick-link">Log First Session</Link>
           </div>
@@ -73,7 +73,7 @@ export default function Home() {
           )}
 
           {/* Quick Links */}
-          <div className="quick-links">
+          <div className="quick-links quick-links-dashboard">
             <Link to="/session" className="quick-link primary">New Session</Link>
             <Link to="/analytics" className="quick-link">Analytics</Link>
             <Link to="/analysis" className="quick-link">Analysis Lab</Link>

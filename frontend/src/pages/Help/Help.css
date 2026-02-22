@@ -130,8 +130,39 @@
   font-size: 1.25rem;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+  .help-page {
+    padding: 0.75rem;
+  }
+
+  .help-page h1 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .help-section h2 {
+    font-size: 1.1rem;
+  }
+
   .help-grid {
     grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .help-card {
+    padding: 0.75rem;
+  }
+
+  .help-card h3 {
+    font-size: 0.95rem;
+  }
+
+  .help-card p {
+    font-size: 0.85rem;
+  }
+
+  .contact-link {
+    padding: 0.65rem 0.75rem;
+    font-size: 0.9rem;
   }
 }

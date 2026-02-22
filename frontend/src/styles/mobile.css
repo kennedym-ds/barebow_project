@@ -1,7 +1,26 @@
 /* Mobile-responsive overrides for Android and small screens */
 
+/* Prevent horizontal scroll globally */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Force all elements to respect viewport */
+* {
+  max-width: 100vw;
+}
+
 /* Touch-friendly minimum tap targets (48px as per Material Design) */
 @media (max-width: 768px) {
+  html {
+    font-size: 15px;
+  }
+
+  body {
+    line-height: 1.4;
+  }
+
   /* Hide sidebar on mobile, use hamburger menu pattern */
   :root {
     --sidebar-width: 0px;
@@ -9,18 +28,22 @@
 
   /* Keep mobile nav below fixed app bar */
   .nav-sidebar.nav-open {
-    top: calc(56px + var(--safe-area-top, 0px));
-    height: calc(100vh - 56px - var(--safe-area-top, 0px));
+    top: calc(var(--mobile-app-bar-height, 56px) + var(--safe-area-top, 0px));
+    height: calc(100vh - var(--mobile-app-bar-height, 56px) - var(--safe-area-top, 0px));
   }
 
-  /* Ensure all interactive elements are at least 48px */
+  /* Ensure all interactive elements are at least 48x48 */
   button,
   input,
   select,
   textarea,
   a {
-    min-height: 48px;
-    min-width: 48px;
+    min-height: 48px !important;
+    min-width: 48px !important;
+  }
+
+  a {
+    display: inline-block;
   }
 
   /* Stack form layouts vertically */
@@ -28,40 +51,76 @@
   .filter-row,
   .equipment-grid {
     flex-direction: column !important;
-    gap: 0.75rem;
+    gap: 0.625rem;
   }
 
-  /* Full-width inputs on mobile */
-  input,
-  select,
-  textarea {
+  /* Full-width inputs on mobile — but NOT inside tables */
+  .form-group input,
+  .form-group select,
+  .form-group textarea,
+  .config-form input,
+  .config-form select,
+  .config-form textarea,
+  .form-header select {
     width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
   }
 
   /* Reduce padding for more content space */
   .page-content {
-    padding: 0.75rem !important;
+    padding: 0.625rem !important;
   }
 
   .main-content {
-    padding: calc(56px + var(--safe-area-top, 0px) + 0.75rem) 1rem 1rem !important;
+    padding: calc(var(--mobile-app-bar-height, 56px) + var(--safe-area-top, 0px) + 0.625rem) 0.625rem 0.875rem !important;
+    max-width: 100vw;
+    overflow-x: hidden;
   }
 
-  /* Smaller headings */
+  /* Compact but readable mobile typography */
   h1 {
-    font-size: 1.5rem;
+    font-size: 1.35rem;
+    line-height: 1.2;
+    margin: 0 0 0.625rem;
   }
   h2 {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
+    line-height: 1.25;
+    margin: 0 0 0.5rem;
   }
   h3 {
-    font-size: 1.1rem;
+    font-size: 1.02rem;
+    line-height: 1.25;
+    margin: 0 0 0.5rem;
   }
 
-  /* Plotly charts responsive sizing */
+  p,
+  li,
+  label {
+    line-height: 1.4;
+  }
+
+  /* Plotly charts responsive sizing — force fit to container */
   .js-plotly-plot,
   .plot-container {
     width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .js-plotly-plot .plotly,
+  .js-plotly-plot .main-svg,
+  .js-plotly-plot .svg-container {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  /* Plotly chart wrappers — scroll horizontally if chart can't fit */
+  .visual-tab,
+  .chart-container,
+  .sparkline-card {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   /* Tab navigation on mobile — horizontal scroll */
@@ -82,6 +141,7 @@
     display: block;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    max-width: 100%;
   }
 
   /* Cards and panels — full width */
@@ -91,6 +151,58 @@
     width: 100% !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
+  }
+
+  /* Prevent any child from exceeding viewport */
+  .main-content > * {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Target face wrapper */
+  .target-plot,
+  .target-face-container {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Select elements should remove min-width */
+  select {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  /* Confirmation dialogs */
+  .modal-overlay .modal-content,
+  .confirm-dialog {
+    width: 90vw !important;
+    max-width: 400px;
+  }
+
+  /* Page containers - remove excessive padding */
+  .session-logger,
+  .crawl-manager,
+  .history-page,
+  .analysis-lab,
+  .analytics-page,
+  .trajectory-page,
+  .tuning-wizard,
+  .equipment-profile,
+  .dashboard {
+    padding: 0.4375rem !important;
+    max-width: 100% !important;
+    overflow-x: hidden;
+  }
+
+  /* Flex containers: force wrapping */
+  .session-info,
+  .form-actions,
+  .marks-actions,
+  .image-actions,
+  .calibration-bar,
+  .optimizer-controls,
+  .similar-controls {
+    flex-wrap: wrap !important;
   }
 }
 

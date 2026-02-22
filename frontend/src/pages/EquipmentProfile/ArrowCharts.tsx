@@ -41,7 +41,7 @@ export default function ArrowCharts({ arrowId }: ArrowChartsProps) {
     z: shafts.map((s) => s.straightness ?? 0),
     text: shafts.map((s) => `Arrow #${s.arrow_number}`),
     type: 'scatter3d' as const,
-    mode: 'markers+text' as any,
+    mode: 'text+markers' as const,
     name: grade,
     marker: { size: 6, color: GRADE_COLORS[grade] ?? '#94a3b8' },
     textposition: 'top center' as const,

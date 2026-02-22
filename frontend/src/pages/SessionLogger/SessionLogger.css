@@ -387,3 +387,256 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 768px) {
+  .session-logger {
+    padding: 0.75rem;
+  }
+
+  .session-header {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+
+  .session-header h1 {
+    font-size: 1.3rem;
+  }
+
+  .session-info {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .logging-layout {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .quiver-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.35rem;
+  }
+
+  .quiver-panel {
+    padding: 1rem;
+  }
+
+  .end-controls {
+    padding: 1rem;
+  }
+
+  .stats-table th,
+  .stats-table td {
+    padding: 0.5rem 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .session-complete h2 {
+    font-size: 1.75rem;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+  }
+
+  .summary-stats {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .stat-card {
+    padding: 1.25rem;
+  }
+
+  .logging-active {
+    padding: 0.5rem;
+  }
+}
+
+/* ─── Mobile Logging Layout ──────────────────────────── */
+
+.mobile-logging {
+  padding: 0.25rem !important;
+}
+
+.mobile-header {
+  margin-bottom: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+.mobile-header-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: nowrap;
+}
+
+.mobile-header-row h1 {
+  font-size: 1.2rem !important;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.mobile-session-badge {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  flex: 1;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-end-session-sm {
+  padding: 0.3rem 0.6rem;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  min-height: 48px !important;
+  white-space: nowrap;
+}
+
+.mobile-target-hint {
+  margin: 0.35rem 0 0.15rem;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+/* ── Mobile controls bar: Score | Quiver strip | Save ── */
+
+.mobile-controls-bar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem;
+  background: var(--color-bg);
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  min-height: 64px;
+}
+
+.mobile-score-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 58px;
+  justify-self: start;
+}
+
+.mobile-score-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #28a745;
+  line-height: 1;
+}
+
+.mobile-score-label {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+}
+
+.mobile-quiver-strip {
+  display: flex;
+  gap: 0.4rem;
+  min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 0.15rem 0.1rem;
+}
+
+.mobile-quiver-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.mq-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px !important;
+  min-width: 48px;
+  min-height: 48px !important;
+  padding: 0.2rem;
+  border: 2px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.mq-arrow.active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.mq-arrow.shot {
+  background: #e8f4e8;
+}
+
+.mq-arrow.shot.active {
+  background: #0052a3;
+}
+
+.mq-arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.mq-score {
+  font-size: 0.65rem;
+  color: #28a745;
+  line-height: 1;
+}
+
+.mq-arrow.active .mq-score {
+  color: #ffeb3b;
+}
+
+.mobile-save {
+  min-width: 72px;
+  padding: 0.5rem 0.85rem !important;
+  font-size: 0.9rem !important;
+  min-height: 48px !important;
+  border-radius: 6px;
+  white-space: nowrap;
+  justify-self: end;
+}
+
+/* ── Mobile stats toggle ───────────────────────────── */
+
+.mobile-stats-section {
+  margin-top: 0.75rem;
+}
+
+.stats-toggle {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  color: var(--color-text);
+  min-height: 48px !important;
+}
+
+.mobile-stats-section .stats-table {
+  margin-top: 0.5rem;
+}

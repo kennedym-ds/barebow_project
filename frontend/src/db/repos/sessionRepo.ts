@@ -49,7 +49,7 @@ function getShotsForEnd(endId: string): Shot[] {
 function getEndsForSession(sessionId: string): End[] {
   const db = getDatabase();
   const stmt = db.prepare(
-    "SELECT * FROM end WHERE session_id = ? ORDER BY end_number"
+    'SELECT * FROM "end" WHERE session_id = ? ORDER BY end_number'
   );
   stmt.bind([sessionId]);
   const ends: End[] = [];
@@ -123,7 +123,7 @@ export const sessionRepo = {
         SELECT e.session_id,
                SUM(sh.score) as total_score,
                COUNT(sh.id) as shot_count
-        FROM end e
+        FROM "end" e
         JOIN shot sh ON sh.end_id = e.id
         GROUP BY e.session_id
       ) agg ON agg.session_id = s.id
@@ -184,7 +184,7 @@ export const sessionRepo = {
   addEnd(sessionId: string, data: EndCreate): End {
     const endId = generateUUID();
     runParams(
-      "INSERT INTO end (id, session_id, end_number) VALUES (?, ?, ?)",
+      'INSERT INTO "end" (id, session_id, end_number) VALUES (?, ?, ?)',
       [endId, sessionId, data.end_number]
     );
 
@@ -210,7 +210,7 @@ export const sessionRepo = {
 
   deleteEnd(endId: string): boolean {
     const db = getDatabase();
-    runParams("DELETE FROM end WHERE id = ?", [endId]);
+    runParams('DELETE FROM "end" WHERE id = ?', [endId]);
     scheduleSave();
     return db.getRowsModified() > 0;
   },
@@ -254,7 +254,7 @@ export const sessionRepo = {
     const stmt = db.prepare(`
       SELECT sh.*, e.end_number
       FROM shot sh
-      JOIN end e ON sh.end_id = e.id
+      JOIN "end" e ON sh.end_id = e.id
       WHERE e.session_id = ?
       ORDER BY e.end_number, sh.shot_sequence, sh.arrow_number
     `);

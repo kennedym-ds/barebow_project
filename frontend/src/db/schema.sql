@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS session (
   FOREIGN KEY (arrow_id) REFERENCES arrowsetup(id)
 );
 
-CREATE TABLE IF NOT EXISTS end (
+CREATE TABLE IF NOT EXISTS "end" (
   id VARCHAR NOT NULL PRIMARY KEY,
   session_id VARCHAR NOT NULL,
   end_number INTEGER NOT NULL,
@@ -92,7 +92,7 @@ CREATE TABLE IF NOT EXISTS shot (
   y FLOAT NOT NULL,
   arrow_number INTEGER,
   shot_sequence INTEGER,
-  FOREIGN KEY (end_id) REFERENCES end(id) ON DELETE CASCADE
+  FOREIGN KEY (end_id) REFERENCES "end"(id) ON DELETE CASCADE
 );
 
 -- Schema version tracking (mirrors src/migrations.py pattern)

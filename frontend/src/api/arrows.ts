@@ -5,14 +5,14 @@ import { arrowService } from '../services/arrowService';
 export function useArrows() {
   return useQuery({
     queryKey: ['arrows'],
-    queryFn: () => arrowService.list(),
+    queryFn: () => Promise.resolve(arrowService.list()),
   });
 }
 
 export function useArrow(id: string | null) {
   return useQuery({
     queryKey: ['arrows', id],
-    queryFn: () => arrowService.getById(id!),
+    queryFn: () => Promise.resolve(arrowService.getById(id!)),
     enabled: !!id,
   });
 }
@@ -46,7 +46,7 @@ export function useDeleteArrow() {
 export function useShafts(arrowId: string | null) {
   return useQuery({
     queryKey: ['arrows', arrowId, 'shafts'],
-    queryFn: () => arrowService.listShafts(arrowId!),
+    queryFn: () => Promise.resolve(arrowService.listShafts(arrowId!)),
     enabled: !!arrowId,
   });
 }
@@ -76,7 +76,7 @@ export function useDeleteShafts() {
 export function useArrowAnalytics(arrowId: string | null, outlierThreshold = 2.0) {
   return useQuery({
     queryKey: ['arrows', arrowId, 'analytics', outlierThreshold],
-    queryFn: () => arrowService.getAnalytics(arrowId!, outlierThreshold),
+    queryFn: () => Promise.resolve(arrowService.getAnalytics(arrowId!, outlierThreshold)),
     enabled: !!arrowId,
   });
 }
@@ -85,7 +85,7 @@ export function useArrowAnalytics(arrowId: string | null, outlierThreshold = 2.0
 export function useSpineCheck(arrowId: string | null, bowId: string | null) {
   return useQuery({
     queryKey: ['arrows', arrowId, 'spine-check', bowId],
-    queryFn: () => arrowService.spineCheck(arrowId!, bowId!),
+    queryFn: () => Promise.resolve(arrowService.spineCheck(arrowId!, bowId!)),
     enabled: !!arrowId && !!bowId,
   });
 }

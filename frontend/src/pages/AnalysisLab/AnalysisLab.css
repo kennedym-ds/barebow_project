@@ -842,4 +842,156 @@
   .arrow-heatmap-layout {
     grid-template-columns: 1fr;
   }
+
+  .analysis-lab {
+    padding: 0.5rem;
+  }
+
+  .analysis-lab h1 {
+    font-size: 1.4rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .analysis-lab h2 {
+    font-size: 1.15rem;
+    margin-top: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .equipment-section {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .input-section {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .filter-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .setup-metrics {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .metric-card {
+    padding: 0.75rem;
+  }
+
+  .metric-card .value {
+    font-size: 1.2rem;
+  }
+
+  .analysis-mode-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .analysis-mode-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mode-tab {
+    white-space: nowrap;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .mode-description {
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+  }
+
+  .result-card {
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .result-card h3 {
+    font-size: 1rem;
+  }
+
+  .goal-inputs {
+    flex-direction: column;
+  }
+
+  .goal-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .tier-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .primary-set-callout {
+    flex-direction: column;
+    text-align: center;
+    padding: 0.75rem;
+  }
+
+  .performance-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .bar-fill {
+    min-width: 40px;
+    font-size: 0.7rem;
+  }
+
+  .arrow-single-stats {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .arrow-single-stats .mini-card {
+    padding: 0.5rem;
+  }
+
+  .arrow-single-stats .mini-card h5 {
+    font-size: 0.65rem;
+  }
+
+  .arrow-single-stats .mini-card .value {
+    font-size: 1rem;
+  }
+
+  .alert {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .end-score-table th,
+  .end-score-table td {
+    padding: 0.25rem 0.35rem;
+    font-size: 0.75rem;
+  }
+
+  .trend-table th,
+  .trend-table td {
+    padding: 0.25rem 0.4rem;
+    font-size: 0.75rem;
+  }
+
+  .ring-prob-item {
+    grid-template-columns: 28px 1fr 40px;
+  }
+
+  .ring-label {
+    font-size: 0.75rem;
+  }
+
+  .ring-pct {
+    font-size: 0.7rem;
+  }
+
+  .target-face-container {
+    max-width: 100%;
+  }
 }

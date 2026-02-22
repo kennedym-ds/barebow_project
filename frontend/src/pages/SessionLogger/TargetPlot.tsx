@@ -73,6 +73,7 @@ export default function TargetPlot({
         interactive={true}
         shaftDiameterMm={shaftDiameterMm}
         xIs11={xIs11}
+        responsive={true}
       />
     </div>
   );

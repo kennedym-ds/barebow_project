@@ -240,6 +240,107 @@
   align-items: flex-end;
 }
 
+@media (max-width: 768px) {
+  .history-page {
+    padding: 0.5rem;
+  }
+
+  .history-page h1 {
+    font-size: 1.4rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .session-selector {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .selector-wrapper select {
+    font-size: 0.85rem;
+    padding: 0.5rem;
+  }
+
+  .session-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .session-actions .export-btn,
+  .session-actions .delete-btn {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    text-align: center;
+  }
+
+  .content-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .heatmap-section,
+  .scorecard-section {
+    padding: 0.75rem;
+  }
+
+  .heatmap-section h2,
+  .scorecard-section h2 {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .replay-controls {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    padding: 0.5rem;
+  }
+
+  .replay-btn {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.8rem;
+    min-height: 48px !important;
+  }
+
+  .replay-label {
+    width: 100%;
+    text-align: center;
+    margin-left: 0;
+    font-size: 0.8rem;
+  }
+
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    margin: 1rem 0;
+  }
+
+  .stats-row .stat-card {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .stats-row .stat-value {
+    font-size: 1.5rem;
+  }
+
+  .stats-row .stat-label {
+    font-size: 0.7rem;
+  }
+
+  .session-metadata {
+    padding: 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .scorecard-table th,
+  .scorecard-table td {
+    padding: 0.4rem 0.35rem;
+    font-size: 0.8rem;
+  }
+}
+
 .export-btn {
   padding: 0.75rem 1.5rem;
   background: #4CAF50;

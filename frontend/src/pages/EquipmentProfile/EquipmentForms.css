@@ -8,7 +8,7 @@
 }
 
 .form-header select {
-  min-width: 300px;
+  min-width: min(300px, 100%);
   padding: 10px 14px;
   border: 2px solid var(--color-border);
   border-radius: 6px;
@@ -211,7 +211,15 @@
 }
 
 .file-input {
-  display: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .file-label {
@@ -398,7 +406,7 @@
   background: var(--color-surface);
   color: var(--color-text);
   font-size: 0.85rem;
-  min-width: 220px;
+  min-width: min(220px, 100%);
   margin-top: 6px;
 }
 
@@ -522,7 +530,7 @@
   background: var(--color-surface);
   color: var(--color-text);
   font-size: 0.85rem;
-  min-width: 160px;
+  min-width: min(160px, 100%);
 }
 
 .similar-table {
@@ -547,15 +555,63 @@
 @media (max-width: 768px) {
   .form-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 12px;
   }
 
   .form-header {
     flex-direction: column;
     align-items: stretch;
+    gap: 0.5rem;
   }
 
   .form-header select {
     width: 100%;
+    min-width: 0;
+  }
+
+  .form-header h2 {
+    font-size: 1.15rem;
+  }
+
+  .form-actions {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .form-actions button {
+    flex: 1;
+    text-align: center;
+  }
+
+  .stats-grid {
+    gap: 8px;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .optimizer-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .similar-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .spine-check-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .spine-check-controls select {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .similar-table th,
+  .similar-table td {
+    padding: 0.35rem;
+    font-size: 0.8rem;
   }
 }

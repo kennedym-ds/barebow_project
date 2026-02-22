@@ -973,6 +973,7 @@ export default function AnalysisLab() {
                             markerOpacity={0.2}
                             centroids={centroids}
                             extraTraces={heatmapTraces}
+                            responsive={true}
                           />
                         </Suspense>
                       </div>

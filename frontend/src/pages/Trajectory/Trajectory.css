@@ -147,7 +147,59 @@
 }
 
 @media (max-width: 768px) {
+  .trajectory-page {
+    padding: 0.5rem;
+  }
+
+  .trajectory-page h2 {
+    font-size: 1.3rem;
+  }
+
   .trajectory-panels {
     grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .trajectory-inputs h3,
+  .drift-inputs h3 {
+    font-size: 1rem;
+  }
+
+  .trajectory-stats {
+    gap: 0.5rem;
+  }
+
+  .traj-stat {
+    padding: 6px 8px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .traj-stat-label {
+    font-size: 0.65rem;
+  }
+
+  .traj-stat-value {
+    font-size: 0.95rem;
+  }
+
+  .trajectory-actions {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .trajectory-actions button {
+    flex: 1;
+    text-align: center;
+  }
+
+  .drop-table th,
+  .drop-table td {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+  }
+
+  .drift-result {
+    padding: 0.75rem;
   }
 }

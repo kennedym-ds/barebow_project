@@ -1,7 +1,8 @@
-import { useMemo, useCallback, useState } from 'react';
+import { useMemo, useCallback, useState, useRef, useEffect } from 'react';
 import Plot from 'react-plotly.js';
 import type { Data, Layout, Shape } from 'plotly.js';
 import { getRingScore, getFlintScore } from '../utils/scoring';
+import { mapPixelToData, computeResponsiveTargetSize } from './TargetFace.utils';
 
 interface Centroid {
   x: number;
@@ -35,6 +36,8 @@ interface TargetFaceProps {
   centroids?: Centroid[];
   /** Extra Plotly traces (e.g. heatmap contours) injected before shot markers */
   extraTraces?: Data[];
+  /** If true, auto-size to container width (overrides width/height props) */
+  responsive?: boolean;
 }
 
 export default function TargetFace({
@@ -51,7 +54,40 @@ export default function TargetFace({
   markerOpacity = 1,
   centroids = [],
   extraTraces = [],
+  responsive = false,
 }: TargetFaceProps) {
+  // Auto-size to container while reserving room for mobile controls below target
+  const containerRef = useRef<HTMLDivElement>(null);
+  const suppressClickRef = useRef(false);
+  const [autoSize, setAutoSize] = useState<number>(width);
+  const [isMobileViewport, setIsMobileViewport] = useState<boolean>(() => window.innerWidth < 768);
+  const [zoomEnabled, setZoomEnabled] = useState<boolean>(true);
+  const [touchActive, setTouchActive] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!responsive) return;
+    const el = containerRef.current;
+    if (!el) return;
+    const measure = () => {
+      const w = el.clientWidth;
+      if (w > 0) {
+        const mobile = window.innerWidth < 768;
+        setIsMobileViewport(mobile);
+        setAutoSize(
+          computeResponsiveTargetSize(w, window.innerWidth, window.innerHeight, mobile),
+        );
+      }
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    // Also re-measure when orientation changes (affects vh)
+    window.addEventListener('resize', measure);
+    return () => { ro.disconnect(); window.removeEventListener('resize', measure); };
+  }, [responsive]);
+
+  const resolvedSize = responsive ? autoSize : width;
+  const resolvedHeight = responsive ? autoSize : height;
   const { shapes, maxR } = useMemo(() => {
     const shapes: Partial<Shape>[] = [];
     let maxR: number;
@@ -139,15 +175,14 @@ export default function TargetFace({
   const handleOverlayClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (!onPlotClick || !interactive) return;
+      if (suppressClickRef.current) return;
       const rect = e.currentTarget.getBoundingClientRect();
       const pixelX = e.clientX - rect.left;
       const pixelY = e.clientY - rect.top;
-      // margins are 0, so axis fills the full div
-      const dataX = -maxR + (2 * maxR * pixelX) / width;
-      const dataY = maxR - (2 * maxR * pixelY) / height; // screen-Y is inverted
+      const { dataX, dataY } = mapPixelToData(pixelX, pixelY, resolvedSize, resolvedHeight, maxR);
       onPlotClick(dataX, dataY);
     },
-    [onPlotClick, interactive, maxR, width, height],
+    [onPlotClick, interactive, maxR, resolvedSize, resolvedHeight],
   );
 
   // Hover preview state: show arrow circle + predicted score at cursor
@@ -159,14 +194,57 @@ export default function TargetFace({
       const rect = e.currentTarget.getBoundingClientRect();
       const px = e.clientX - rect.left;
       const py = e.clientY - rect.top;
-      const dataX = -maxR + (2 * maxR * px) / width;
-      const dataY = maxR - (2 * maxR * py) / height;
+      const { dataX, dataY } = mapPixelToData(px, py, resolvedSize, resolvedHeight, maxR);
       setHover({ px, py, dataX, dataY });
     },
-    [interactive, maxR, width, height],
+    [interactive, maxR, resolvedSize, resolvedHeight],
   );
 
   const handleOverlayLeave = useCallback(() => setHover(null), []);
+
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent<HTMLDivElement>) => {
+      if (!interactive || !onPlotClick) return;
+      const touch = e.touches[0];
+      if (!touch) return;
+
+      const rect = e.currentTarget.getBoundingClientRect();
+      const px = touch.clientX - rect.left;
+      const py = touch.clientY - rect.top;
+      const { dataX, dataY } = mapPixelToData(px, py, resolvedSize, resolvedHeight, maxR);
+      setTouchActive(true);
+      setHover({ px, py, dataX, dataY });
+    },
+    [interactive, onPlotClick, resolvedSize, resolvedHeight, maxR],
+  );
+
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent<HTMLDivElement>) => {
+      if (!interactive || !touchActive) return;
+      const touch = e.touches[0];
+      if (!touch) return;
+
+      const rect = e.currentTarget.getBoundingClientRect();
+      const px = touch.clientX - rect.left;
+      const py = touch.clientY - rect.top;
+      const { dataX, dataY } = mapPixelToData(px, py, resolvedSize, resolvedHeight, maxR);
+      setHover({ px, py, dataX, dataY });
+    },
+    [interactive, touchActive, resolvedSize, resolvedHeight, maxR],
+  );
+
+  const handleTouchEnd = useCallback(() => {
+    if (!interactive || !onPlotClick) return;
+    if (hover) {
+      suppressClickRef.current = true;
+      window.setTimeout(() => {
+        suppressClickRef.current = false;
+      }, 250);
+      onPlotClick(hover.dataX, hover.dataY);
+    }
+    setTouchActive(false);
+    setHover(null);
+  }, [interactive, onPlotClick, hover]);
 
   // Preview score computed from hover position
   const hoverScore = useMemo(() => {
@@ -181,8 +259,8 @@ export default function TargetFace({
   const arrowRadiusPx = useMemo(() => {
     if (shaftDiameterMm <= 0) return 0;
     const radiusCm = (shaftDiameterMm / 10) / 2;
-    return (radiusCm / (2 * maxR)) * width;
-  }, [shaftDiameterMm, maxR, width]);
+    return (radiusCm / (2 * maxR)) * resolvedSize;
+  }, [shaftDiameterMm, maxR, resolvedSize]);
 
   const traces = useMemo(() => {
     const data: Data[] = [];
@@ -256,6 +334,37 @@ export default function TargetFace({
     return data;
   }, [shots, showMedianCenter, markerOpacity, centroids, extraTraces]);
 
+  const zoomRange = useMemo(() => maxR * 0.24, [maxR]);
+
+  const zoomLayout: Partial<Layout> = useMemo(() => {
+    if (!hover) return {};
+
+    return {
+      shapes,
+      xaxis: {
+        range: [hover.dataX - zoomRange, hover.dataX + zoomRange],
+        showgrid: false,
+        zeroline: false,
+        visible: false,
+      },
+      yaxis: {
+        range: [hover.dataY - zoomRange, hover.dataY + zoomRange],
+        showgrid: false,
+        zeroline: false,
+        visible: false,
+        scaleanchor: 'x',
+        scaleratio: 1,
+      },
+      width: 190,
+      height: 190,
+      margin: { l: 0, r: 0, t: 0, b: 0 },
+      paper_bgcolor: 'rgba(0,0,0,0)',
+      plot_bgcolor: 'rgba(0,0,0,0)',
+      dragmode: false,
+      showlegend: false,
+    };
+  }, [hover, shapes, zoomRange]);
+
   const layout: Partial<Layout> = useMemo(() => ({
     shapes,
     xaxis: {
@@ -272,18 +381,18 @@ export default function TargetFace({
       scaleanchor: 'x',
       scaleratio: 1,
     },
-    width,
-    height,
+    width: resolvedSize,
+    height: resolvedHeight,
     margin: { l: 0, r: 0, t: 0, b: 0 },
     paper_bgcolor: 'rgba(0,0,0,0)',
     plot_bgcolor: 'rgba(0,0,0,0)',
     dragmode: false,
     clickmode: 'event',
     showlegend: false,
-  }), [shapes, maxR, width, height]);
+  }), [shapes, maxR, resolvedSize, resolvedHeight]);
 
   return (
-    <div style={{ position: 'relative', width, height }}>
+    <div ref={containerRef} style={{ position: 'relative', width: responsive ? '100%' : resolvedSize, height: resolvedHeight }}>
       <Plot
         data={traces}
         layout={layout}
@@ -291,13 +400,16 @@ export default function TargetFace({
           displayModeBar: false, 
           staticPlot: true,
         }}
-        style={{ width, height }}
+        style={{ width: resolvedSize, height: resolvedHeight }}
       />
       {interactive && (
         <div
           onClick={handleOverlayClick}
           onMouseMove={handleOverlayMove}
           onMouseLeave={handleOverlayLeave}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
           style={{
             position: 'absolute',
             top: 0,
@@ -305,6 +417,7 @@ export default function TargetFace({
             width: '100%',
             height: '100%',
             cursor: 'crosshair',
+            touchAction: isMobileViewport ? 'none' : 'auto',
           }}
         >
           {/* Hover preview: arrow circle + score badge */}
@@ -347,6 +460,81 @@ export default function TargetFace({
             </>
           )}
         </div>
+      )}
+
+      {/* Mobile precision zoom controls and lens */}
+      {interactive && isMobileViewport && (
+        <>
+          <button
+            type="button"
+            onClick={() => setZoomEnabled(v => !v)}
+            style={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              zIndex: 20,
+              border: '1px solid rgba(255,255,255,0.35)',
+              borderRadius: 6,
+              background: zoomEnabled ? 'rgba(0,82,163,0.9)' : 'rgba(0,0,0,0.65)',
+              color: '#fff',
+              padding: '6px 10px',
+              fontSize: 12,
+              fontWeight: 700,
+            }}
+            aria-pressed={zoomEnabled}
+            aria-label="Toggle precision zoom"
+          >
+            {zoomEnabled ? 'Zoom On' : 'Zoom Off'}
+          </button>
+
+          {zoomEnabled && touchActive && hover && (
+            <div
+              style={{
+                position: 'absolute',
+                left: 8,
+                top: 8,
+                width: 190,
+                height: 190,
+                borderRadius: '50%',
+                overflow: 'hidden',
+                border: '2px solid rgba(255,255,255,0.85)',
+                boxShadow: '0 4px 14px rgba(0, 0, 0, 0.35)',
+                zIndex: 30,
+                background: 'rgba(16,16,16,0.65)',
+                pointerEvents: 'none',
+              }}
+            >
+              <Plot
+                data={traces}
+                layout={zoomLayout}
+                config={{ displayModeBar: false, staticPlot: true }}
+                style={{ width: 190, height: 190 }}
+              />
+              <div
+                style={{
+                  position: 'absolute',
+                  left: '50%',
+                  top: 0,
+                  width: 2,
+                  height: '100%',
+                  transform: 'translateX(-50%)',
+                  background: 'rgba(255,255,255,0.8)',
+                }}
+              />
+              <div
+                style={{
+                  position: 'absolute',
+                  left: 0,
+                  top: '50%',
+                  width: '100%',
+                  height: 2,
+                  transform: 'translateY(-50%)',
+                  background: 'rgba(255,255,255,0.8)',
+                }}
+              />
+            </div>
+          )}
+        </>
       )}
     </div>
   );

@@ -5,14 +5,14 @@ import { sessionService } from '../services/sessionService';
 export function useSessions(bowId?: string, arrowId?: string) {
   return useQuery({
     queryKey: ['sessions', bowId, arrowId],
-    queryFn: () => sessionService.list(bowId, arrowId),
+    queryFn: () => Promise.resolve(sessionService.list(bowId, arrowId)),
   });
 }
 
 export function useSession(id: string | null) {
   return useQuery({
     queryKey: ['sessions', id],
-    queryFn: () => sessionService.getById(id!),
+    queryFn: () => Promise.resolve(sessionService.getById(id!)),
     enabled: !!id,
   });
 }

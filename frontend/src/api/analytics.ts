@@ -47,21 +47,21 @@ export interface PersonalBest {
 export function useAnalyticsSummary(roundTypes?: string[], fromDate?: string, toDate?: string) {
   return useQuery({
     queryKey: ['analytics', 'summary', roundTypes, fromDate, toDate],
-    queryFn: () => analyticsService.summary({ roundTypes, fromDate, toDate }),
+    queryFn: () => Promise.resolve(analyticsService.summary({ roundTypes, fromDate, toDate })),
   });
 }
 
 export function useAnalyticsShots(roundTypes?: string[], fromDate?: string, toDate?: string) {
   return useQuery({
     queryKey: ['analytics', 'shots', roundTypes, fromDate, toDate],
-    queryFn: () => analyticsService.shots({ roundTypes, fromDate, toDate }),
+    queryFn: () => Promise.resolve(analyticsService.shots({ roundTypes, fromDate, toDate })),
   });
 }
 
 export function usePersonalBests() {
   return useQuery({
     queryKey: ['analytics', 'personal-bests'],
-    queryFn: () => analyticsService.personalBests(),
+    queryFn: () => Promise.resolve(analyticsService.personalBests()),
   });
 }
 
@@ -143,7 +143,7 @@ export interface RoundPreset {
 export function useParkModel(shortRound: string, longRound: string, fromDate?: string, toDate?: string) {
   return useQuery({
     queryKey: ['analytics', 'park-model', shortRound, longRound, fromDate, toDate],
-    queryFn: () => analyticsService.parkModel(shortRound, longRound, { fromDate, toDate }),
+    queryFn: () => Promise.resolve(analyticsService.parkModel(shortRound, longRound, { fromDate, toDate })),
     enabled: !!shortRound && !!longRound,
   });
 }
@@ -151,21 +151,21 @@ export function useParkModel(shortRound: string, longRound: string, fromDate?: s
 export function useBiasAnalysis(roundTypes?: string[], fromDate?: string, toDate?: string) {
   return useQuery({
     queryKey: ['analytics', 'bias', roundTypes, fromDate, toDate],
-    queryFn: () => analyticsService.biasAnalysis({ roundTypes, fromDate, toDate }),
+    queryFn: () => Promise.resolve(analyticsService.biasAnalysis({ roundTypes, fromDate, toDate })),
   });
 }
 
 export function useScoreContext(roundTypes?: string[], fromDate?: string, toDate?: string) {
   return useQuery({
     queryKey: ['analytics', 'score-context', roundTypes, fromDate, toDate],
-    queryFn: () => analyticsService.scoreContext({ roundTypes, fromDate, toDate }),
+    queryFn: () => Promise.resolve(analyticsService.scoreContext({ roundTypes, fromDate, toDate })),
   });
 }
 
 export function useRoundPresets() {
   return useQuery({
     queryKey: ['rounds', 'presets'],
-    queryFn: () => roundService.listPresets(),
+    queryFn: () => Promise.resolve(roundService.listPresets()),
   });
 }
 
@@ -270,28 +270,28 @@ export interface EquipmentComparison {
 export function useAdvancedPrecision(roundTypes?: string[], fromDate?: string, toDate?: string) {
   return useQuery({
     queryKey: ['analytics', 'advanced-precision', roundTypes, fromDate, toDate],
-    queryFn: () => analyticsService.advancedPrecision({ roundTypes, fromDate, toDate }),
+    queryFn: () => Promise.resolve(analyticsService.advancedPrecision({ roundTypes, fromDate, toDate })),
   });
 }
 
 export function useTrends(roundTypes?: string[], fromDate?: string, toDate?: string) {
   return useQuery({
     queryKey: ['analytics', 'trends', roundTypes, fromDate, toDate],
-    queryFn: () => analyticsService.trends({ roundTypes, fromDate, toDate }),
+    queryFn: () => Promise.resolve(analyticsService.trends({ roundTypes, fromDate, toDate })),
   });
 }
 
 export function useWithinEnd(roundTypes?: string[], fromDate?: string, toDate?: string) {
   return useQuery({
     queryKey: ['analytics', 'within-end', roundTypes, fromDate, toDate],
-    queryFn: () => analyticsService.withinEnd({ roundTypes, fromDate, toDate }),
+    queryFn: () => Promise.resolve(analyticsService.withinEnd({ roundTypes, fromDate, toDate })),
   });
 }
 
 export function useHitProbability(roundType: string, fromDate?: string, toDate?: string) {
   return useQuery({
     queryKey: ['analytics', 'hit-probability', roundType, fromDate, toDate],
-    queryFn: () => analyticsService.hitProbability(roundType, { fromDate, toDate }),
+    queryFn: () => Promise.resolve(analyticsService.hitProbability(roundType, { fromDate, toDate })),
     enabled: !!roundType,
   });
 }
@@ -303,10 +303,10 @@ export function useEquipmentComparison(
 ) {
   return useQuery({
     queryKey: ['analytics', 'equipment', setupABowId, setupAArrowId, setupBBowId, setupBArrowId, roundType, fromDate, toDate],
-    queryFn: () => analyticsService.equipmentComparison(
+    queryFn: () => Promise.resolve(analyticsService.equipmentComparison(
       setupABowId, setupAArrowId, setupBBowId, setupBArrowId,
       roundType, fromDate, toDate
-    ),
+    )),
     enabled: !!(setupABowId || setupAArrowId) && !!(setupBBowId || setupBArrowId),
   });
 }
@@ -314,14 +314,14 @@ export function useEquipmentComparison(
 export function useBowsForAnalytics() {
   return useQuery({
     queryKey: ['bows'],
-    queryFn: () => bowService.list().map((b) => ({ id: b.id, name: b.name })),
+    queryFn: () => Promise.resolve(bowService.list().map((b) => ({ id: b.id, name: b.name }))),
   });
 }
 
 export function useArrowsForAnalytics() {
   return useQuery({
     queryKey: ['arrows'],
-    queryFn: () => arrowService.list().map((a) => ({ id: a.id, make: a.make, model: a.model })),
+    queryFn: () => Promise.resolve(arrowService.list().map((a) => ({ id: a.id, make: a.make, model: a.model }))),
   });
 }
 
@@ -344,7 +344,7 @@ export interface DashboardStats {
 export function useDashboard() {
   return useQuery({
     queryKey: ['analytics', 'dashboard'],
-    queryFn: () => analyticsService.dashboard(),
+    queryFn: () => Promise.resolve(analyticsService.dashboard()),
   });
 }
 
@@ -365,7 +365,7 @@ export interface ScoreGoalSimulation {
 export function useScoreGoal(goalScore: number, totalArrows: number, distanceM: number, faceCm: number, roundType?: string) {
   return useQuery({
     queryKey: ['analytics', 'score-goal', goalScore, totalArrows, distanceM, faceCm, roundType],
-    queryFn: () => analyticsService.scoreGoal(goalScore, totalArrows, distanceM, faceCm, roundType),
+    queryFn: () => Promise.resolve(analyticsService.scoreGoal(goalScore, totalArrows, distanceM, faceCm, roundType)),
     enabled: goalScore > 0 && totalArrows > 0,
   });
 }
@@ -411,6 +411,6 @@ export interface ArrowPerformanceSummary {
 export function useArrowPerformance(roundType?: string, fromDate?: string, toDate?: string) {
   return useQuery({
     queryKey: ['analytics', 'arrow-performance', roundType, fromDate, toDate],
-    queryFn: () => analyticsService.arrowPerformance(roundType, fromDate, toDate),
+    queryFn: () => Promise.resolve(analyticsService.arrowPerformance(roundType, fromDate, toDate)),
   });
 }

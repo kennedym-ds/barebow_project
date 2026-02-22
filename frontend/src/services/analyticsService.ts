@@ -131,7 +131,7 @@ function querySessions(filters: AnalyticsFilters): RawSession[] {
 
 function getEndsForSession(sessionId: string): RawEnd[] {
   const db = getDatabase();
-  const stmt = db.prepare("SELECT * FROM end WHERE session_id = :sid ORDER BY end_number");
+  const stmt = db.prepare('SELECT * FROM "end" WHERE session_id = :sid ORDER BY end_number');
   stmt.bind({ ":sid": sessionId });
   const results: RawEnd[] = [];
   while (stmt.step()) {
@@ -160,7 +160,7 @@ function getAllShotsForSession(sessionId: string): (RawShot & { end_number: numb
   const stmt = db.prepare(`
     SELECT sh.*, e.end_number
     FROM shot sh
-    JOIN end e ON sh.end_id = e.id
+    JOIN "end" e ON sh.end_id = e.id
     WHERE e.session_id = :sid
     ORDER BY e.end_number, sh.shot_sequence, sh.arrow_number
   `);
