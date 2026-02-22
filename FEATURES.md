@@ -15,6 +15,7 @@ Implemented features as of 2026-06-29 (v2.0.0).
 
 ### Session Logging
 - ✅ **Interactive Target Face**: Click-on-target scoring with WA and Flint target faces
+- ✅ **TargetFace Magnifier**: Touch-and-drag zoom lens for precise arrow placement on mobile devices
 - ✅ **Hover Preview**: Arrow diameter circle + predicted score before clicking
 - ✅ **Quiver Panel**: Select which arrows (1-12+) to log by number
 - ✅ **Arrows-Per-End Selector**: 3, 5, 6, or 10 arrows per end
@@ -28,6 +29,12 @@ Implemented features as of 2026-06-29 (v2.0.0).
 - ✅ **Session Replay**: End-by-end animation showing shot accumulation over time
 - ✅ **CSV Export**: Download full shot data (Date, Round, End, Arrow, Score, X, Y, Is_X)
 - ✅ **Delete Session**: With confirmation dialog
+
+### Mobile & Cross-Platform
+- ✅ **Native Android APK/AAB**: Built via Tauri 2's mobile target. Requires Android 7.0+.
+- ✅ **Touch-Optimized UI**: 48x48px minimum touch targets, safe-area padding, and responsive layouts.
+- ✅ **Android Auto Backup**: Automatic Google Drive backups for the local database.
+- ✅ **Play Store Ready**: Strict CSP, restricted file system capabilities, and automated CI/CD deployment pipeline.
 
 ---
 

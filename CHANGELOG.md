@@ -16,6 +16,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2026-02-22] — v2.1.0 Mobile Optimization & Play Store Release
+
+### Added
+- **TargetFace Magnifier**: Touch-and-drag zoom lens for precise arrow placement on mobile devices.
+- **Play Store Deployment Pipeline**: GitHub Actions workflow for building and deploying Android App Bundles (`.aab`).
+- **Database Migration Safety**: Implemented `PRAGMA user_version` tracking to safely handle future SQLite schema updates.
+- **Android Auto Backup**: Explicitly enabled Google Drive backups for the local database.
+- **Privacy Policy**: Added offline-first privacy policy for Play Store compliance.
+
+### Changed
+- **Mobile UI/UX**: Enforced 48x48px minimum touch targets across all interactive elements.
+- **Responsive Layouts**: Standardized mobile breakpoints to 768px and added horizontal scrolling for data-heavy tables.
+- **Security**: Restricted Tauri `@tauri-apps/plugin-fs` capabilities strictly to the app's private data directory.
+- **Security**: Enforced a strict Content Security Policy (CSP) in `tauri.conf.json`.
+- **Bug Fix**: Fixed an issue where picture uploads failed on mobile browsers by replacing `display: none` with `.visually-hidden`.
+
+---
+
 ## [2026-06-29] — v2.0.0 Tauri 2 Migration
 
 ### Changed

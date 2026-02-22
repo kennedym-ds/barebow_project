@@ -180,7 +180,7 @@ Select **Custom** to manually configure any combination.
 
 ### Scoring on the Target Face
 
-1. Click where the arrow landed on the target face. A hover preview shows the arrow diameter circle and predicted score before you click.
+1. Click where the arrow landed on the target face. On desktop, a hover preview shows the arrow diameter circle and predicted score before you click. On mobile, touch and hold to bring up a magnifying lens, drag to position the crosshairs precisely, and release to log the arrow.
 2. The score is calculated from the click coordinates using WA or Flint ring geometry.
 3. A running total updates in real time — score, average arrow, ends completed.
 4. After placing all arrows for the end, click **Save End**.

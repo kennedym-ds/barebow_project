@@ -17,13 +17,14 @@ For a full walkthrough of every feature, see the [User Guide](docs/user-guide.md
 
 ### Android
 
-1. Download the APK from **[Releases](https://github.com/kennedym-ds/barebow_project/releases/latest)**
-2. Enable "Install from unknown sources" in Settings
-3. Open the APK to install
+1. Download the app from the **Google Play Store** (Coming Soon)
+2. Alternatively, download the APK from **[Releases](https://github.com/kennedym-ds/barebow_project/releases/latest)**
+3. Enable "Install from unknown sources" in Settings
+4. Open the APK to install
 
 **Requirements:** Android 7.0 (API 24) or later.
 
-Your data is stored locally on-device — nothing is sent to the cloud.
+Your data is stored locally on-device — nothing is sent to the cloud. See our [Privacy Policy](docs/privacy-policy.md) for more details.
 
 ## Key Features
 
@@ -138,5 +139,6 @@ npx tauri android build --debug --target aarch64
 | --- | --- |
 | [Getting Started](docs/getting-started.md) | 5-minute setup and first session |
 | [User Guide](docs/user-guide.md) | Full walkthrough of every feature |
+| [Privacy Policy](docs/privacy-policy.md) | Data collection and storage policy |
 | [FEATURES.md](FEATURES.md) | Complete feature checklist |
 | [CHANGELOG.md](CHANGELOG.md) | Version history and release notes |
