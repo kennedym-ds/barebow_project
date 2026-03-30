@@ -60,7 +60,13 @@ export const arrowRepo = {
     const existing = this.getById(id);
     if (!existing) return null;
 
-    const fields = Object.entries(data).filter(([, v]) => v !== undefined);
+    const ALLOWED_COLS = new Set([
+      "make", "model", "spine", "length_in", "point_weight_gr",
+      "total_arrow_weight_gr", "shaft_diameter_mm",
+      "fletching_type", "nock_type", "arrow_count",
+    ]);
+
+    const fields = Object.entries(data).filter(([k, v]) => v !== undefined && ALLOWED_COLS.has(k));
     if (fields.length === 0) return existing;
 
     const setClauses = fields.map(([k]) => `${k} = ?`).join(", ");

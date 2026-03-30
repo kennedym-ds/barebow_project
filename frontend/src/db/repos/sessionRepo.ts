@@ -182,21 +182,29 @@ export const sessionRepo = {
   },
 
   addEnd(sessionId: string, data: EndCreate): End {
+    const db = getDatabase();
     const endId = generateUUID();
-    runParams(
-      'INSERT INTO "end" (id, session_id, end_number) VALUES (?, ?, ?)',
-      [endId, sessionId, data.end_number]
-    );
-
-    // Insert shots
-    for (let i = 0; i < data.shots.length; i++) {
-      const shot = data.shots[i];
-      const shotId = generateUUID();
+    db.run("BEGIN TRANSACTION");
+    try {
       runParams(
-        `INSERT INTO shot (id, end_id, score, is_x, x, y, arrow_number, shot_sequence)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [shotId, endId, shot.score, shot.is_x ? 1 : 0, shot.x, shot.y, shot.arrow_number ?? null, i]
+        'INSERT INTO "end" (id, session_id, end_number) VALUES (?, ?, ?)',
+        [endId, sessionId, data.end_number]
       );
+
+      for (let i = 0; i < data.shots.length; i++) {
+        const shot = data.shots[i];
+        const shotId = generateUUID();
+        runParams(
+          `INSERT INTO shot (id, end_id, score, is_x, x, y, arrow_number, shot_sequence)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          [shotId, endId, shot.score, shot.is_x ? 1 : 0, shot.x, shot.y, shot.arrow_number ?? null, i]
+        );
+      }
+
+      db.run("COMMIT");
+    } catch (e) {
+      db.run("ROLLBACK");
+      throw e;
     }
 
     scheduleSave();

@@ -59,7 +59,16 @@ export const bowRepo = {
     const existing = this.getById(id);
     if (!existing) return null;
 
-    const fields = Object.entries(data).filter(([, v]) => v !== undefined);
+    const ALLOWED_COLS = new Set([
+      "name", "riser_make", "riser_model", "riser_length_in",
+      "limbs_make", "limbs_model", "limbs_length", "limbs_marked_poundage",
+      "draw_weight_otf", "draw_length_in", "brace_height_in",
+      "tiller_top_mm", "tiller_bottom_mm", "tiller_type",
+      "nocking_point_height_mm", "plunger_center_shot_mm", "plunger_spring_tension",
+      "string_material", "strand_count", "limb_alignment", "total_mass_g", "riser_weights",
+    ]);
+
+    const fields = Object.entries(data).filter(([k, v]) => v !== undefined && ALLOWED_COLS.has(k));
     if (fields.length === 0) return existing;
 
     const setClauses = fields.map(([k]) => `${k} = ?`).join(", ");

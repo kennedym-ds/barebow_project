@@ -4,7 +4,7 @@
  */
 
 export * from "./rounds";
-export * from "./scoring";
+export * from "../utils/scoring";
 export * from "./physics";
 export * from "./parkModel";
 export * from "./crawls";

@@ -8,7 +8,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **Scoring correctness**: Consolidated dual scoring modules — `domain/scoring.ts` (no line-break support) and `utils/scoring.ts` (with line-break rule) were divergent. Services now use the canonical `utils/scoring.ts` implementation including arrow-diameter offset scoring.
+- **Data integrity**: `sessionRepo.addEnd()` now wraps the end + all shot inserts in a single transaction. Previously, a crash mid-insert could leave an end row with missing shots.
+- **Security**: Repository `update()` methods in `arrowRepo`, `bowRepo`, and `tabRepo` now validate column names against an explicit allowlist before building dynamic `UPDATE` SQL.
+
+### Added
+
+- **Scoring tests**: 35 unit tests covering `getRingScore`, `getFlintScore`, and `isXRing` — ring boundaries, line-break rule, X-ring detection, and miss cases for both WA and IFAA Flint formats.
+
 ### Under Development
+
 - Multi-distance session support (field archery)
 - Computer vision auto-scoring
 - Weather conditions logging
@@ -19,6 +30,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [2026-02-22] — v2.1.0 Mobile Optimization & Play Store Release
 
 ### Added
+
 - **TargetFace Magnifier**: Touch-and-drag zoom lens for precise arrow placement on mobile devices.
 - **Play Store Deployment Pipeline**: GitHub Actions workflow for building and deploying Android App Bundles (`.aab`).
 - **Database Migration Safety**: Implemented `PRAGMA user_version` tracking to safely handle future SQLite schema updates.
@@ -26,6 +38,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Privacy Policy**: Added offline-first privacy policy for Play Store compliance.
 
 ### Changed
+
 - **Mobile UI/UX**: Enforced 48x48px minimum touch targets across all interactive elements.
 - **Responsive Layouts**: Standardized mobile breakpoints to 768px and added horizontal scrolling for data-heavy tables.
 - **Security**: Restricted Tauri `@tauri-apps/plugin-fs` capabilities strictly to the app's private data directory.
@@ -37,6 +50,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [2026-06-29] — v2.0.0 Tauri 2 Migration
 
 ### Changed
+
 - **Architecture**: Migrated from pywebview + FastAPI (Python) to **Tauri 2** (Rust shell + React frontend). All domain logic now runs client-side in TypeScript.
 - **Database**: Replaced server-side SQLite with **sql.js** (WASM SQLite) running in the browser/WebView. Data persisted via Tauri FS plugin to AppData.
 - **Platform**: Now builds for **Windows desktop** and **Android** from a single codebase.
@@ -44,6 +58,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **CI/CD**: Simplified to frontend lint/typecheck/build + Tauri desktop build on Windows.
 
 ### Added
+
 - **Android Support**: Native Android APK via Tauri 2's mobile target. Requires Android 7.0+.
 - **`runParams()` Helper**: Explicit prepare/bind/step/free pattern for sql.js parameter binding — required because `db.run(sql, params)` silently drops parameters on Android WebView's WASM runtime.
 - **Tauri Persistence**: Database file automatically saved/loaded via `@tauri-apps/plugin-fs`. Browser dev mode uses in-memory DB.
@@ -51,6 +66,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Android Safe Area**: Status bar and navigation bar padding handled via CSS env() variables.
 
 ### Removed
+
 - **Python Backend**: Removed `src/`, `api/`, `tests/`, `desktop.py`, `seed_data.py`, `requirements.txt`, `pyproject.toml`, and all Python dependencies.
 - **PyInstaller Packaging**: Replaced by Tauri's built-in bundler.
 - **Inno Setup Installer**: Replaced by Tauri NSIS installer.
@@ -58,6 +74,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **pytest Suite**: 224 Python tests removed (domain logic now in TypeScript).
 
 ### Migration Notes
+
 - User data from the old pywebview app (`%LOCALAPPDATA%/BareTrack/baretrack.db`) is automatically imported on first launch of the Tauri app.
 - The new app stores data in the Tauri AppData directory.
 
@@ -66,6 +83,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [2026-02-16] — v1.1.0 Arrow Science & Trajectory Release
 
 ### Added
+
 - **Trajectory Prediction**: Bisection solver computes optimal launch angle for any target distance and elevation (uphill/downhill). Displays trajectory arc, max height, time of flight, impact velocity, impact angle, and drop table.
 - **Wind Drift Analysis**: Estimates crosswind deflection in cm and target rings, with aim-off advice.
 - **Arrow Shaft Grading**: Automatic A/B/C/D grading based on weight tolerance and straightness thresholds.
@@ -81,12 +99,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Arrow Charts**: Lazy-loaded Plotly charts for shaft weight distribution, spine distribution, and weight-vs-spine scatter.
 
 ### Changed
+
 - **Spine Check Endpoint**: Now returns `effective_draw_weight` and optional `frequency_match` analysis alongside existing status/recommendation.
 - **Spine Recommendation Range**: Tightened from ±50 to ±40 spine thanks to improved model accuracy.
 - **Spine Chart**: Added 2 data points (22 lbs/850, 27 lbs/750) for better interpolation in common barebow range.
 - **Frontend Spine UI**: Displays effective draw weight, frequency match quality, oscillation count, and arrow frequency in the equipment profile.
 
 ### Tests
+
 - **224 Total Tests**: All passing (104 new tests covering trajectory, shaft analytics, spine model, frequency analysis, API endpoints).
 
 ---
@@ -94,6 +114,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [2026-02-13] — v1.0.2 Polish & Architecture Release
 
 ### Added
+
 - **Error Boundary**: React error boundary with retry/home buttons prevents white-screen crashes
 - **Toast Notifications**: Context-based toast system (success/error/warning/info) for user feedback
 - **Dark Mode**: Full dark theme via CSS custom properties with Light/Dark/System toggle in sidebar
@@ -104,6 +125,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Pyproject.toml**: Ruff lint/format config + pytest settings
 
 ### Changed
+
 - **Analytics Router Split**: Monolithic `analytics.py` (1,747 lines) refactored into `analytics/` package with 4 sub-modules (summary, precision, trends, goals) and shared schemas
 - **Responsive Sidebar**: Hamburger menu for mobile viewports with overlay navigation
 - **Accessibility Pass**: All 9 page CSS files updated from hardcoded hex to CSS variables for theme support
@@ -112,6 +134,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Favicon & Meta**: Custom SVG favicon (target + arrow), meta description, theme-color
 
 ### Tests
+
 - **27 New Router Tests**: Coverage for arrows (7), tabs (6), scoring (4), analysis (5), crawls (5) endpoints
 - **120 Total Tests**: All passing (93 original + 27 new)
 
@@ -120,6 +143,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [2026-02-13] — v1.0.1 Stability & UX Release
 
 ### Fixed
+
 - **History Page White Screen**: Added defensive handling for missing/partial shot arrays and lazy-loaded target rendering to prevent runtime crashes when opening History.
 - **Within-End Analytics Ordering**: Uses persisted shot sequence to ensure first/last arrow metrics are deterministic and match shooting order.
 - **Session Save Robustness**: Added payload validation and deterministic shot sequencing when saving ends.
@@ -127,11 +151,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Tab Upload Reliability**: Added chunked writes and upload size safeguards to reduce memory spikes and return clean `413` errors for oversized files.
 
 ### Changed
+
 - **Frontend Cache Consistency**: End-save mutations now invalidate both session detail and list queries to prevent stale UI state.
 - **Numeric Input Guards**: Analysis and equipment forms now guard empty numeric fields to prevent `NaN` propagation.
 - **TypeScript Strictness Cleanup**: Resolved strict build blockers across analytics, crawl manager, tuning wizard, and equipment forms.
 
 ### Build
+
 - Desktop packaging pipeline validated on Windows.
 - Fresh installer produced: `dist/BareTrackSetup.exe`.
 
@@ -140,6 +166,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [2026-02-11] — Deep Review & Robustness Fixes
 
 ### Fixed
+
 - **Flint Scoring**: Corrected max score (560 → 280) and scoring formula (`*10` → `*5`) in round presets
 - **Round Preset Alignment**: Expanded backend from 6 to 21 presets, matching all frontend round definitions with legacy aliases for backward compatibility
 - **Zero-Division Guards**: Added protection in Park Model (`known_distance_m <= 0`) and scoring (`ring_width <= 0`)
@@ -154,11 +181,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Crawl Debounce**: Added 400ms debounce to crawl calculation mutation to prevent rapid-fire recomputation
 
 ### Changed
+
 - **Bulk Delete Performance**: Arrow shaft deletion uses single SQL `DELETE WHERE` instead of loop
 - **Precision Calculation**: `np.std()**2` replaced with `np.var()` — cleaner and avoids rounding artifacts
 - **Analytics Shot Ordering**: Bias and within-end queries now sort by `(arrow_number, id)` for deterministic results
 
 ### Docs
+
 - Added [Getting Started](docs/getting-started.md) guide
 - Added [User Guide](docs/user-guide.md)
 - Updated README with documentation links table
@@ -167,6 +196,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added `build/`, `dist/`, `uploads/` to `.gitignore`
 
 ### Technical
+
 - Test suite: 93 tests passing
 - 4 tests updated to match corrected round preset count and Flint scoring
 
@@ -175,6 +205,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [2026-02-10] — Arrow Analytics Updates
 
 ### Added
+
 - **Per-Arrow Heatmaps**: Shot markers now render at alpha 0.2 with centre-of-mass × markers per arrow
 - **Density Heatmap Toggle**: Optional histogram2dcontour visualization per arrow in Analysis Lab (density overlays)
 - **Point-On Distance Calculator**: Polynomial root-finding for zero-crawl distance, displayed in Crawl Manager
@@ -192,6 +223,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Practice (30 arrows)
 
 ### Technical
+
 - Added `markerOpacity`, `centroids`, and `extraTraces` props to TargetFace component
 - Extended CrawlCalculateResponse with `point_on_distance` field
 - Added `find_point_on_distance()` function to src/crawls.py using numpy polynomial roots
@@ -202,6 +234,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [2026-02-09] — Arrow Precision Grouping
 
 ### Added
+
 - **Arrow Precision Tiers**: Composite precision scoring (60% avg_radius + 40% std_score) ranks arrows into Primary/Secondary/Reserve tiers
 - **Competition Set Callout**: Displays recommended set of arrows for highest precision
 - **Tier Cards**: Visual grouping with aggregate stats per tier (green/yellow/red styling)
@@ -209,6 +242,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **ArrowTier Model**: Backend aggregate stats (avg_score, avg_radius, avg_precision_score per tier)
 
 ### Changed
+
 - Arrow Performance endpoint now returns `tiers`, `primary_set`, and `group_size` fields
 - Individual arrows include `precision_score`, `precision_rank`, and `tier` assignment
 
@@ -217,6 +251,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [2026-02-08] — Six-Feature Batch Release
 
 ### Added
+
 1. **Dashboard Home Page**: Summary stats, recent sessions grid, personal bests, quick actions
 2. **Session Notes**: Free-text notes field on session creation and detail view
 3. **Print Crawl Card**: Printable crawl chart with tab marks and distance lookup table
@@ -225,6 +260,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 6. **Arrow Performance Tracker**: Per-arrow shot heatmap on target face with arrow selector checkboxes, single-arrow focus stats, and sortable performance table
 
 ### Fixed
+
 - Sigma conversion bug: Removed double normalization in score-goal and arrow-performance endpoints (shots already in cm)
 - Arrow color stability: Colors now keyed by original array index to prevent color changes when toggling arrows
 - Unicode diamond rendering: Diamond markers now display correctly cross-platform
@@ -234,12 +270,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [2026-01-18] — Session Logger Enhancements
 
 ### Added
+
 - **Full Quiver Arrow Selection**: Select which quiver arrows to log (numbered 1-12+)
 - **Arrows-Per-End Selector**: Dynamic dropdown (3, 5, 6, or 10 arrows per end)
 - **Hover Preview**: Arrow circle + predicted score badge on target face before clicking
 - **Arrow Diameter Scoring**: Shaft outer diameter (mm) now affects line-break score calculations
 
 ### Fixed
+
 - **Target Click Detection**: Switched from invisible heatmap to CSS overlay for 100% reliable click interception
 - **Save End Crash**: Fixed "list index out of range" error when arrow_numbers list is shorter than shots
 - **Uvicorn File Watching**: Added `--reload-dir src --reload-dir api` to prevent `.venv` thrashing
@@ -249,6 +287,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [2026-01-12] — Analysis Lab & Equipment
 
 ### Added
+
 - **Analysis Lab**: Dual-mode analysis page with:
   - **Single-Distance Tab**: Advanced precision metrics (CEP50, sigma X/Y, H/V ratio, MPI), bias analysis, trends over time, within-end analysis, hit probability
   - **Cross-Distance Tab**: James Park Model analysis — separates skill (angular deviation) from equipment drag loss by comparing two distances
@@ -260,6 +299,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [2025-12-20] — Core Platform & Analytics Foundation
 
 ### Added
+
 - **API Backend**: 49 REST endpoints across 9 routers
   - Bows (5 endpoints): CRUD operations
   - Arrows (7 endpoints): CRUD + shaft data CSV upload
@@ -289,6 +329,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Testing**: pytest suite with 93 tests, in-memory SQLite with StaticPool
 
 ### Technical Decisions
+
 - Monorepo structure: domain logic in `src/`, API in `api/`, frontend in `frontend/`
 - FastAPI + SQLModel for strong typing and Pydantic validation
 - TanStack Query for data fetching with optimistic updates and cache invalidation
@@ -310,7 +351,6 @@ Currently pre-1.0. Versions will follow [Semantic Versioning](https://semver.org
 ---
 
 [Unreleased]: https://github.com/kennedym-ds/barebow_project/compare/main...HEAD
-[2026-02-13 v1.0.2]: https://github.com/kennedym-ds/barebow_project/compare/v1.0.1...v1.0.2
 [2026-02-13]: https://github.com/kennedym-ds/barebow_project/compare/v2026-02-11...v1.0.1
 [2026-02-11]: https://github.com/kennedym-ds/barebow_project/compare/v2026-02-10...v2026-02-11
 [2026-02-10]: https://github.com/kennedym-ds/barebow_project/compare/v2026-02-09...v2026-02-10

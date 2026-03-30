@@ -44,7 +44,11 @@ export const tabRepo = {
     const existing = this.getById(id);
     if (!existing) return null;
 
-    const fields = Object.entries(data).filter(([, v]) => v !== undefined);
+    const ALLOWED_COLS = new Set([
+      "name", "make", "model", "marks", "nock_y_px", "scale_mm_per_px",
+    ]);
+
+    const fields = Object.entries(data).filter(([k, v]) => v !== undefined && ALLOWED_COLS.has(k));
     if (fields.length === 0) return existing;
 
     const setClauses = fields.map(([k]) => `${k} = ?`).join(", ");

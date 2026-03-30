@@ -3,7 +3,7 @@
  * Pure computation, no database access.
  */
 
-import { getRingScore, getFlintScore } from "../domain/scoring";
+import { getRingScore, getFlintScore, isXRing } from "../utils/scoring";
 
 export interface ScoreResult {
   score: number;
@@ -20,17 +20,19 @@ export const scoringService = {
     y: number,
     faceCm: number,
     faceType: "WA" | "Flint" = "WA",
-    xIs11 = true
+    xIs11 = true,
+    arrowDiameterMm = 0,
   ): ScoreResult {
     const radius = Math.sqrt(x * x + y * y);
 
     if (faceType === "Flint") {
-      const score = getFlintScore(radius, faceCm);
-      return { score, is_x: false };
+      const score = getFlintScore(radius, faceCm, arrowDiameterMm);
+      const is_x = isXRing(radius, faceCm, "Flint", arrowDiameterMm);
+      return { score, is_x };
     }
 
-    const score = getRingScore(radius, faceCm);
-    const is_x = score === 10 && xIs11 && radius <= faceCm / 40;
+    const score = getRingScore(radius, faceCm, xIs11, arrowDiameterMm);
+    const is_x = xIs11 ? isXRing(radius, faceCm, "WA", arrowDiameterMm) : false;
     return { score, is_x };
   },
 };
